@@ -15,8 +15,24 @@ roombooking project kelvin's kittens
 - copy the .env file provided to the folder (this is not included in github because it contains credentials)
 - Install [Node.js](https://nodejs.org/en/download/)
 - npm install
-- node install dotenv
-- node install mysql2
+- npm install dotenv
+- npm install mysql2
+- npm install express
+- npm install express-session
+- npm install ejs
+- npm install sanitize-html
+- npm install body-parser
+- npm install bcrypt
+
 
 to run
 - node app.js
+
+the test login is
+ - u: jake@123.com
+ - p: test
+
+to create new users use 
+ /register
+there is no link in the current pages to this
+

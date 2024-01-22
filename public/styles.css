@@ -1,0 +1,158 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    /* Removed padding-top here since we already have padding in the top-menu */
+    display: flex;
+    flex-direction: column; /* Changed to column to organize items vertically */
+    justify-content: flex-start; /* Align content to the top */
+    align-items: center; /* Center align items horizontally */
+    min-height: 100vh; /* Use min-height to fill the screen but allow scrolling */
+}
+
+.top-menu {
+    background: #fff;
+    height: 50px;
+    position: fixed;
+    top: 0;
+    left: 0; /* Ensure it spans from the left */
+    right: 0; /* Ensure it spans to the right */
+    z-index: 1000;
+    display: flex;
+    align-items: center; /* Center items vertically */
+    padding: 0 20px; /* Add padding on the sides */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.logo img {
+    height: 40px; /* Adjust as needed */
+}
+
+.app-name {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ff8200;
+    margin-left: 10px; /* Add spacing between logo and app name */
+}
+
+.logged-in-as {
+    font-size: 20px;
+    color: #000;
+    margin-left: auto; /* Add spacing between appname and login status */
+}
+
+.login-container, .welcome-container {
+    text-align: center;
+    background: white;
+    padding: 2em;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 350px; /* width of login container */
+    margin-top: 100px; /* Push down to make space for fixed header */
+}
+
+.login-container, .welcome-container h1 {
+    color: #333;
+}
+
+.login-container, .welcome-container p {
+    color: #666;
+}
+
+.input-group {
+    margin-bottom: 1em;
+}
+
+.input-group label {
+    display: block;
+    color: #333;
+    margin-bottom: 0.5em;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 0.75em;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    width: 100%;
+    padding: 1em;
+    border: none;
+    border-radius: 20px;
+    background-color: #5419f5;
+    color: white;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #5419f5;
+}
+.footer {
+    background: #fff; /* Adjusted to white */
+    color: #333; /* Text color adjusted for contrast */
+    padding: 0; /* Removed padding */
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center; /* Center items vertically */
+    position: relative; /* Changed from fixed to relative */
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.footer-link {
+    color: #333; /* Text color adjusted for contrast */
+    text-decoration: none;
+    padding: 10px 15px; /* Adjusted padding for better spacing */
+    background: #66BB6A;
+    border-radius: 20px;
+    font-weight: bold;
+    margin: 0 10px; /* Add margin to space out the links */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    display: flex; /* Display as flex to align text */
+    align-items: center; /* Align text vertically */
+    justify-content: center; /* Align text horizontally */
+}
+
+.footer-link:hover {
+    background-color: #66BB6A;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}   
+
+.button-link {
+    color: #fff; /* Text color adjusted for contrast */
+    text-decoration: none;
+    padding: 10px 15px; /* Adjusted padding for better spacing */
+    background: #5419f5;
+    border-radius: 20px;
+    font-weight: bold;
+    margin: 10px 10px; /* Add margin to space out the links */
+    transition: background-color 0.3s, box-shadow 0.3s;
+    display: flex; /* Display as flex to align text */
+    align-items: center; /* Align text vertically */
+    justify-content: center; /* Align text horizontally */
+}
+
+.button-link:hover {
+    background-color: #5419f5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}   
+
+.welcome-user-logo {
+    width: 25%; /* This will make the image take the full width of its parent */
+    height: auto; /* To maintain the aspect ratio */
+}
+
+.logout-user-button-image {
+    width: auto; /* This will make the image take the full width of its parent */
+    height: 50%; /* To maintain the aspect ratio */
+}
+
+.content {
+    flex: 1; /* This will make the content grow to take available space, pushing the footer down */
+}
+

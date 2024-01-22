@@ -24,8 +24,9 @@ CREATE TABLE user_account (
     module VARCHAR(50)
 );   
 
-INSERT INTO user_account (email, password, society_name, module)
-VALUES  ('jbrun001@gold.ac.uk', 'test', 'societynametest','');
+# this bcrypt password is "test" - use for testing
+INSERT INTO user_account (email, password, society_name, module, user_role)
+VALUES  ('jbrun001@gold.ac.uk', '$2b$10$u2KUmmCePRZhYZ8bQSk6NuSwOLx9NJvLnoSSneW4TcJa1Jd0U1wMW', 'societynametest','','society leader');
 
 CREATE TABLE room (
     # increased pictureURL to 300 as 100 not long enough

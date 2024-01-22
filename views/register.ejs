@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Bookit</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="top-menu">
+        <div class="logo">
+            <img src="logo.png" alt="Bookit Logo"> 
+        </div>
+        <div class="app-name">Bookit</div>
+        <div class="logged-in-as">Not logged in</div>
+    </header>
+    <div class="content">
+        <div class="register-container">
+            <h1>Registration</h1>
+            <p>Please enter your details to register</p>
+            <form action="/registered" method="POST">
+                <div class="input-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="input-group">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <div class="input-group">
+                    <label for="userrole">User Role:</label>
+                    <input type="text" id="userole" name="userrole" required>
+                </div>
+                <div class="input-group">
+                    <label for="societyname">Society Name:</label>
+                    <input type="text" id="societyname" name="societyname" required>
+                </div>
+                <button type="submit">Register</button>
+            </form>
+        </div>
+    </div>
+    <footer class="footer">
+        <a href="#" class="footer-link">Credits</a>
+        <a href="mailto:support@bookit.com" class="footer-link">Support Email</a>
+        <a href="#" class="footer-link">Report Bug</a>
+        <a href="#" class="footer-link">FAQ / Help</a>  
+    </footer>
+</body>
+</html>
