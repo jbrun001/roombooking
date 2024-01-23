@@ -111,7 +111,7 @@ button:hover {
     background: #66BB6A;
     border-radius: 20px;
     font-weight: bold;
-    margin: 0 10px; /* Add margin to space out the links */
+    margin: 10px 10px; /* Add margin to space out the links */
     transition: background-color 0.3s, box-shadow 0.3s;
     display: flex; /* Display as flex to align text */
     align-items: center; /* Align text vertically */
@@ -155,4 +155,42 @@ button:hover {
 .content {
     flex: 1; /* This will make the content grow to take available space, pushing the footer down */
 }
+
+.content-list {
+    display: flex;
+    flex: 1;
+    margin: 20px;
+    margin-top: 30px; /* Push down to make space for fixed header */
+    display: flex;
+    align-items: flex-start; /* Aligns items to the start of the container */
+    justify-content: flex-start; /* Aligns the content to the start (left side) of the container */
+}
+
+.left-column {
+    padding: 10px;
+    min-width: 200px; /* min-width to ensure it doesn't get too small */
+    flex-grow: 0; /* Do not allow the column to grow */
+    flex-shrink: 0; /* Do not allow the column to shrink */
+    flex-basis: 200px; /* Adjust the width as needed */
+    padding: 10px;
+}
+
+.right-column {
+    padding: 10px;
+    border-left: 1px solid #ddd; /* separator between left and right columns */
+    flex-grow: 1; /* Allows the column to grow and take up the remaining space */
+    flex-shrink: 1; /* Allows the column to shrink if necessary */
+    padding: 10px;
+}
+
+.bookings-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.bookings-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
 

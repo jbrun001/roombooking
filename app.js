@@ -93,112 +93,120 @@ app.get('/login', (req, res) => {
 })
 
 // login-check route which is the target for the https post in login,ejs.ejs
-    app.post('/login-check', function (req,res) {
-      var email = sanitiseHtml(req.body.email);
-      var password = req.body.password;   
-      // just check that the email address exists (password hash checking comes after)
-      let sqlquery = "SELECT email, id, password, user_role FROM user_account WHERE email=\""+ email.toLowerCase() +"\";" 
-      db.query(sqlquery, (err, result) => {
-          // if error display login-error page
-          loggedInMessage = getLoggedInUser(req);
-          if (err) {
-              console.error(err.message);
-              res.render('login-error.ejs',{}); 
-          } else if (result === null || result.length === 0) {
-              // no matching records at all
-              console.error("user not found");
-              res.render('login-error.ejs',{});
-          }
-          // if this is a valid user
-          else {
-              // now have to check the passwords matches the hashed password
-              // take the first result from the sql query 
-              if(isMatchingPassword(password,result[0].password)){
-                  req.session.isLoggedIn = true;  // set the session variable to show logged in
-                  req.session.userid = result[0].id;
-                  req.session.email = result[0].email;
-                  req.session.user_role = result[0].user_role;
-                  loggedInMessage = getLoggedInUser(req);
-                  res.redirect('/login-success');
-              }else {
-                  console.error("user details don't match");
-                  loggedInMessage = getLoggedInUser(req);
-                  res.render('login-error.ejs',{});
-              }
-          }
-      });
-  });
+app.post('/login-check', function (req,res) {
+    var email = sanitiseHtml(req.body.email);
+    var password = req.body.password;   
+    // just check that the email address exists (password hash checking comes after)
+    let sqlquery = "SELECT email, id, password, user_role FROM user_account WHERE email=\""+ email.toLowerCase() +"\";" 
+    db.query(sqlquery, (err, result) => {
+        // if error display login-error page
+        loggedInMessage = getLoggedInUser(req);
+        if (err) {
+            console.error(err.message);
+            res.render('login-error.ejs',{}); 
+        } else if (result === null || result.length === 0) {
+            // no matching records at all
+            console.error("user not found");
+            res.render('login-error.ejs',{});
+        }
+        // if this is a valid user
+        else {
+            // now have to check the passwords matches the hashed password
+            // take the first result from the sql query 
+            if(isMatchingPassword(password,result[0].password)){
+                req.session.isLoggedIn = true;  // set the session variable to show logged in
+                req.session.userid = result[0].id;
+                req.session.email = result[0].email;
+                req.session.user_role = result[0].user_role;
+                loggedInMessage = getLoggedInUser(req);
+                res.redirect('/login-success');
+            }else {
+                console.error("user details don't match");
+                loggedInMessage = getLoggedInUser(req);
+                res.render('login-error.ejs',{});
+            }
+        }
+    });
+});
 
-  app.get('/login-error', function (req,res) {
-      forumMessage = getForumMessage(req);
-      res.render('login-error.ejs',{forumName, forumMessage, htmlNav});
-  }); 
+app.get('/login-error', function (req,res) {
+    forumMessage = getForumMessage(req);
+    res.render('login-error.ejs',{forumName, forumMessage, htmlNav});
+}); 
 
-  // this route is the template for all pages when the user is logged in
-  // there is an extra check to make sure that the user is currently logged in
-  // before displaying this route
-  app.get('/login-success',isLoggedIn, function (req,res) {
-      loggedInMessage = getLoggedInUser(req);      
-      var userrole = req.session.user_role;
-      var email = req.session.email;
-      //console.log(loggedInMessage + " " + userrole);
-      res.render('login-success.ejs',{loggedInMessage, userrole, email});
-  }); 
 
-  app.get('/logout', function (req,res) {
-      req.session.destroy((err) => {
-          if (err) {
-            console.error('Error destroying session:', err);
-            res.sendStatus(500); // Internal Server Error
-          } else {
-            forumMessage = "not logged in";
-            res.render('login.ejs',{});      
-          }
-      });
-  });
+app.get('/logout', function (req,res) {
+    req.session.destroy((err) => {
+        if (err) {
+        console.error('Error destroying session:', err);
+        res.sendStatus(500); // Internal Server Error
+        } else {
+        forumMessage = "not logged in";
+        res.render('login.ejs',{});      
+        }
+    });
+});
 
-  
-  // register page route - registers a new user and adds them as a member to the first topic
-  // so they are able to post somewhere when they first join
-  app.get('/register', function (req,res) {
-      res.render('register.ejs',{});
-  }); 
-  // the form in register.ejs has a target of /registered which will get managed by this code.  
-  // this form uses http POST
-  app.post('/registered', function (req,res) {
-      // before we send the input fields which will be displayed on the page
-      // make sure they don't contain any dangerous HTML for cross site scripting 
-      var email = sanitiseHtml(req.body.email);
-      var password = sanitiseHtml(req.body.password);
-      var userrole = sanitiseHtml(req.body.userrole);
-      var societyname = sanitiseHtml(req.body.societyname);
-      var hashedPassword = hashPassword(password);
-      let sqlqueryuser = "INSERT INTO user_account (email, password, user_role, society_name) VALUES (?,?,?,?)"; 
-      // execute sql query
-      let newuser = [email.toLowerCase(), hashedPassword, userrole, societyname];
-      db.query(sqlqueryuser, newuser, (err, result) => {
-          // if error display login page
-          if (err) {
-              res.redirect('/'); 
-              return console.error(err.message);
-          }
-          else {
-              res.redirect('/'); 
-          }
-       });
-  }); 
 
+// register page route - registers a new user and adds them as a member to the first topic
+// so they are able to post somewhere when they first join
+app.get('/register', function (req,res) {
+    res.render('register.ejs',{});
+}); 
+// the form in register.ejs has a target of /registered which will get managed by this code.  
+// this form uses http POST
+app.post('/registered', function (req,res) {
+    // before we send the input fields which will be displayed on the page
+    // make sure they don't contain any dangerous HTML for cross site scripting 
+    var email = sanitiseHtml(req.body.email);
+    var password = sanitiseHtml(req.body.password);
+    var userrole = sanitiseHtml(req.body.userrole);
+    var societyname = sanitiseHtml(req.body.societyname);
+    var hashedPassword = hashPassword(password);
+    let sqlqueryuser = "INSERT INTO user_account (email, password, user_role, society_name) VALUES (?,?,?,?)"; 
+    // execute sql query
+    let newuser = [email.toLowerCase(), hashedPassword, userrole, societyname];
+    db.query(sqlqueryuser, newuser, (err, result) => {
+        // if error display login page
+        if (err) {
+            res.redirect('/'); 
+            return console.error(err.message);
+        }
+        else {
+            res.redirect('/'); 
+        }
+    });
+}); 
+
+// test route to display the user_account table - remove in final version
 app.get('/test', (req, res) => {
-  connection.query('SELECT * FROM user_account', function (err, rows, fields) {
-    if (err) throw err
-
-    res.send(rows)
-  })
+    connection.query('SELECT * FROM user_account', function (err, rows, fields) {
+      if (err) throw err
+      res.send(rows)
+    })
 })
 
+// this route is the template for all pages when the user is logged in
+// there is an extra check to make sure that the user is currently logged in
+// before displaying this route
+app.get('/login-success',isLoggedIn, function (req,res) {
+    loggedInMessage = getLoggedInUser(req);      
+    var userrole = req.session.user_role;
+    var email = req.session.email;
+    //console.log(loggedInMessage + " " + userrole);
+    res.render('login-success.ejs',{loggedInMessage, userrole, email});
+}); 
 
+
+app.get('/view-bookings',isLoggedIn, function (req,res) {
+    loggedInMessage = getLoggedInUser(req);      
+    var userrole = req.session.user_role;
+    var email = req.session.email;
+    //console.log(loggedInMessage + " " + userrole);
+    res.render('view-bookings.ejs',{loggedInMessage, userrole, email});
+}); 
 
 
 app.listen(port, () => {
-  console.log(`Bookit app listening at http://localhost:${port}`)
+    console.log(`Bookit app listening at http://localhost:${port}`)
 })

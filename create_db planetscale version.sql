@@ -26,7 +26,10 @@ CREATE TABLE user_account (
 
 # this bcrypt password is "test" - use for testing
 INSERT INTO user_account (email, password, society_name, module, user_role)
-VALUES  ('jbrun001@gold.ac.uk', '$2b$10$u2KUmmCePRZhYZ8bQSk6NuSwOLx9NJvLnoSSneW4TcJa1Jd0U1wMW', 'societynametest','','society leader');
+VALUES  ('jake@123.com', '$2b$10$lgIpFn3VZhDRaPsqiZDA0u9qEJYKNskmtlybrO2.K35a0wYb8XzB.', 'societynametest','','society leader');
+INSERT INTO user_account (email, password, society_name, module, user_role)
+VALUES  ('coordinator@123.com', '$2b$10$lgIpFn3VZhDRaPsqiZDA0u9qEJYKNskmtlybrO2.K35a0wYb8XzB.', '','','coordinator');
+
 
 CREATE TABLE room (
     # increased pictureURL to 300 as 100 not long enough

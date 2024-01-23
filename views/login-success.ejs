@@ -26,7 +26,11 @@
             <% } %>
             <h1>Welcome, <%= email %></h1>
             <a href="#" class="button-link">Book Room</a>
-            <a href="#" class="button-link">View Bookings</a>
+            <a href="/view-bookings" class="button-link">View Bookings</a>
+            <% if(userrole == "coordinator"){ %>
+                <a href="#" class="button-link">View Requests</a>
+                <a href="#" class="button-link">View Accepted</a>
+            <% } %>
         </div>
     </div>
     <footer class="footer">
