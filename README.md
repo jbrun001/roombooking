@@ -36,6 +36,10 @@ the test login, for a coordinator, is
  - u: coordinator@123.com
  - p: test
 
+the test login, for an administrator, is
+ -u: admin@123.com
+ -p: admintest
+
 
 to create new users use 
  /register
