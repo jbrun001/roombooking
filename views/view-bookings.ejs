@@ -20,14 +20,20 @@
     <div class="content-list">
         <div class="left-column">
             <p>Here are the filters</p>
-            <button>Button 1</button>
-            <button>Button 2</button>
-            <input type="text" placeholder="Field 1">
-            <input type="text" placeholder="Field 2">
-            <input type="text" placeholder="Field 1">
-            <input type="text" placeholder="Field 2">
+            <div class="date">
+                <input type="date" />
+            </div>
+            <p>Time Slot</p>
+            <input type="text" placeholder="Field 1" id="timeSlot">
+            <p>Building</p>
+            <input type="text" placeholder="Field 2" id="building">
+            <p>Room Type</p>
+            <input type="text" placeholder="Field 1" id="roomType">
+            <p>Duration</p>
             <input type="range" min="1" max="100" value="50" class="slider" id="myRange1">
-            <input type="range" min="1" max="100" value="50" class="slider" id="myRange1">
+            <input type="range" min="1" max="100" value="50" class="slider" id="myRange2" oninput="rangeValue.innerText = this.value">
+            <p id="rangeValue">Seating Available: 50</p>
+            <a href="/filter"><button>Confirm</button> </a>
         </div>
         <div class="right-column">
             <!-- This is where the list will go -->

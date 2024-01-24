@@ -174,6 +174,17 @@ button:hover {
     flex-shrink: 0; /* Do not allow the column to shrink */
     flex-basis: 200px; /* Adjust the width as needed */
     padding: 10px;
+    button {
+        width: 100%;
+        padding: 1em;
+        border: none;
+        border-radius: 20px;
+        background-color: #77f095;
+        color: white;
+        font-size: 1em;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
 }
 
 .right-column {
@@ -194,4 +205,42 @@ button:hover {
     border-bottom: 1px solid #eee;
 }
 
+input::-webkit-inner-spin-button,
+input::-webkit-clear-button {
+  display: block;
+}
 
+input::-webkit-calendar-picker-indicator {
+  color: rgba(0, 0, 0, 0);
+  opacity: 1
+}
+
+input::-webkit-calendar-picker-indicator:hover {
+  background: transparent;
+  cursor: pointer;
+}
+
+input::-webkit-calendar-picker-indicator::after {
+  content: '';
+  display: block;
+  background: url(https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_keyboard_arrow_down_48px-32.png) no-repeat;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-top: -16px;
+}
+
+.date {
+  position: relative;
+  width: 154px;
+  overflow: auto;
+  background: #000;
+}
+input {
+  width: 140px;
+  padding: 5px;
+  height: 24px;
+  display: block;
+}
