@@ -1,6 +1,6 @@
 ## roombooking
 
-roombooking project kelvin's kittens
+## roombooking project kelvin's kittens
 
 ## Prerequisites
 
@@ -35,6 +35,10 @@ the test login, for a society leader, is
 the test login, for a coordinator, is
  - u: coordinator@123.com
  - p: test
+
+the test login, for an administrator, is
+ -u: admin@123.com
+ -p: admintest
 
 
 to create new users use 

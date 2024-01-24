@@ -178,9 +178,9 @@ app.post('/registered', function (req,res) {
     });
 }); 
 
-// test route to display the user_account table - remove in final version
+// test route to display the user_account table - remove in final version.
 app.get('/test', (req, res) => {
-    connection.query('SELECT * FROM user_account', function (err, rows, fields) {
+    db.query('SELECT * FROM user_account', function (err, rows, fields) {
       if (err) throw err
       res.send(rows)
     })
