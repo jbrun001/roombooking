@@ -174,10 +174,11 @@ app.post('/registered', isLoggedIn, function (req,res) {
     var password = sanitiseHtml(req.body.password);
     var userrole = sanitiseHtml(req.body.userrole);
     var societyname = sanitiseHtml(req.body.societyname);
+    var module = sanitiseHtml(req.body.module);
     var hashedPassword = hashPassword(password);
-    let sqlqueryuser = "INSERT INTO user_account (email, password, user_role, society_name) VALUES (?,?,?,?)"; 
+    let sqlqueryuser = "INSERT INTO user_account (email, password, user_role, society_name, module) VALUES (?,?,?,?,?)"; 
     // execute sql query
-    let newuser = [email.toLowerCase(), hashedPassword, userrole, societyname];
+    let newuser = [email.toLowerCase(), hashedPassword, userrole, societyname, module];
     db.query(sqlqueryuser, newuser, (err, result) => {
         // if error display login page
         if (err) {
