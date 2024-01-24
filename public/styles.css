@@ -136,6 +136,7 @@ button:hover {
     display: flex; /* Display as flex to align text */
     align-items: center; /* Align text vertically */
     justify-content: center; /* Align text horizontally */
+    width: 10%;
 }
 
 .button-link:hover {
@@ -151,6 +152,12 @@ button:hover {
 .logout-user-button-image {
     width: auto; /* This will make the image take the full width of its parent */
     height: 50%; /* To maintain the aspect ratio */
+}
+
+.room-preview-image {
+    float: left;
+    width: 15%;
+    height: auto;
 }
 
 .content {
