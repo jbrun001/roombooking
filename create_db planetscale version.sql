@@ -119,9 +119,11 @@ CREATE TABLE lookup_user_role (
 );
 
 INSERT INTO lookup_user_role (role_name)
-VALUES  ('Society Leader');
+VALUES  ('society Leader');
 INSERT INTO lookup_user_role (role_name)
-VALUES  ('Lecturer');
+VALUES  ('lecturer');
 INSERT INTO lookup_user_role (role_name)
-VALUES  ('Coordinator');
+VALUES  ('coordinator');
+INSERT INTO lookup_user_role (role_name)
+VALUES  ('admin');
 
