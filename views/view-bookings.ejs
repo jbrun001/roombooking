@@ -23,14 +23,15 @@
             <div class="date">
                 <input type="date" />
             </div>
+            <p>Duration</p>
+            <input type="range" min="1" max="100" value="50" class="slider" id="myRange1">
             <p>Time Slot</p>
             <input type="text" placeholder="Field 1" id="timeSlot">
             <p>Building</p>
             <input type="text" placeholder="Field 2" id="building">
             <p>Room Type</p>
             <input type="text" placeholder="Field 1" id="roomType">
-            <p>Duration</p>
-            <input type="range" min="1" max="100" value="50" class="slider" id="myRange1">
+            <p>Seating Available</p>
             <input type="range" min="1" max="100" value="50" class="slider" id="myRange2" oninput="rangeValue.innerText = this.value">
             <p id="rangeValue">Seating Available: 50</p>
             <a href="/filter"><button>Confirm</button> </a>
