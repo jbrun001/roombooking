@@ -41,9 +41,7 @@ the test login, for an administrator, is
  -p: admintest
 
 
-to create new users use 
- /register
-there is no link in the current pages to this
+to create new users, log in as an admin user and use the "register new user" button from their menu 
 
 Front end pages/routes required & status
 route               prototyped      connected to database       societyleader   coordinator     comment
