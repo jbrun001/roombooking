@@ -32,9 +32,21 @@
         <div class="right-column">
             <!-- This is where the list will go -->
             <ul class="bookings-list">
-                <li>Item 1 in the list <a href="#" class="button-link">Action button</a></li>
-                <li>Item 2 in the list <a href="#" class="button-link">Action button</a></li>
-                <li>Item 3 in the list <a href="#" class="button-link">Action button</a></li>
+                <!-- TO DO: Have for loop iterate through all rooms matching filter criteria -->
+                <% for (let i = 0; i < 5; i++) { %>
+                    <li>
+                        <img src="classroom.jpg" alt="Room Preview Image" class="room-preview-image">
+                        <div>
+                            <p>Room Number: 104</p>
+                            <p>Building: South</p>
+                            <p>Date: 16 Jan 2024</p>
+                            <p>Timeslot: South</p>
+                            <p>Booked by: Emily Rain</p>
+                            <p>Status: Awaiting Approval</p>
+                        </div>
+                        <a href="#" class="button-link">View</a>
+                    </li>
+                <% } %>
             </ul>
         </div>
     </div>
