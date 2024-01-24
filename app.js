@@ -150,12 +150,24 @@ app.get('/logout', function (req,res) {
 
 // register page route - registers a new user and adds them as a member to the first topic
 // so they are able to post somewhere when they first join
-app.get('/register', function (req,res) {
-    res.render('register.ejs',{});
+app.get('/register', isLoggedIn, function (req,res) {
+    loggedInMessage = getLoggedInUser(req);    
+    var userrole = req.session.user_role;
+    var email = req.session.email;  
+    sqlquery = "select * from lookup_user_role"
+    // execute sql query
+    db.query(sqlquery, (err, data) => {
+        if (err) {
+            res.redirect('./'); 
+            return console.error(err.message);
+        }
+        let newData = Object.assign({}, {loggedInMessage}, {userrole}, {email}, {allUserRoles:data});
+        res.render('register.ejs',newData);
+    });
 }); 
 // the form in register.ejs has a target of /registered which will get managed by this code.  
 // this form uses http POST
-app.post('/registered', function (req,res) {
+app.post('/registered', isLoggedIn, function (req,res) {
     // before we send the input fields which will be displayed on the page
     // make sure they don't contain any dangerous HTML for cross site scripting 
     var email = sanitiseHtml(req.body.email);
@@ -173,7 +185,7 @@ app.post('/registered', function (req,res) {
             return console.error(err.message);
         }
         else {
-            res.redirect('/'); 
+            res.redirect('/login-success'); 
         }
     });
 }); 

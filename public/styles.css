@@ -41,7 +41,7 @@ body {
     margin-left: auto; /* Add spacing between appname and login status */
 }
 
-.login-container, .welcome-container {
+.login-container, .welcome-container, .register-container {
     text-align: center;
     background: white;
     padding: 2em;
@@ -51,11 +51,11 @@ body {
     margin-top: 100px; /* Push down to make space for fixed header */
 }
 
-.login-container, .welcome-container h1 {
+.login-container, .welcome-container h1, .register-container {
     color: #333;
 }
 
-.login-container, .welcome-container p {
+.login-container, .welcome-container p, register-container {
     color: #666;
 }
 
@@ -69,7 +69,7 @@ body {
     margin-bottom: 0.5em;
 }
 
-.input-group input {
+.input-group input, select {
     width: 100%;
     padding: 0.75em;
     border: 1px solid #ddd;
