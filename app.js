@@ -219,6 +219,48 @@ app.get('/view-bookings',isLoggedIn, function (req,res) {
     res.render('view-bookings.ejs',{loggedInMessage, userrole, email});
 }); 
 
+app.get('/add-room', isLoggedIn, (req, res) => {
+    // Assuming you want only admin users to add rooms
+    if(req.session.user_role === 'admin') {
+        res.render('add-room.ejs');
+    } else {
+        res.send('Unauthorized access');
+    }
+});
+
+// This route is used to add a room to the database
+app.post('/add-room', isLoggedIn, (req, res) => {
+    // checking for admin role
+    if(req.session.user_role !== 'admin') {
+        return res.send('Unauthorized access');
+    }
+
+    // sanitising the input
+    const roomNumber = sanitiseHtml(req.body.roomNumber);
+    const capacity = parseInt(req.body.capacity);
+    const pictureURL = sanitiseHtml(req.body.pictureURL);
+    const isAcceptingBookings = req.body.isAcceptingBookings === 'true';
+
+    // inserting the room into the database
+    let sqlquery = "INSERT INTO room (room_number, capacity, picture_URL, is_accepting_bookings) VALUES (?, ?, ?, ?)";
+
+    // execute sql query
+    db.query(sqlquery, [roomNumber, capacity, pictureURL, isAcceptingBookings], (err, result) => {
+        if (err) {
+            console.error(err.message);
+            return res.send('Error in adding room');
+        }
+        // redirecting to a success page if the room was added successfully
+        res.redirect('/add-room-success');
+    });
+});
+
+//this route displays when a room has been added successfully
+app.get('/add-room-success', isLoggedIn, (req, res) => {
+    res.send('<p>Room added successfully!</p><a href="/login-success">Return to Dashboard</a>');
+});
+
+
 
 app.listen(port, () => {
     console.log(`Bookit app listening at http://localhost:${port}`)

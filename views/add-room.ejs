@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Room - Bookit</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="top-menu">
+        <div class="logo">
+            <img src="logo.png" alt="Bookit Logo">
+        </div>
+        <div class="app-name">Bookit</div>
+        <div class="logged-in-as"><%= loggedInMessage %></div>
+        <div class="logout-user-button-image"></div>
+            <a href="/logout" class="button-link">Logout</a>
+        </div>
+    </header>
+    <div class="content">
+        <div class="form-container">
+            <h1>Add New Room</h1>
+            <form action="/add-room" method="post">
+                <label for="roomNumber">Room Number:</label>
+                <input type="text" id="roomNumber" name="roomNumber" required>
+
+                <label for="capacity">Capacity:</label>
+                <input type="number" id="capacity" name="capacity" required>
+
+                <label for="pictureURL">Picture URL:</label>
+                <input type="text" id="pictureURL" name="pictureURL">
+
+                <label for="isAcceptingBookings">Accepting Bookings:</label>
+                <select id="isAcceptingBookings" name="isAcceptingBookings">
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+                <button type="submit" class="button-link">Add Room</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <a href="#" class="footer-link">Credits</a>
+        <a href="mailto:support@bookit.com" class="footer-link">Support Email</a>
+        <a href="#" class="footer-link">Report Bug</a>
+        <a href="#" class="footer-link">FAQ / Help</a>          
+    </footer>
+</body>
+</html>
