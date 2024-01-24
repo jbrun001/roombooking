@@ -19,10 +19,15 @@
     </header>
     <div class="content">
         <div class="welcome-container">
-            <% if(userrole == "coordinator"){ %>
-                <img src="person-green.png" alt="" class="welcome-user-logo">
-                <% } else{ %>  
-                <img src="person-orange.png" alt="" class="welcome-user-logo">
+            <% switch (userrole) {
+                case "coordinator": %>
+                    <img src="person-green.png" alt="" class="welcome-user-logo">
+                    <% break;
+                case "admin": %>
+                    <img src="person-green.png" alt="" class="welcome-user-logo">
+                    <% break;
+                default: %>
+                    <img src="person-orange.png" alt="" class="welcome-user-logo">
             <% } %>
             <h1>Welcome, <%= email %></h1>
             <a href="#" class="button-link">Book Room</a>
@@ -30,6 +35,10 @@
             <% if(userrole == "coordinator"){ %>
                 <a href="#" class="button-link">View Requests</a>
                 <a href="#" class="button-link">View Accepted</a>
+            <% } %>
+            <% if(userrole == "admin"){ %>
+                <a href="#" class="button-link">Register User</a>
+                <a href="#" class="button-link">Add Room</a>
             <% } %>
         </div>
     </div>
