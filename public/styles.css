@@ -26,6 +26,7 @@ body {
 
 .logo img {
     height: 40px; /* Adjust as needed */
+    border-radius: 20%;
 }
 
 .app-name {
@@ -55,7 +56,7 @@ body {
     color: #333;
 }
 
-.login-container, .welcome-container p, register-container {
+.login-container, .welcome-container, register-container p {
     color: #666;
 }
 
