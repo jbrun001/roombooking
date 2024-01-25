@@ -130,8 +130,8 @@ app.post('/login-check', function (req, res) {
 });
 
 app.get('/login-error', function (req, res) {
-    forumMessage = getForumMessage(req);
-    res.render('login-error.ejs', { forumName, forumMessage, htmlNav });
+    loggedInMessage = getLoggedInUser(req);
+    res.render('login-error.ejs', {loggedInMessage});
 });
 
 
@@ -141,7 +141,7 @@ app.get('/logout', function (req, res) {
             console.error('Error destroying session:', err);
             res.sendStatus(500); // Internal Server Error
         } else {
-            forumMessage = "not logged in";
+            loggedInMessage = "not logged in";
             res.render('login.ejs', {});
         }
     });
