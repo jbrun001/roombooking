@@ -136,7 +136,10 @@ button:hover {
     display: flex; /* Display as flex to align text */
     align-items: center; /* Align text vertically */
     justify-content: center; /* Align text horizontally */
-    /* width: 100%; */
+}
+
+.button-small-width {
+    width: 10%;
 }
 
 .button-link:hover {
