@@ -42,7 +42,7 @@ body {
     margin-left: auto; /* Add spacing between appname and login status */
 }
 
-.login-container, .welcome-container, .register-container {
+.login-container, .welcome-container, .register-container, .form-container {
     text-align: center;
     background: white;
     padding: 2em;
@@ -136,7 +136,7 @@ button:hover {
     display: flex; /* Display as flex to align text */
     align-items: center; /* Align text vertically */
     justify-content: center; /* Align text horizontally */
-    width: 10%;
+    /* width: 100%; */
 }
 
 .button-link:hover {
