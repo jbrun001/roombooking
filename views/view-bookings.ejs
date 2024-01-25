@@ -42,16 +42,30 @@
                 <!-- TO DO: Have for loop iterate through all rooms matching filter criteria -->
                 <% for (let i = 0; i < 5; i++) { %>
                     <li>
-                        <img src="classroom.jpg" alt="Room Preview Image" class="room-preview-image">
-                        <div>
-                            <p>Room Number: 104</p>
-                            <p>Building: South</p>
-                            <p>Date: 16 Jan 2024</p>
-                            <p>Timeslot: South</p>
-                            <p>Booked by: Emily Rain</p>
-                            <p>Status: Awaiting Approval</p>
+                        <div class="card-wrapper">
+                            <img src="classroom.jpg" alt="Room Preview Image" class="room-preview-image">
+                            <div class="card-outline">
+                                <div class="card-column">
+                                    <div class="room-data">
+                                        <div>Room Number: 104</div>
+                                        <div>Building: South</div>
+                                    </div>
+                                    <div class="time-data">
+                                        <div>Date: 16 Jan 2024</div>
+                                        <div>Timeslot: South</div>
+                                    </div>
+                                </div>
+                                <div class="card-column">
+                                    <div class="user-data">
+                                        <div>Booked by: Emily Rain</div>
+                                        <div>Status: Awaiting Approval</div>
+                                    </div>
+                                </div>
+                                <div class="card-column">
+                                    <a href="#" class="button-link">View</a>
+                                </div>
+                            </div>
                         </div>
-                        <a href="#" class="button-link">View</a>
                     </li>
                 <% } %>
             </ul>

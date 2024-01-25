@@ -157,7 +157,48 @@ button:hover {
 .room-preview-image {
     float: left;
     width: 15%;
-    height: auto;
+    border-radius: 2rem;
+    border: 0.4rem solid #000;
+    margin-right: 3%;
+}
+
+.card-wrapper {
+    display: inline-flex;
+}
+
+.card-wrapper > * {
+    display: inline-flex;
+}
+
+.card-outline {
+    width: 100%;
+    box-shadow: 0 0.15rem 0.5rem 0 #000;
+    transition: 0.2s;
+    padding: 1.5%;
+}
+
+.card-content {
+    margin-top: auto;
+}
+
+.card-column {
+    display: inline-block;
+    width: 33%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.card-column > .button-link {
+    float: right;
+    width: 25%;
+}
+
+.room-data {
+    margin-bottom: 10%;
+}
+
+.time-data {
+    margin-top: 10%;
 }
 
 .content {
@@ -251,3 +292,4 @@ input {
   height: 24px;
   display: block;
 }
+
