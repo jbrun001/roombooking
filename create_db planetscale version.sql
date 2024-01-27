@@ -130,3 +130,19 @@ VALUES  ('coordinator');
 INSERT INTO lookup_user_role (role_name)
 VALUES  ('admin');
 
+
+# types of room
+CREATE TABLE lookup_room_type (
+    id INT AUTO_INCREMENT,
+    PRIMARY KEY(id),
+    room_type VARCHAR(50)
+);
+
+INSERT INTO lookup_room_type (room_type)
+VALUES  ('Lecture Theatre');
+INSERT INTO lookup_room_type (room_type)
+VALUES  ('Seminar Room');
+INSERT INTO lookup_room_type (room_type)
+VALUES  ('Piano Room');
+INSERT INTO lookup_room_type (room_type)
+VALUES  ('Promotional Table / Stall');
