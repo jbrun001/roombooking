@@ -237,15 +237,17 @@ app.post('/add-room', isLoggedIn, (req, res) => {
 
     // sanitising the input
     const roomNumber = sanitiseHtml(req.body.roomNumber);
+    const buildingName = sanitiseHtml(req.body.buildingName);
+    const roomType = sanitiseHtml(req.body.roomType);
     const capacity = parseInt(req.body.capacity);
     const pictureURL = sanitiseHtml(req.body.pictureURL);
     const isAcceptingBookings = req.body.isAcceptingBookings === 'true';
 
     // inserting the room into the database
-    let sqlquery = "INSERT INTO room (room_number, capacity, picture_URL, is_accepting_bookings) VALUES (?, ?, ?, ?)";
+    let sqlquery = "INSERT INTO room (room_number, building_name, room_type, capacity, picture_URL, is_accepting_bookings) VALUES (?, ?, ?, ?, ?, ?)";
 
     // execute sql query
-    db.query(sqlquery, [roomNumber, capacity, pictureURL, isAcceptingBookings], (err, result) => {
+    db.query(sqlquery, [roomNumber, buildingName, roomType, capacity, pictureURL, isAcceptingBookings], (err, result) => {
         if (err) {
             console.error(err.message);
             return res.send('Error in adding room');
