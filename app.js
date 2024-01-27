@@ -219,16 +219,27 @@ app.get('/view-bookings', isLoggedIn, function (req, res) {
     res.render('view-bookings.ejs', { loggedInMessage, userrole, email });
 });
 
+//this route is used to display the add-room page
 app.get('/add-room', isLoggedIn, (req, res) => {
-    // Assuming you want only admin users to add rooms
-    if (req.session.user_role === 'admin') {
-        res.render('add-room.ejs');
-    } else {
-        res.send('Unauthorized access');
+    // checking for admin role
+    if (req.session.user_role !== 'admin') {
+        return res.send('Unauthorized access');
     }
+
+    // get the room types from the database
+    const query = "SELECT room_type FROM lookup_room_type";
+    db.query(query, (err, roomTypes) => {
+        if (err) {
+            console.error(err.message);
+            return res.send('Error fetching room types');
+        }
+        // pass the roomTypes to the add-room page
+        res.render('add-room', { roomTypes: roomTypes });
+    });
 });
 
-// This route is used to add a room to the database
+
+// this route is used to add a room to the database
 app.post('/add-room', isLoggedIn, (req, res) => {
     // checking for admin role
     if (req.session.user_role !== 'admin') {
@@ -256,6 +267,7 @@ app.post('/add-room', isLoggedIn, (req, res) => {
         res.redirect('/add-room-success');
     });
 });
+
 
 //this route displays when a room has been added successfully
 app.get('/add-room-success', isLoggedIn, (req, res) => {
