@@ -35,16 +35,19 @@ CREATE TABLE room (
     # increased pictureURL to 300 as 100 not long enough
     # increased room number to 50 as 10 not long enough if including building references
     # changed from room_id to id so can see difference between primary and foreign keys
+    # added room_type and building_name to room, as these were missed in the orginal model
     id INT AUTO_INCREMENT,
     PRIMARY KEY(id),
     room_number VARCHAR(50),
     capacity INT,
     picture_URL VARCHAR(300),
-    is_accepting_bookings BOOLEAN
+    is_accepting_bookings BOOLEAN,
+    room_type VARCHAR(50),
+    building_name VARCHAR(50)
 );
 
-INSERT INTO room (room_number, capacity, picture_URL, is_accepting_bookings)
-VALUES  ('Main 309', 10, 'https://commons.wikimedia.org/wiki/File:5th_Floor_Lecture_Hall.jpg#/media/File:5th_Floor_Lecture_Hall.jpg',TRUE);
+INSERT INTO room (room_number, building_name, room_type, capacity, picture_URL, is_accepting_bookings)
+VALUES  ('309','RHB','classroom', 10, 'https://commons.wikimedia.org/wiki/File:5th_Floor_Lecture_Hall.jpg#/media/File:5th_Floor_Lecture_Hall.jpg',TRUE);
 
 CREATE TABLE booking (
     # changed from booking_id to id so can see difference between primary and foreign keys
