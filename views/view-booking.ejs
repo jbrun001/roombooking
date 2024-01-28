@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookit / View Booking</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="top-menu">
+        <div class="logo">
+            <img src="logo.png" alt="Bookit Logo">
+        </div>
+        <div class="app-name">Bookit</div>
+        <div class="logged-in-as"><%= loggedInMessage %></div>
+        <div class="logout-user-button-image"></div>
+            <a href="/logout" class="button-link">Logout</a>
+        </div>
+    </header>
+    <div class="view-booking-content">
+        <h2>View Booking</h2>
+        <ul class="view-booking-column-list">
+            <li><strong>Booked by:</strong> Emily Rain</li>
+            <li><strong>Date:</strong> 16 Jan 2024</li>
+            <li><strong>Building:</strong> RHB</li>
+            <li><strong>Status:</strong> Awaiting Approval</li>
+            <li><strong>Role:</strong> Society Leader</li>
+            <li><strong>Timeslot:</strong> 10:00-12:00</li>
+            <li><strong>Room Number:</strong> 256</li>
+            <li><strong>Seating Requested:</strong> 8</li>
+        </ul>
+        <!-- TO DO: Temporary solution for now until better alternative found -->
+        <div class="view-booking-input">
+            <p><strong>Risk Assessment 1</strong></p>
+            <textarea rows="8" cols="200" readonly></textarea>
+            <p><strong>Risk Assessment 2</strong></p>
+            <textarea rows="8" cols="200" readonly></textarea>
+        </div>
+        <div class="view-booking-button"><a href="/bookings-list" class="button-link">Back</a></div>
+    </div>
+    <footer class="footer">
+        <a href="#" class="footer-link">Credits</a>
+        <a href="mailto:support@bookit.com" class="footer-link">Support Email</a>
+        <a href="#" class="footer-link">Report Bug</a>
+        <a href="#" class="footer-link">FAQ / Help</a>  
+    </footer>
+</body>
+</html>

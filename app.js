@@ -211,12 +211,12 @@ app.get('/login-success', isLoggedIn, function (req, res) {
 });
 
 
-app.get('/view-bookings', isLoggedIn, function (req, res) {
+app.get('/bookings-list', isLoggedIn, function (req, res) {
     loggedInMessage = getLoggedInUser(req);
     var userrole = req.session.user_role;
     var email = req.session.email;
     //console.log(loggedInMessage + " " + userrole);
-    res.render('view-bookings.ejs', { loggedInMessage, userrole, email });
+    res.render('bookings-list.ejs', { loggedInMessage, userrole, email });
 });
 
 //this route is used to display the add-room page
@@ -268,6 +268,13 @@ app.post('/add-room', isLoggedIn, (req, res) => {
     });
 });
 
+app.get('/view-booking', isLoggedIn, (req, res) => {
+    loggedInMessage = getLoggedInUser(req);
+    var userrole = req.session.user_role;
+    var email = req.session.email;
+    //console.log(loggedInMessage + " " + userrole);
+    res.render('view-booking.ejs', { loggedInMessage, userrole, email });
+})
 
 //this route displays when a room has been added successfully
 app.get('/add-room-success', isLoggedIn, (req, res) => {
