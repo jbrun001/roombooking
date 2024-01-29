@@ -276,6 +276,15 @@ app.get('/view-booking', isLoggedIn, (req, res) => {
     res.render('view-booking.ejs', { loggedInMessage, userrole, email });
 })
 
+app.get('/edit-booking', isLoggedIn, (req, res) => {
+    loggedInMessage = getLoggedInUser(req);
+    var userrole = req.session.user_role;
+    var email = req.session.email;
+    //console.log(loggedInMessage + " " + userrole);
+    res.render('edit-booking.ejs', { loggedInMessage, userrole, email });
+})
+
+
 //this route displays when a room has been added successfully
 app.get('/add-room-success', isLoggedIn, (req, res) => {
     res.send('<p>Room added successfully!</p><a href="/login-success">Return to Dashboard</a>');

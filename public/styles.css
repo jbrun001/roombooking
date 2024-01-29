@@ -166,8 +166,10 @@ button:hover {
 .room-preview-image {
     float: left;
     width: 15%;
-    border-radius: 2rem;
-    border: 0.4rem solid #000;
+    border-radius: 0.1rem;
+    border: 0.02rem solid #000;
+    border-top: white;
+    border-right: white;
     margin-right: 3%;
 }
 
@@ -181,7 +183,7 @@ button:hover {
 
 .card-outline {
     width: 100%;
-    box-shadow: 0 0.05rem 0.05rem 0 #000;
+    box-shadow: 0 0.02rem 0.03rem 0 #000;
     transition: 0.2s;
     padding: 1.2%;
 }
@@ -329,23 +331,40 @@ input {
 
 .view-booking-input{
     padding-left: 10%;
+    box-sizing: border-box;
 }
 
 .view-booking-input textarea{
+    width: 86%;
     resize: none;
     border-width: 0.1rem;
     border-radius: 1rem;
+    margin-bottom: 20px;
 }
 
 .view-booking-button {
-    flex: 1;
-    width: 100%;
-    padding-left: 71.2%;
+    display: flex;
+    justify-content:flex-end;
+    align-items: center;
+    padding-right: 12%;
     padding-top: 1%;
 }
 
 .view-booking-button a{
-    width: 10%;
+    width: 12%;
+}
+
+
+.view-booking-editbutton {
+    display: flex;
+    justify-content:flex-start;
+    align-items: center;
+    padding-left: 9.6%;
+    padding-top: 1%;
+}
+
+.view-booking-editbutton a{
+    width: 12%;
 }
 
 
