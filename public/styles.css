@@ -1,13 +1,17 @@
 body {
-    font-family:"Trebuchet MS", "Arial", sans-serif;
+    font-family: "Trebuchet MS", "Arial", sans-serif;
     background-color: #f4f4f4;
     margin: 0;
     /* Removed padding-top here since we already have padding in the top-menu */
     display: flex;
-    flex-direction: column; /* Changed to column to organize items vertically */
-    justify-content: flex-start; /* Align content to the top */
-    align-items: center; /* Center align items horizontally */
-    min-height: 100vh; /* Use min-height to fill the screen but allow scrolling */
+    flex-direction: column;
+    /* Changed to column to organize items vertically */
+    justify-content: flex-start;
+    /* Align content to the top */
+    align-items: center;
+    /* Center align items horizontally */
+    min-height: 100vh;
+    /* Use min-height to fill the screen but allow scrolling */
 }
 
 h2 {
@@ -19,18 +23,23 @@ h2 {
     height: 50px;
     position: fixed;
     top: 0;
-    left: 0; /* Ensure it spans from the left */
-    right: 0; /* Ensure it spans to the right */
+    left: 0;
+    /* Ensure it spans from the left */
+    right: 0;
+    /* Ensure it spans to the right */
     z-index: 1000;
     display: flex;
-    align-items: center; /* Center items vertically */
-    padding: 0 20px; /* Add padding on the sides */
+    align-items: center;
+    /* Center items vertically */
+    padding: 0 20px;
+    /* Add padding on the sides */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    
+
 }
 
 .logo img {
-    height: 40px; /* Adjust as needed */
+    height: 40px;
+    /* Adjust as needed */
     border-radius: 20%;
 }
 
@@ -38,30 +47,41 @@ h2 {
     font-size: 20px;
     font-weight: bold;
     color: #ff8200;
-    margin-left: 10px; /* Add spacing between logo and app name */
+    margin-left: 10px;
+    /* Add spacing between logo and app name */
 }
 
 .logged-in-as {
     font-size: 20px;
     color: #000;
-    margin-left: auto; /* Add spacing between appname and login status */
+    margin-left: auto;
+    /* Add spacing between appname and login status */
 }
 
-.login-container, .welcome-container, .register-container, .form-container {
+.login-container,
+.welcome-container,
+.register-container,
+.form-container {
     text-align: center;
     background: white;
     padding: 2em;
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    width: 350px; /* width of login container */
-    margin-top: 100px; /* Push down to make space for fixed header */
+    width: 350px;
+    /* width of login container */
+    margin-top: 100px;
+    /* Push down to make space for fixed header */
 }
 
-.login-container, .welcome-container h1, .register-container {
+.login-container,
+.welcome-container h1,
+.register-container {
     color: #333;
 }
 
-.login-container, .welcome-container, register-container p {
+.login-container,
+.welcome-container,
+register-container p {
     color: #666;
 }
 
@@ -75,7 +95,8 @@ h2 {
     margin-bottom: 0.5em;
 }
 
-.input-group input, select {
+.input-group input,
+select {
     width: 100%;
     padding: 0.75em;
     border: 1px solid #ddd;
@@ -99,49 +120,66 @@ button:hover {
 }
 
 .footer {
-    background: #fff; /* Adjusted to white */
-    color: #333; /* Text color adjusted for contrast */
-    padding: 0; /* Removed padding */
+    background: #fff;
+    /* Adjusted to white */
+    color: #333;
+    /* Text color adjusted for contrast */
+    padding: 0;
+    /* Removed padding */
     display: flex;
     justify-content: space-evenly;
-    align-items: center; /* Center items vertically */
-    position: relative; /* Changed from fixed to relative */
+    align-items: center;
+    /* Center items vertically */
+    position: relative;
+    /* Changed from fixed to relative */
     bottom: 0;
     width: 100%;
     box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .footer-link {
-    color: #333; /* Text color adjusted for contrast */
+    color: #333;
+    /* Text color adjusted for contrast */
     text-decoration: none;
-    padding: 10px 15px; /* Adjusted padding for better spacing */
+    padding: 10px 15px;
+    /* Adjusted padding for better spacing */
     background: #66BB6A;
     border-radius: 20px;
     font-weight: bold;
-    margin: 10px 10px; /* Add margin to space out the links */
+    margin: 10px 10px;
+    /* Add margin to space out the links */
     transition: background-color 0.3s, box-shadow 0.3s;
-    display: flex; /* Display as flex to align text */
-    align-items: center; /* Align text vertically */
-    justify-content: center; /* Align text horizontally */
+    display: flex;
+    /* Display as flex to align text */
+    align-items: center;
+    /* Align text vertically */
+    justify-content: center;
+    /* Align text horizontally */
 }
 
 .footer-link:hover {
     background-color: #66BB6A;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}   
+}
 
 .button-link {
-    color: #fff; /* Text color adjusted for contrast */
+    color: #fff;
+    /* Text color adjusted for contrast */
     text-decoration: none;
-    padding: 10px 15px; /* Adjusted padding for better spacing */
+    padding: 10px 15px;
+    /* Adjusted padding for better spacing */
     background: #5419f5;
     border-radius: 20px;
     font-weight: bold;
-    margin: 10px 10px; /* Add margin to space out the links */
+    margin: 10px 10px;
+    /* Add margin to space out the links */
     transition: background-color 0.3s, box-shadow 0.3s;
-    display: flex; /* Display as flex to align text */
-    align-items: center; /* Align text vertically */
-    justify-content: center; /* Align text horizontally */
+    display: flex;
+    /* Display as flex to align text */
+    align-items: center;
+    /* Align text vertically */
+    justify-content: center;
+    /* Align text horizontally */
 }
 
 .button-small-width {
@@ -151,16 +189,20 @@ button:hover {
 .button-link:hover {
     background-color: #5419f5;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-}   
+}
 
 .welcome-user-logo {
-    width: 25%; /* This will make the image take the full width of its parent */
-    height: auto; /* To maintain the aspect ratio */
+    width: 25%;
+    /* This will make the image take the full width of its parent */
+    height: auto;
+    /* To maintain the aspect ratio */
 }
 
 .logout-user-button-image {
-    width: auto; /* This will make the image take the full width of its parent */
-    height: 50%; /* To maintain the aspect ratio */
+    width: auto;
+    /* This will make the image take the full width of its parent */
+    height: 50%;
+    /* To maintain the aspect ratio */
 }
 
 .room-preview-image {
@@ -177,7 +219,7 @@ button:hover {
     display: inline-flex;
 }
 
-.card-wrapper > * {
+.card-wrapper>* {
     display: inline-flex;
 }
 
@@ -199,7 +241,7 @@ button:hover {
     margin-right: auto;
 }
 
-.card-column > .button-link {
+.card-column>.button-link {
     float: right;
     width: 25%;
 }
@@ -213,26 +255,35 @@ button:hover {
 }
 
 .content {
-    flex: 1; /* This will make the content grow to take available space, pushing the footer down */
+    flex: 1;
+    /* This will make the content grow to take available space, pushing the footer down */
 }
 
 .content-list {
     display: flex;
     flex: 1;
     margin: 20px;
-    margin-top: 30px; /* Push down to make space for fixed header */
+    margin-top: 30px;
+    /* Push down to make space for fixed header */
     display: flex;
-    align-items: flex-start; /* Aligns items to the start of the container */
-    justify-content: flex-start; /* Aligns the content to the start (left side) of the container */
+    align-items: flex-start;
+    /* Aligns items to the start of the container */
+    justify-content: flex-start;
+    /* Aligns the content to the start (left side) of the container */
 }
 
 .left-column {
     padding: 10px;
-    min-width: 200px; /* min-width to ensure it doesn't get too small */
-    flex-grow: 0; /* Do not allow the column to grow */
-    flex-shrink: 0; /* Do not allow the column to shrink */
-    flex-basis: 200px; /* Adjust the width as needed */
+    min-width: 200px;
+    /* min-width to ensure it doesn't get too small */
+    flex-grow: 0;
+    /* Do not allow the column to grow */
+    flex-shrink: 0;
+    /* Do not allow the column to shrink */
+    flex-basis: 200px;
+    /* Adjust the width as needed */
     padding: 10px;
+
     button {
         width: 100%;
         padding: 1em;
@@ -248,9 +299,12 @@ button:hover {
 
 .right-column {
     padding: 10px;
-    border-left: 1px solid #ddd; /* separator between left and right columns */
-    flex-grow: 1; /* Allows the column to grow and take up the remaining space */
-    flex-shrink: 1; /* Allows the column to shrink if necessary */
+    border-left: 1px solid #ddd;
+    /* separator between left and right columns */
+    flex-grow: 1;
+    /* Allows the column to grow and take up the remaining space */
+    flex-shrink: 1;
+    /* Allows the column to shrink if necessary */
     padding: 10px;
 }
 
@@ -266,57 +320,58 @@ button:hover {
 
 input::-webkit-inner-spin-button,
 input::-webkit-clear-button {
-  display: block;
+    display: block;
 }
 
 input::-webkit-calendar-picker-indicator {
-  color: rgba(0, 0, 0, 0);
-  opacity: 1
+    color: rgba(0, 0, 0, 0);
+    opacity: 1
 }
 
 input::-webkit-calendar-picker-indicator:hover {
-  background: transparent;
-  cursor: pointer;
+    background: transparent;
+    cursor: pointer;
 }
 
 input::-webkit-calendar-picker-indicator::after {
-  content: '';
-  display: block;
-  background: url(https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_keyboard_arrow_down_48px-32.png) no-repeat;
-  width: 32px;
-  height: 32px;
-  position: absolute;
-  top: 50%;
-  right: 0;
-  margin-top: -16px;
+    content: '';
+    display: block;
+    background: url(https://cdn3.iconfinder.com/data/icons/google-material-design-icons/48/ic_keyboard_arrow_down_48px-32.png) no-repeat;
+    width: 32px;
+    height: 32px;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    margin-top: -16px;
 }
 
 .date {
-  position: relative;
-  width: 154px;
-  overflow: auto;
-  background: #000;
+    position: relative;
+    width: 154px;
+    overflow: auto;
+    background: #000;
 }
+
 input {
-  width: 140px;
-  padding: 5px;
-  height: 24px;
-  display: block;
+    width: 140px;
+    padding: 5px;
+    height: 24px;
+    display: block;
 }
 
 /* =============================VIEW BOOKING CSS============================= */
 
-.view-booking-content{
+.view-booking-content {
     flex: 1;
     width: 100%;
     margin-top: 50px;
 }
 
-.view-booking-content h2{
+.view-booking-content h2 {
     padding-left: 10%;
 }
 
-.view-booking-column-list{
+.view-booking-column-list {
     column-count: 2;
     list-style: none;
     padding-left: 10%;
@@ -329,12 +384,12 @@ input {
     margin-bottom: 20px;
 }
 
-.view-booking-input{
+.view-booking-input {
     padding-left: 10%;
     box-sizing: border-box;
 }
 
-.view-booking-input textarea{
+.view-booking-input textarea {
     width: 86%;
     resize: none;
     border-width: 0.1rem;
@@ -344,27 +399,34 @@ input {
 
 .view-booking-button {
     display: flex;
-    justify-content:flex-end;
+    justify-content: flex-end;
     align-items: center;
     padding-right: 12%;
     padding-top: 1%;
 }
 
-.view-booking-button a{
+.view-booking-button a {
     width: 12%;
 }
 
 
 .view-booking-editbutton {
     display: flex;
-    justify-content:flex-start;
+    justify-content: flex-start;
     align-items: center;
     padding-left: 9.6%;
     padding-top: 1%;
 }
 
-.view-booking-editbutton a{
+.view-booking-editbutton a {
     width: 12%;
 }
 
-
+.order-by-button-wrapper {
+    display: inline-flex;
+    float: left;
+    width: 100%;
+    padding-left: 25%;
+    padding-right: 25%;
+    margin-bottom: 1rem;
+}

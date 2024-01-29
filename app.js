@@ -131,7 +131,7 @@ app.post('/login-check', function (req, res) {
 
 app.get('/login-error', function (req, res) {
     loggedInMessage = getLoggedInUser(req);
-    res.render('login-error.ejs', {loggedInMessage});
+    res.render('login-error.ejs', { loggedInMessage });
 });
 
 
@@ -216,7 +216,38 @@ app.get('/bookings-list', isLoggedIn, function (req, res) {
     var userrole = req.session.user_role;
     var email = req.session.email;
     //console.log(loggedInMessage + " " + userrole);
-    res.render('bookings-list.ejs', { loggedInMessage, userrole, email });
+    var bookings = [];
+    // temporarily fill bookings:
+    var tempBooking = {
+        roomNumber: 256,
+        building: "RHB",
+        date: "16 Jan 2024",
+        timeslot: "10:00-12:00",
+        bookedBy: "Emily Rain",
+        Status: "Awaiting Approval"
+    };
+    for (let i = 0; i < 5; i++) {
+        bookings.push(tempBooking);
+    }
+    res.render('bookings-list.ejs', { loggedInMessage, userrole, email, bookings });
+});
+
+app.get('/bookings-list/booking-order-result', isLoggedIn, function (req, res) {
+    loggedInMessage = getLoggedInUser(req);
+    var userrole = req.session.user_role;
+    var email = req.session.email;
+    var queryProcess;
+    switch (req.query.orderSelection) {
+        case "o_b_Room":
+            res.send("Ordering by room");
+            break;
+        case "o_b_Time":
+            res.send("Ordering by time");
+            break;
+        case "o_b_Status":
+            res.send("Ordering by status");
+            break;
+    }
 });
 
 //this route is used to display the add-room page
