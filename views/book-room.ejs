@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookit / Bookings List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header class="top-menu">
+        <div class="logo">
+            <img src="logo.png" alt="Bookit Logo">
+        </div>
+        <div class="app-name">Bookit</div>
+        <div class="logged-in-as"><%= loggedInMessage %></div>
+        <div class="logout-user-button-image"></div>
+            <a href="/logout" class="button-link">Logout</a>
+        </div>
+    </header>
+    <div class="content-list">
+        <div class="left-column">
+            <p>Here are the filters</p>
+            <div class="date">
+                <input type="date" />
+            </div>
+            <p>Duration</p>
+            <input type="range" min="1" max="100" value="50" class="slider" id="myRange1">
+            <p>Time Slot</p>
+            <input type="text" placeholder="Field 1" id="timeSlot">
+            <p>Building</p>
+            <input type="text" placeholder="Field 2" id="building">
+            <p>Room Type</p>
+            <input type="text" placeholder="Field 1" id="roomType">
+            <p>Seating Available</p>
+            <input type="range" min="1" max="100" value="50" class="slider" id="myRange2" oninput="rangeValue.innerText = this.value">
+            <p id="rangeValue">Seating Available: 50</p>
+            <a href="/filter"><button>Confirm</button> </a>
+        </div>
+        <div class="right-column">
+            <h2 class="current-bookings-title">Available Rooms</h2>
+            <!-- This is where the list will go -->
+            <ul class="bookings-list">
+                <!-- TO DO: Have for loop iterate through all rooms matching filter criteria -->
+                <% for (let i = 0; i < bookings.length; i++) { %>
+                    <li>
+                        <div class="card-wrapper">
+                            <img src="classroom.jpg" alt="Room Preview Image" class="room-preview-image">
+                            <div class="card-outline">
+                                <div class="card-column">
+                                    <div class="room-data">
+                                        <div>Room Number: <%=bookings[i].roomNumber%></div>
+                                    </div>
+                                    <div class="time-data">
+                                        <div>Building: <%=bookings[i].building%></div>
+                                    </div>
+                                </div>
+                                <div class="card-column">
+                                    <div class="user-data">
+                                        <div><%=bookings[i].Layout%></div>
+                                    </div>
+                                </div>
+                                <div class="card-column">
+                                    <a href="" class="button-link">Select</a>
+                                </div>
+                            </div>
+                        </div>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+    </div>
+    <footer class="footer">
+        <a href="#" class="footer-link">Credits</a>
+        <a href="mailto:support@bookit.com" class="footer-link">Support Email</a>
+        <a href="#" class="footer-link">Report Bug</a>
+        <a href="#" class="footer-link">FAQ / Help</a>  
+    </footer>
+</body>
+</html>

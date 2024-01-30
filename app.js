@@ -340,6 +340,23 @@ app.post('/filtered', isLoggedIn, (req, res) => {
     });
 
 });
+app.get('/book-room', isLoggedIn, (req, res) => {
+    loggedInMessage = getLoggedInUser(req);
+    var userrole = req.session.user_role;
+    var email = req.session.email;
+    //console.log(loggedInMessage + " " + userrole);
+    var bookings = [];
+    // temporarily fill bookings:
+    var tempBooking = {
+        roomNumber: 256,
+        building: "RHB",
+        Layout: "Small Tiered Lecture Room",
+    };
+    for (let i = 0; i < 5; i++) {
+        bookings.push(tempBooking);
+    }
+    res.render('book-room.ejs', { loggedInMessage, userrole, email, bookings });
+});
 
 app.listen(port, () => {
     console.log(`Bookit app listening at http://localhost:${port}`)
