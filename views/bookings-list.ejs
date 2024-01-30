@@ -39,8 +39,8 @@
         <div class="right-column">
             <h2 class="current-bookings-title">Current bookings</h2>
             <div class="order-by-button-wrapper">
-                <form class="card-wrapper" action="/bookings-list/booking-order-result" method="get">
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Room">Order by Room</button>
+                <form class="card-wrapper" action="/bookings-list" method="POST">
+                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Room">Order by Building</button>
                     <button class="button-link" name="orderSelection" type="submit" value="o_b_Time">Order by Time</button>
                     <button class="button-link" name="orderSelection" type="submit" value="o_b_Status">Order by Status</>
                 </form>

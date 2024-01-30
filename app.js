@@ -210,43 +210,155 @@ app.get('/login-success', isLoggedIn, function (req, res) {
     res.render('login-success.ejs', { loggedInMessage, userrole, email });
 });
 
+// temporary booking data:
+var bookings = [];
+// temporarily fill bookings:
+var tempBooking1 = {
+    roomNumber: 256,
+    building: "RHB",
+    date: "2024/01/16",
+    timeslot: "10:00-12:00",
+    bookedBy: "Emily Rain",
+    Status: "Awaiting Approval"
+};
+var tempBooking2 = {
+    roomNumber: 306,
+    building: "RHB",
+    date: "2024/01/16",
+    timeslot: "11:00-13:00",
+    bookedBy: "Noah Tambala",
+    Status: "Awaiting Approval"
+};
+var tempBooking3 = {
+    roomNumber: "LG02",
+    building: "PSH",
+    date: "2024/01/16",
+    timeslot: "10:00-12:00",
+    bookedBy: "Spike Elliot",
+    Status: "Approved"
+};
+var tempBooking4 = {
+    roomNumber: 124,
+    building: "WHB",
+    date: "2024/01/16",
+    timeslot: "14:00-17:00",
+    bookedBy: "Syed Sahaf",
+    Status: "Approved"
+};
+var tempBooking5 = {
+    roomNumber: "BLK3",
+    building: "RHB",
+    date: "2024/01/16",
+    timeslot: "16:00-18:00",
+    bookedBy: "Abdul Jinadu",
+    Status: "Denied"
+};
+bookings.push(tempBooking1);
+bookings.push(tempBooking2);
+bookings.push(tempBooking3);
+bookings.push(tempBooking4);
+bookings.push(tempBooking5);
+//for (let i = 0; i < 5; i++) {
+//    bookings.push(tempBooking);
+//}
+
+// sort booking functions:
+function sortByBuilding(bookings) {
+    bookings.sort(function (a, b) {
+        // sort by rooms alphabetically:
+        if (a.building < b.building) {
+            return -1;
+        }
+        if (a.building > b.building) {
+            return 1;
+        }
+        // If the bookings are in the same building sort by room number:
+        if (a.building === b.building) {
+            return a.roomNumber - b.roomNumber;
+        }
+    });
+    return bookings;
+}
+function sortByTime(bookings) {
+    bookings.sort(function (a, b) {
+        // Convert the date strings into date objects:
+        var aDateSplit = a.date.split("/"); // form is YYYY/MM/DD - split at "/"
+        var bDateSplit = b.date.split("/");
+        var aDate = new Date(parseInt(aDateSplit[0]), parseInt(aDateSplit[1]) - 1, parseInt(aDateSplit[2]));
+        var bDate = new Date(parseInt(bDateSplit[0]), parseInt(bDateSplit[1]) - 1, parseInt(bDateSplit[2]));
+        // Compare the dates
+        if (aDate < bDate) {
+            return -1;
+        }
+        if (aDate > bDate) {
+            return 1;
+        }
+        // If the dates the same date then order by ascending timeslots from starting time
+        var startingTimeA = a.timeslot.split("-")[0]; // remove central dash and second time
+        var startingTimeB = b.timeslot.split("-")[0];
+        var aTimeSlot = parseInt(startingTimeA.split(":")[0]);
+        var bTimeSlot = parseInt(startingTimeB.split(":")[0]);
+        return aTimeSlot - bTimeSlot;
+    });
+    return bookings;
+}
+function sortByStatus(bookings) { // sorts bookings as follows - Approved, Awaiting Approval, Denied
+    var sortedBookings = [];
+    var awaitingApprovalBookings = [];
+    for (let i = 0; i < bookings.length; i++) {
+        switch (bookings[i].Status) {
+            case "Approved":
+                sortedBookings.unshift(bookings[i]);
+                break;
+            case "Awaiting Approval":
+                awaitingApprovalBookings.push(bookings[i]);
+                break;
+            case "Denied":
+                sortedBookings.push(bookings[i]);
+                break;
+        }
+    }
+    var lastApproved = -1;
+    for (let i = 0; i < sortedBookings.length; i++) {
+        if (sortedBookings[i].Status !== "Approved") {
+            lastApproved = i;
+            break;
+        }
+    }
+    // insert the awaiting approval bookings at the appropriate index:
+    Array.prototype.splice.apply(sortedBookings, [lastApproved, 0].concat(awaitingApprovalBookings));
+    return sortedBookings;
+}
 
 app.get('/bookings-list', isLoggedIn, function (req, res) {
     loggedInMessage = getLoggedInUser(req);
     var userrole = req.session.user_role;
     var email = req.session.email;
     //console.log(loggedInMessage + " " + userrole);
-    var bookings = [];
-    // temporarily fill bookings:
-    var tempBooking = {
-        roomNumber: 256,
-        building: "RHB",
-        date: "16 Jan 2024",
-        timeslot: "10:00-12:00",
-        bookedBy: "Emily Rain",
-        Status: "Awaiting Approval"
-    };
-    for (let i = 0; i < 5; i++) {
-        bookings.push(tempBooking);
-    }
     res.render('bookings-list.ejs', { loggedInMessage, userrole, email, bookings });
 });
 
-app.get('/bookings-list/booking-order-result', isLoggedIn, function (req, res) {
+app.post('/bookings-list', isLoggedIn, function (req, res) {
     loggedInMessage = getLoggedInUser(req);
     var userrole = req.session.user_role;
     var email = req.session.email;
     var queryProcess;
-    switch (req.query.orderSelection) {
+    switch (req.body.orderSelection) {
         case "o_b_Room":
-            res.send("Ordering by room");
+            bookings = sortByBuilding(bookings);
+            res.render('bookings-list.ejs', { loggedInMessage, userrole, email, bookings });
             break;
         case "o_b_Time":
-            res.send("Ordering by time");
+            bookings = sortByTime(bookings);
+            res.render('bookings-list.ejs', { loggedInMessage, userrole, email, bookings });
             break;
         case "o_b_Status":
-            res.send("Ordering by status");
+            bookings = sortByStatus(bookings);
+            res.render('bookings-list.ejs', { loggedInMessage, userrole, email, bookings });
             break;
+        default:
+            console.log("Invalid input for ordering bookings");
+            res.send(req.body);
     }
 });
 
