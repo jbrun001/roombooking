@@ -20,21 +20,61 @@
     <div class="content-list">
         <div class="left-column">
             <p>Here are the filters</p>
-            <div class="date">
-                <input type="date" />
-            </div>
-            <p>Duration</p>
-            <input type="range" min="1" max="100" value="50" class="slider" id="myRange1">
-            <p>Time Slot</p>
-            <input type="text" placeholder="Field 1" id="timeSlot">
-            <p>Building</p>
-            <input type="text" placeholder="Field 2" id="building">
-            <p>Room Type</p>
-            <input type="text" placeholder="Field 1" id="roomType">
-            <p>Seating Available</p>
-            <input type="range" min="1" max="100" value="50" class="slider" id="myRange2" oninput="rangeValue.innerText = this.value">
-            <p id="rangeValue">Seating Available: 50</p>
-            <a href="/filter"><button>Confirm</button> </a>
+            <form action="/bookings-list" method="POST">
+                <div class="date">
+                    <input type="date" name="date" />
+                </div>
+                <p>Duration</p>
+                <!-- <input type="range" step="30" min="30" max="240" value="60" class="slider" id="myRange1"> -->
+                <input type="range" name="durationRange" step="30" min="30" max="240" value="60" class="slider" id="timeSlider" oninput="updateTimeDisplay(this.value)" />
+                <input type="time" name="durationNumber" step="1800" min="00:30:00" max="04:00:00" value="01:00:00" id="timeDisplay" oninput="updateTimeSlider(this.value)" />
+                <p>Time Slot</p>
+                <select placeholder="Choose timeslot" id="timeSlot" name="timeslot">
+                    <% for (let i = 9; i <= 21; i++) { %>
+                        <% for (let j = 0; j < 31; j += 30) { %>
+                            <% var hours = String(i).padStart(2, "0"); %>
+                            <% var minutes = String(j).padStart(2, "0"); %>
+                            <option value="starting from <%=hours + ":" + minutes%>">starting from <%=hours + ":" + minutes%></option>
+                        <% } %>
+                    <% } %>
+                </select>
+                <p>Building</p>
+                <select placeholder="Field 2" id="building" name="building">
+                    <option value="RHB">Richard Hoggart Building</option>
+                    <option value="PSH">Professor Stuart Hall Building</option>
+                    <option value="WHB">Whitehead Building</option>
+                    <option value="MMM">Margaret MacMillan Building</option>
+                </select>
+                <p>Room Type</p>
+                <select placeholder="Field 2" id="building" name="building">
+                    <option value="Lecture theatre">Lecture theatre</option>
+                    <option value="Seminar room">Seminar room</option>
+                    <option value="Piano room">Piano room</option>
+                    <option value="Promotional table / stall">Promotional table / stall</option>
+                </select>
+                <p>Seating Available</p>
+                <input type="range" min="1" max="100" value="50" class="slider" id="myRange2" oninput="document.getElementById('rangeValue').innerText='Seating Available: ' + this.value">
+                <p id="rangeValue">Seating Available: 50</p>
+                <button type="submit">Confirm</button>
+            </form>
+            <script>
+                function updateTimeDisplay(val) {
+                    var stringVal = "0" + Math.floor(val / 60) + ":" + ("0" + (val % 60)).slice(-2);
+                    document.querySelector("#timeDisplay").value = stringVal;
+                }
+                function updateTimeSlider(val) {
+                    var hoursMinutes = val.split(":");
+                    console.log(hoursMinutes);
+                    var totalTime = parseInt(hoursMinutes[0]) * 60 + parseInt(hoursMinutes[1]);
+                    document.querySelector("#timeSlider").value = totalTime;
+                    if (document.querySelector("#timeDisplay").value > "04:00") {
+                        document.querySelector("#timeDisplay").value = "04:00";
+                    } 
+                    if (document.querySelector("#timeDisplay").value < "00:30") {
+                        document.querySelector("#timeDisplay").value = "00:30";
+                    } 
+                }
+            </script>
         </div>
         <div class="right-column">
             <h2 class="current-bookings-title">Current bookings</h2>
