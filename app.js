@@ -358,6 +358,48 @@ app.get('/book-room', isLoggedIn, (req, res) => {
     res.render('book-room.ejs', { loggedInMessage, userrole, email, bookings });
 });
 
+app.get('/view-requests', isLoggedIn, function (req, res) {
+    loggedInMessage = getLoggedInUser(req);
+    var userrole = req.session.user_role;
+    var email = req.session.email;
+    //console.log(loggedInMessage + " " + userrole);
+    var bookings = [];
+    // temporarily fill bookings:
+    var tempBooking = {
+        roomNumber: 256,
+        building: "RHB",
+        date: "16 Jan 2024",
+        timeslot: "10:00-12:00",
+        bookedBy: "Emily Rain",
+        Status: "Awaiting Approval"
+    };
+    for (let i = 0; i < 5; i++) {
+        bookings.push(tempBooking);
+    }
+    res.render('view-requests.ejs', { loggedInMessage, userrole, email, bookings });
+});
+
+app.get('/view-accepted', isLoggedIn, function (req, res) {
+    loggedInMessage = getLoggedInUser(req);
+    var userrole = req.session.user_role;
+    var email = req.session.email;
+    //console.log(loggedInMessage + " " + userrole);
+    var bookings = [];
+    // temporarily fill bookings:
+    var tempBooking = {
+        roomNumber: 256,
+        building: "RHB",
+        date: "16 Jan 2024",
+        timeslot: "10:00-12:00",
+        bookedBy: "Emily Rain",
+        Status: "Awaiting Approval"
+    };
+    for (let i = 0; i < 5; i++) {
+        bookings.push(tempBooking);
+    }
+    res.render('view-accepted.ejs', { loggedInMessage, userrole, email, bookings });
+});
+
 app.listen(port, () => {
     console.log(`Bookit app listening at http://localhost:${port}`)
 })
