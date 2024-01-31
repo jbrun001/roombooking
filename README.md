@@ -23,7 +23,7 @@ install dotenv## roombooking
 - npm install sanitize-html
 - npm install body-parser
 - npm install bcrypt
--npm install dotenv mysql2 express express-session ejs sanitize-html body-parser bcrypt
+- npm install dotenv mysql2 express express-session ejs sanitize-html body-parser bcrypt
 
 
 to run
