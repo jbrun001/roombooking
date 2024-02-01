@@ -41,7 +41,8 @@ app.use((req, res, next) => {
         "default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'none';"
     );
     // this stops any frames being used in the pages at all.  If we need frames we can change this to be SAMEORIGIN and not DENY
-    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-Frame-Options', "DENY");
+    res.setHeader('X-Content-Type-Options','nosniff');
     next(); // Pass control to the next middleware or route handler
 });
 
