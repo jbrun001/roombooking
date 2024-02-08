@@ -56,7 +56,7 @@
                     <option value="Promotional table / stall">Promotional table / stall</option>
                 </select>
                 <p>Seating Available</p>
-                <input type="range" min="1" max="100" value="1" class="slider" name="seating" oninput="updateSeatValue()">
+                <input type="range" min="1" max="100" value="1" class="slider" name="seating" oninput="updateSeatValue(this.value)">
                 <p id="seatValue">Seating Available: 1</p>
                 <button type="submit">Confirm</button>
             </form>
@@ -78,7 +78,7 @@
                     } 
                 }
                 function updateSeatValue(val) {
-                    document.getElementById('seatValue').innerText = 'Seating Available: ' + value;
+                    document.getElementById('seatValue').innerText = 'Seating Available: ' + val;
                 }
             </script>
         </div>
