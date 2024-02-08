@@ -225,56 +225,69 @@ app.get('/login-success', isLoggedIn, function (req, res) {
 });
 
 // temporary booking data:
-var bookings = [];
-// temporarily fill bookings:
-var tempBooking1 = {
-    roomNumber: 256,
-    building: "RHB",
-    date: "2024/01/16",
-    timeslot: "10:00-12:00",
-    bookedBy: "Emily Rain",
-    Status: "Awaiting Approval"
-};
-var tempBooking2 = {
-    roomNumber: 306,
-    building: "RHB",
-    date: "2024/01/16",
-    timeslot: "11:00-13:00",
-    bookedBy: "Noah Tambala",
-    Status: "Awaiting Approval"
-};
-var tempBooking3 = {
-    roomNumber: "LG02",
-    building: "PSH",
-    date: "2024/01/16",
-    timeslot: "10:00-12:00",
-    bookedBy: "Spike Elliot",
-    Status: "Approved"
-};
-var tempBooking4 = {
-    roomNumber: 124,
-    building: "WHB",
-    date: "2024/01/16",
-    timeslot: "14:00-17:00",
-    bookedBy: "Syed Sahaf",
-    Status: "Approved"
-};
-var tempBooking5 = {
-    roomNumber: "BLK3",
-    building: "RHB",
-    date: "2024/01/16",
-    timeslot: "16:00-18:00",
-    bookedBy: "Abdul Jinadu",
-    Status: "Denied"
-};
-bookings.push(tempBooking1);
-bookings.push(tempBooking2);
-bookings.push(tempBooking3);
-bookings.push(tempBooking4);
-bookings.push(tempBooking5);
-//for (let i = 0; i < 5; i++) {
-//    bookings.push(tempBooking);
-//}
+function getBookings(){
+    var bookings = [];
+    // temporarily fill bookings:
+    var tempBooking1 = {
+        roomNumber: 256,
+        building: "RHB",
+        minSeats: 10,
+        roomType: "Seminar room",
+        date: "2024-01-16",
+        timeslot: "10:00-12:00",
+        bookedBy: "Emily Rain",
+        Status: "Awaiting Approval"
+    };
+    var tempBooking2 = {
+        roomNumber: 306,
+        building: "RHB",
+        minSeats: 10,
+        roomType: "Seminar room",
+        date: "2024-01-16",
+        timeslot: "11:00-13:00",
+        bookedBy: "Noah Tambala",
+        Status: "Awaiting Approval"
+    };
+    var tempBooking3 = {
+        roomNumber: "LG02",
+        building: "PSH",
+        minSeats: 10,
+        roomType: "Lecture theatre",
+        date: "2024-01-16",
+        timeslot: "10:00-12:00",
+        bookedBy: "Spike Elliot",
+        Status: "Approved"
+    };
+    var tempBooking4 = {
+        roomNumber: 124,
+        building: "WHB",
+        minSeats: 10,
+        roomType: "Seminar room",
+        date: "2024-01-16",
+        timeslot: "14:00-17:00",
+        bookedBy: "Syed Sahaf",
+        Status: "Approved"
+    };
+    var tempBooking5 = {
+        roomNumber: "BLK3",
+        building: "RHB",
+        minSeats: 10,
+        roomType: "Seminar room",
+        date: "2024-01-16",
+        timeslot: "16:00-18:00",
+        bookedBy: "Abdul Jinadu",
+        Status: "Denied"
+    };
+    bookings.push(tempBooking1);
+    bookings.push(tempBooking2);
+    bookings.push(tempBooking3);
+    bookings.push(tempBooking4);
+    bookings.push(tempBooking5);
+    //for (let i = 0; i < 5; i++) {
+    //    bookings.push(tempBooking);
+    //}
+    return bookings;
+}
 
 // sort booking functions:
 function sortByBuilding(bookings) {
@@ -345,6 +358,7 @@ function sortByStatus(bookings) { // sorts bookings as follows - Approved, Await
 }
 
 app.get('/bookings-list', isLoggedIn, function (req, res) {
+    bookings = getBookings();
     loggedInMessage = getLoggedInUser(req);
     var userrole = req.session.user_role;
     var email = req.session.email;
@@ -359,21 +373,87 @@ app.post('/bookings-list', isLoggedIn, function (req, res) {
     var queryProcess;
     switch (req.body.orderSelection) {
         case "o_b_Room":
-            bookings = sortByBuilding(bookings);
+            bookings = sortByBuilding(getBookings());
             res.render('bookings-list.ejs', { loggedInMessage, userrole, email, bookings });
             break;
         case "o_b_Time":
-            bookings = sortByTime(bookings);
+            bookings = sortByTime(getBookings());
             res.render('bookings-list.ejs', { loggedInMessage, userrole, email, bookings });
             break;
         case "o_b_Status":
-            bookings = sortByStatus(bookings);
+            bookings = sortByStatus(getBookings());
             res.render('bookings-list.ejs', { loggedInMessage, userrole, email, bookings });
             break;
         default:
             console.log("Invalid input for ordering bookings");
             res.send(req.body);
     }
+});
+
+app.post('/bookings-list-filtered', isLoggedIn, function (req, res) {
+    bookings = getBookings();
+    loggedInMessage = getLoggedInUser(req);
+    var userrole = req.session.user_role;
+    var email = req.session.email;
+    var queryProcess;
+    var startingTimeslot = req.body.timeslot.replace("starting from ","");
+    var bookingDuration = req.body.durationRange;
+    var bookingHours = Math.floor(bookingDuration / 60);
+    var bookingMinutes = bookingDuration % 60;
+    var startingTimeSplit = startingTimeslot.split(":");
+    var endingTimeslot = String(parseInt(startingTimeSplit[0]) + bookingHours).padStart(2, "0") + ":" + String(parseInt(startingTimeSplit[1]) + bookingMinutes).padStart(2, "0");
+    var filters = {
+        date: req.body.date,
+        timeslot: startingTimeslot + "-" + endingTimeslot,
+        building: req.body.building[0],
+        roomType: req.body.building[1],
+        minSeats: req.body.seating,
+        duration: req.body.durationRange
+    };
+    //console.log(bookings);
+    console.log(filters);
+    var filteredBookings = [];
+    for (var i = 0; i < bookings.length; i++) {
+        console.log(bookings[i]);
+        if (bookings[i].date != filters.date && filters.date != '') {
+            console.log("date failed: " + bookings[i].date);
+            continue;
+        }
+        if (bookings[i].timeslot != filters.timeslot && filters.timeslot != '-NaN:NaN'){
+            console.log("timeslot failed: " + bookings[i].timeslot);
+            continue;
+        } else if (filters.duration > 0) {
+            var bookingTimeslot = bookings[i].timeslot.split("-");
+            var bookingStartTime = bookingTimeslot[0].split(':').map(Number);
+            console.log(bookingStartTime);
+            var bookingStart = (bookingStartTime[0] * 60) + bookingStartTime[1];
+            var bookingEndTime = bookingTimeslot[1].split(':').map(Number);
+            console.log(bookingEndTime);
+            var bookingEnd = (bookingEndTime[0] * 60) + bookingEndTime[1];
+            var overallDuration = bookingEnd - bookingStart;
+            console.log(i + "; " + overallDuration);
+            if (overallDuration != filters.duration) {
+                console.log("duration failed: " + overallDuration);
+                continue;
+            }
+        }
+        if (bookings[i].building != filters.building && filters.building != ''){
+            console.log("building failed: " + bookings[i].building);
+            continue;
+        }
+        if (bookings[i].roomType != filters.roomType && filters.roomType != ''){
+            console.log("roomtype failed: " + bookings[i].roomType);
+            continue;
+        }
+        if (bookings[i].minSeats <= filters.minSeats && minSeats >= 1){
+            console.log("min seats failed: " + bookings[i].minSeats);
+            continue;
+        }
+        filteredBookings.push(bookings[i]);
+    }
+    bookings = filteredBookings;
+    res.render('bookings-list.ejs', { loggedInMessage, userrole, email, filteredBookings });
+    //res.send(filteredBookings);
 });
 
 //this route is used to display the add-room page

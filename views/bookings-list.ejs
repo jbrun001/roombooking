@@ -20,7 +20,7 @@
     <div class="content-list">
         <div class="left-column">
             <p>Here are the filters</p>
-            <form action="/bookings-list" method="POST">
+            <form action="/bookings-list-filtered" method="POST">
                 <div class="date">
                     <input type="date" name="date" />
                 </div>
@@ -30,6 +30,7 @@
                 <input type="time" name="durationNumber" step="1800" min="00:30:00" max="04:00:00" value="01:00:00" id="timeDisplay" oninput="updateTimeSlider(this.value)" />
                 <p>Time Slot</p>
                 <select placeholder="Choose timeslot" id="timeSlot" name="timeslot">
+                    <option value="">Select...</option>
                     <% for (let i = 9; i <= 21; i++) { %>
                         <% for (let j = 0; j < 31; j += 30) { %>
                             <% var hours = String(i).padStart(2, "0"); %>
@@ -40,6 +41,7 @@
                 </select>
                 <p>Building</p>
                 <select placeholder="Field 2" id="building" name="building">
+                    <option value="">Select...</option>
                     <option value="RHB">Richard Hoggart Building</option>
                     <option value="PSH">Professor Stuart Hall Building</option>
                     <option value="WHB">Whitehead Building</option>
@@ -47,14 +49,15 @@
                 </select>
                 <p>Room Type</p>
                 <select placeholder="Field 2" id="building" name="building">
+                    <option value="">Select...</option>
                     <option value="Lecture theatre">Lecture theatre</option>
                     <option value="Seminar room">Seminar room</option>
                     <option value="Piano room">Piano room</option>
                     <option value="Promotional table / stall">Promotional table / stall</option>
                 </select>
                 <p>Seating Available</p>
-                <input type="range" min="1" max="100" value="50" class="slider" id="myRange2" oninput="document.getElementById('rangeValue').innerText='Seating Available: ' + this.value">
-                <p id="rangeValue">Seating Available: 50</p>
+                <input type="range" min="1" max="100" value="1" class="slider" name="seating" oninput="updateSeatValue()">
+                <p id="seatValue">Seating Available: 1</p>
                 <button type="submit">Confirm</button>
             </form>
             <script>
@@ -73,6 +76,9 @@
                     if (document.querySelector("#timeDisplay").value < "00:30") {
                         document.querySelector("#timeDisplay").value = "00:30";
                     } 
+                }
+                function updateSeatValue(val) {
+                    document.getElementById('seatValue').innerText = 'Seating Available: ' + value;
                 }
             </script>
         </div>
@@ -117,6 +123,9 @@
                     </li>
                 <% } %>
             </ul>
+            <% if (bookings.length == 0) { %>
+                <h2 class="none-found">No bookings found :(</h2>
+            <% } %>
         </div>
     </div>
     <footer class="footer">
