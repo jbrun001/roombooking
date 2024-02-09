@@ -94,16 +94,19 @@ function getLoggedInUser(req) {
 function isLoggedIn(req, res, next) {
     if (req.session && req.session.isLoggedIn) next();  // if user logged in then carry on in the route
     else {
-        res.render('login.ejs', {});     // if user is not logged in take them to the login page
+        loggedInMessage = "not logged in"
+        res.render('login.ejs', {loggedInMessage});     // if user is not logged in take them to the login page
     }
 }
 
 app.get('/', (req, res) => {
-    res.render('login.ejs', {});
+    loggedInMessage = getLoggedInUser(req);
+    res.render('login.ejs', {loggedInMessage});
 })
 
 app.get('/login', (req, res) => {
-    res.render('login.ejs', {});
+    loggedInMessage = getLoggedInUser(req);
+    res.render('login.ejs', {loggedInMessage});
 })
 
 // login-check route which is the target for the https post in login,ejs.ejs
@@ -117,11 +120,11 @@ app.post('/login-check', function (req, res) {
         loggedInMessage = getLoggedInUser(req);
         if (err) {
             console.error(err.message);
-            res.render('login-error.ejs', {});
+            res.render('login-error.ejs', {loggedInMessage});
         } else if (result === null || result.length === 0) {
             // no matching records at all
             console.error("user not found");
-            res.render('login-error.ejs', {});
+            res.render('login-error.ejs', {loggedInMessage});
         }
         // if this is a valid user
         else {
@@ -137,7 +140,7 @@ app.post('/login-check', function (req, res) {
             } else {
                 console.error("user details don't match");
                 loggedInMessage = getLoggedInUser(req);
-                res.render('login-error.ejs', {});
+                res.render('login-error.ejs', {loggedInMessage});
             }
         }
     });
@@ -156,7 +159,7 @@ app.get('/logout', function (req, res) {
             res.sendStatus(500); // Internal Server Error
         } else {
             loggedInMessage = "not logged in";
-            res.render('login.ejs', {});
+            res.render('login.ejs', {loggedInMessage});
         }
     });
 });
