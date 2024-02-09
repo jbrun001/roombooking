@@ -5,15 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookit / Register</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-    <header class="top-menu">
-        <div class="logo">
-            <img src="logo.png" alt="Bookit Logo"> 
-        </div>
-        <div class="app-name">Bookit</div>
-        <div class="logged-in-as"><%= loggedInMessage %></div>
-    </header>
+    <%- include('header-menu') %>
     <div class="content">
         <div class="register-container">
             <h1>Registration</h1>
@@ -47,11 +42,6 @@
             </form>
         </div>
     </div>
-    <footer class="footer">
-        <a href="#" class="footer-link">Credits</a>
-        <a href="mailto:support@bookit.com" class="footer-link">Support Email</a>
-        <a href="#" class="footer-link">Report Bug</a>
-        <a href="#" class="footer-link">FAQ / Help</a>  
-    </footer>
+    <%- include('footer') %>
 </body>
 </html>

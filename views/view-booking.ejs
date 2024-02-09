@@ -5,18 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookit / View Booking</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
-    <header class="top-menu">
-        <div class="logo">
-            <img src="logo.png" alt="Bookit Logo">
-        </div>
-        <div class="app-name">Bookit</div>
-        <div class="logged-in-as"><%= loggedInMessage %></div>
-        <div class="logout-user-button-image"></div>
-            <a href="/logout" class="button-link">Logout</a>
-        </div>
-    </header>
+    <%- include('header-nomenu') %>
     <div class="view-booking-content">
         <h2>View Booking</h2>
         <ul class="view-booking-column-list">
@@ -39,11 +31,6 @@
         </div>
         <div class="view-booking-button"><a href="/bookings-list" class="button-link">Back</a></div>
     </div>
-    <footer class="footer">
-        <a href="#" class="footer-link">Credits</a>
-        <a href="mailto:support@bookit.com" class="footer-link">Support Email</a>
-        <a href="#" class="footer-link">Report Bug</a>
-        <a href="#" class="footer-link">FAQ / Help</a>  
-    </footer>
+    <%- include('footer') %>
 </body>
 </html>
