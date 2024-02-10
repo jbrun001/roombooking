@@ -406,43 +406,44 @@ app.get("/bookings-list", isLoggedIn, function (req, res) {
 });
 
 app.post("/bookings-list", isLoggedIn, function (req, res) {
-  loggedInMessage = getLoggedInUser(req);
+  console.log(req.body); // Add this line
+  var loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var email = req.session.email;
-  var queryProcess;
+  var bookings = getBookings(); // Assume this gets the initial bookings
+  
+  // Your existing sorting logic here...
   switch (req.body.orderSelection) {
-    case "o_b_Room":
-      bookings = sortByBuilding(getBookings());
+      case "o_b_Room":
+          bookings = sortByBuilding(bookings);
+          break;
+      case "o_b_Time":
+          bookings = sortByTime(bookings);
+          break;
+      case "o_b_Status":
+          bookings = sortByStatus(bookings);
+          break;
+      default:
+          console.log("Invalid input for ordering bookings");
+          res.send("Invalid input for ordering bookings");
+          return;
+  }
+
+  // Check if the request is an Ajax request
+  if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
+      // Return only the partial view necessary for updating the bookings list
+      res.render("bookings-list", { bookings: bookings });
+    } else {
+      // Return the entire page for non-Ajax requests
       res.render("bookings-list.ejs", {
-        loggedInMessage,
-        userrole,
-        email,
-        bookings,
+          loggedInMessage,
+          userrole,
+          email,
+          bookings,
       });
-      break;
-    case "o_b_Time":
-      bookings = sortByTime(getBookings());
-      res.render("bookings-list.ejs", {
-        loggedInMessage,
-        userrole,
-        email,
-        bookings,
-      });
-      break;
-    case "o_b_Status":
-      bookings = sortByStatus(getBookings());
-      res.render("bookings-list.ejs", {
-        loggedInMessage,
-        userrole,
-        email,
-        bookings,
-      });
-      break;
-    default:
-      console.log("Invalid input for ordering bookings");
-      res.send(req.body);
   }
 });
+
 
 app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
   bookings = getBookings();

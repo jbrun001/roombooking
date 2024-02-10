@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookit / Bookings List</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
@@ -12,7 +13,7 @@
     <div class="content-list">
         <div class="left-column">
             <p>Here are the filters</p>
-            <form action="/bookings-list-filtered" method="POST">
+            <form id = "filterForm" action="/bookings-list-filtered" method="POST">
                 <div class="date">
                     <input type="date" name="date" />
                 </div>
@@ -72,16 +73,53 @@
                 function updateSeatValue(val) {
                     document.getElementById('seatValue').innerText = 'Seating Available: ' + val;
                 }
+
+                $(document).ready(function() {
+                    $('#filterForm').submit(function(e) {
+                        e.preventDefault(); // Prevent default form submission
+                        $.ajax({
+                            type: "POST",
+                            url: $(this).attr('action'),
+                            data: $(this).serialize(), // Serialize form data for submission
+                            success: function(response) {
+                                // Assuming the server responds with the updated bookings list HTML
+                                $('.bookings-list').html($(response).find('.bookings-list').html());
+                                // Optionally, update any other part of the page affected by the filter change
+                            }
+                        });
+                    });
+                });
             </script>
         </div>
         <div class="right-column">
             <h2 class="current-bookings-title">Current bookings</h2>
             <div class="order-by-button-wrapper">
-                <form class="card-wrapper" action="/bookings-list" method="POST">
+                <form id = "orderForm" class="card-wrapper" action="/bookings-list" method="POST">
                     <button class="button-link" name="orderSelection" type="submit" value="o_b_Room">Order by Building</button>
                     <button class="button-link" name="orderSelection" type="submit" value="o_b_Time">Order by Time</button>
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Status">Order by Status</>
+                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Status">Order by Status</button>
                 </form>
+                <script>
+                    $(document).ready(function() {
+                        // Attach the event listener to buttons within the form
+                        $('#orderForm .button-link').on('click', function(e) {
+                            e.preventDefault(); // Prevent default button action
+                    
+                            var orderValue = $(this).val(); // Get the value of the clicked button
+                            var formData = $('#orderForm').serialize() + '&orderSelection=' + encodeURIComponent(orderValue);
+                    
+                            $.ajax({
+                                type: "POST",
+                                url: $('#orderForm').attr('action'),
+                                data: formData, // Include the clicked button value explicitly
+                                success: function(response) {
+                                    // Update the bookings list with the response
+                                    $('.bookings-list').html($(response).find('.bookings-list').html());
+                                }
+                            });
+                        });
+                    });
+                    </script>                                
             </div>
             <!-- This is where the list will go -->
             <ul class="bookings-list">
