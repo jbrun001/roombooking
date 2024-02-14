@@ -247,7 +247,58 @@ app.get("/login-success", isLoggedIn, function (req, res) {
 });
 
 // temporary booking data:
-function getBookings() {
+function getBookings(pageName,userId) {
+  return new Promise((resolve, reject) => {
+    sqlquery = "";
+    if (pageName === "bookings-list") {
+      // only get the room types that the logged in user has made bookings for
+      sqlquery = `
+        SELECT 
+          r.room_number as roomNumber,
+          r.building_name as building,
+          r.capacity as minSeats,
+          r.room_type as roomType,
+          DATE_FORMAT(b.booking_start, '%d/%m/%Y') as date,
+          CONCAT(DATE_FORMAT(b.booking_start, '%H%i'),'-',DATE_FORMAT(b.booking_end, '%H%i')) as timeslot,
+          r.picture_URL as pictureURL,
+          u.email as bookedBy,
+          b.booking_status as Status,
+          b.id as bookingId,
+          r.id as roomId,
+          u.id as userId
+        FROM booking b JOIN room r ON b.room_id = r.id JOIN user_account u ON b.user_id = u.id
+        WHERE u.id = ?
+        ORDER BY b.booking_status, b.booking_start desc`
+    } else {
+      // get all bookings from any user
+      sqlquery = `
+        SELECT 
+          r.room_number as roomNumber,
+          r.building_name as building,
+          r.capacity as minSeats,
+          r.room_type as roomType,
+          DATE_FORMAT(b.booking_start, '%d/%m/%Y') as date,
+          CONCAT(DATE_FORMAT(b.booking_start, '%H%i'),'-',DATE_FORMAT(b.booking_end, '%H%i')) as timeslot,
+          r.picture_URL as pictureURL,
+          u.email as bookedBy,
+          b.booking_status as Status,
+          b.id as bookingId,
+          r.id as roomId,
+          u.id as userId
+        FROM booking b JOIN room r ON b.room_id = r.id JOIN user_account u ON b.user_id = u.id
+        ORDER BY b.booking_status, b.booking_start desc`
+    }
+    // execute sql query
+    db.query(sqlquery, [userId], (err, results) => {
+      if (err) {
+        console.error(err.message);
+        reject(err);        // if there is an error reject the Promise
+      } else {
+        resolve(results);   // the Promise is resolved with the result of the query
+      }
+    });
+  });
+/* test data without using the database
   var bookings = [];
   // temporarily fill bookings:
   var tempBooking1 = {
@@ -309,6 +360,7 @@ function getBookings() {
   //    bookings.push(tempBooking);
   //}
   return bookings;
+  */
 }
 
 // gets the rooms to be displayed in the filter from the database
@@ -447,15 +499,16 @@ app.get("/bookings-list", isLoggedIn, function (req, res) {
   var userrole = req.session.user_role;
   var userId = req.session.userid;
   var email = req.session.email;
-  bookings = getBookings();
+  // bookings = getBookings();
   // get all the database result sets that are required for this page
   // get them from asynchronus functions so they can be re-used
   // on different pages, pass the function requests in an array as part of Promise.all
   Promise.all([
     getRoomTypes("bookings-list", userId),           // Promise.all[0]
-    getBuildingNames("bookings-list", userId)        // Promise.all[1]
+    getBuildingNames("bookings-list", userId),       // Promise.all[1]
+    getBookings("bookings-list",userId)              // Promise.all[2]
   ])
-  .then(([roomTypes, buildingNames]) => {           // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
+  .then(([roomTypes, buildingNames, bookings]) => {           // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
     res.render("bookings-list.ejs", {
       loggedInMessage,
       userrole,
@@ -476,10 +529,19 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
   var userrole = req.session.user_role;
   var userId = req.session.userid;
   var email = req.session.email;
-  var bookings = getBookings(); // Assume this gets the initial bookings
+  // var bookings = getBookings(); // Assume this gets the initial bookings
   
+
+  // build the result - note there are two versions one for an ajax
+  // Check if the request is an Ajax request
+  Promise.all([
+    getRoomTypes("bookings-list", userId ),           // Promise.all[0]
+    getBuildingNames("bookings-list", userId),         // Promise.all[1]
+    getBookings("bookings-list",userId)               // Promise.all[2]
+  ])
+  .then(([roomTypes, buildingNames, bookings]) => {             // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
   // Your existing sorting logic here...
-  switch (req.body.orderSelection) {
+    switch (req.body.orderSelection) {
       case "o_b_Room":
           bookings = sortByBuilding(bookings);
           break;
@@ -493,15 +555,8 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
           console.log("Invalid input for ordering bookings");
           res.send("Invalid input for ordering bookings");
           return;
-  }
+    }
 
-  // build the result - note there are two versions one for an ajax
-  // Check if the request is an Ajax request
-  Promise.all([
-    getRoomTypes("bookings-list", userId ),           // Promise.all[0]
-    getBuildingNames("bookings-list", userId)         // Promise.all[1]
-  ])
-  .then(([roomTypes, buildingNames]) => {             // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
     res.render("bookings-list.ejs", {
       loggedInMessage,
       userrole,
@@ -530,7 +585,6 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
 
 
 app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
-  bookings = getBookings();
   loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var userId = req.session.userid;
@@ -553,56 +607,60 @@ app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
     minSeats: req.body.seating,
     duration: req.body.durationRange,
   };
-  //console.log(bookings);
-  console.log(filters);
-  var filteredBookings = [];
-  for (var i = 0; i < bookings.length; i++) {
-    console.log(bookings[i]);
-    if (bookings[i].date != filters.date && filters.date != "") {
-      console.log("date failed: " + bookings[i].date);
-      continue;
-    }
-    if (
-      bookings[i].timeslot != filters.timeslot &&
-      filters.timeslot != "-NaN:NaN"
-    ) {
-      console.log("timeslot failed: " + bookings[i].timeslot);
-      continue;
-    } else if (filters.duration > 0) {
-      var bookingTimeslot = bookings[i].timeslot.split("-");
-      var bookingStartTime = bookingTimeslot[0].split(":").map(Number);
-      console.log(bookingStartTime);
-      var bookingStart = bookingStartTime[0] * 60 + bookingStartTime[1];
-      var bookingEndTime = bookingTimeslot[1].split(":").map(Number);
-      console.log(bookingEndTime);
-      var bookingEnd = bookingEndTime[0] * 60 + bookingEndTime[1];
-      var overallDuration = bookingEnd - bookingStart;
-      console.log(i + "; " + overallDuration);
-      if (overallDuration != filters.duration) {
-        console.log("duration failed: " + overallDuration);
-        continue;
-      }
-    }
-    if (bookings[i].building != filters.building && filters.building != "") {
-      console.log("building failed: " + bookings[i].building);
-      continue;
-    }
-    if (bookings[i].roomType != filters.roomType && filters.roomType != "") {
-      console.log("roomtype failed: " + bookings[i].roomType);
-      continue;
-    }
-    if (bookings[i].minSeats <= filters.minSeats && minSeats >= 1) {
-      console.log("min seats failed: " + bookings[i].minSeats);
-      continue;
-    }
-    filteredBookings.push(bookings[i]);
-  }
-  bookings = filteredBookings;
+  // bookings = getBookings();
+
   Promise.all([
     getRoomTypes("bookings-list", userId),           // Promise.all[0]
-    getBuildingNames("bookings-list", userId)        // Promise.all[1]
+    getBuildingNames("bookings-list", userId),       // Promise.all[1]
+    getBookings("bookings-list", userId),            // Promise.all[2]
   ])
-  .then(([roomTypes, buildingNames]) => {           // if you had more data calls above you name it here, the first variable is the result of promise.all[0] etc.
+  .then(([roomTypes, buildingNames, bookings]) => {           // if you had more data calls above you name it here, the first variable is the result of promise.all[0] etc.
+    //console.log(bookings);
+    console.log(filters);
+    var filteredBookings = [];
+    for (var i = 0; i < bookings.length; i++) {
+      console.log(bookings[i]);
+      if (bookings[i].date != filters.date && filters.date != "") {
+        console.log("date failed: " + bookings[i].date);
+        continue;
+      }
+      if (
+        bookings[i].timeslot != filters.timeslot &&
+        filters.timeslot != "-NaN:NaN"
+      ) {
+        console.log("timeslot failed: " + bookings[i].timeslot);
+        continue;
+      } else if (filters.duration > 0) {
+        var bookingTimeslot = bookings[i].timeslot.split("-");
+        var bookingStartTime = bookingTimeslot[0].split(":").map(Number);
+        console.log(bookingStartTime);
+        var bookingStart = bookingStartTime[0] * 60 + bookingStartTime[1];
+        var bookingEndTime = bookingTimeslot[1].split(":").map(Number);
+        console.log(bookingEndTime);
+        var bookingEnd = bookingEndTime[0] * 60 + bookingEndTime[1];
+        var overallDuration = bookingEnd - bookingStart;
+        console.log(i + "; " + overallDuration);
+        if (overallDuration != filters.duration) {
+          console.log("duration failed: " + overallDuration);
+          continue;
+        }
+      }
+      if (bookings[i].building != filters.building && filters.building != "") {
+        console.log("building failed: " + bookings[i].building);
+        continue;
+      }
+      if (bookings[i].roomType != filters.roomType && filters.roomType != "") {
+        console.log("roomtype failed: " + bookings[i].roomType);
+        continue;
+      }
+      if (bookings[i].minSeats <= filters.minSeats && minSeats >= 1) {
+        console.log("min seats failed: " + bookings[i].minSeats);
+        continue;
+      }
+      filteredBookings.push(bookings[i]);
+    }
+    bookings = filteredBookings;
+
     res.render("bookings-list.ejs", {
       loggedInMessage,
       userrole,
