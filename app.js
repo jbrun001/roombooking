@@ -311,6 +311,57 @@ function getBookings() {
   return bookings;
 }
 
+// gets the rooms to be displayed in the filter from the database
+// some pages require all the rooms, others require this list to be filtered
+// this function uses a Promise, which means that the code waits for a result when
+// used with promise all in the route code.
+function getRoomTypes(pageName,userId){
+  return new Promise((resolve, reject) => {
+    sqlquery = "";
+    if (pageName === "bookings-list") {
+      // only get the room types that the logged in user has made bookings for
+      sqlquery = "SELECT DISTINCT r.room_type as room_type FROM room r JOIN booking b ON b.room_id = r.id JOIN user_account u ON b.user_id = u.id WHERE u.id = ? ORDER BY room_type";
+    } else {
+      // get all room_types that have had a booking from any user
+      sqlquery = "SELECT DISTINCT r.room_type as room_type FROM room r JOIN booking b ON b.room_id = r.id ORDER BY room_type";
+    }
+    // execute sql query
+    db.query(sqlquery, [userId], (err, results) => {
+      if (err) {
+        console.error(err.message);
+        reject(err);        // if there is an error reject the Promise
+      } else {
+        resolve(results);   // the Promise is resolved with the result of the query
+      }
+    });
+  });
+}
+
+// gets the buildings to be displayed in the filter
+// some pages require all the rooms, others require this list to be filtered
+function getBuildingNames(pageName,userId){
+  return new Promise((resolve, reject) => {
+    sqlquery = "";
+    if (pageName === "bookings-list") {
+      // only get the buildings that the logged in user has made bookings for
+      sqlquery = "SELECT DISTINCT r.building_name as building_name FROM room r JOIN booking b ON b.room_id = r.id JOIN user_account u ON b.user_id = u.id WHERE u.id = ? ORDER BY building_name";
+    } else {
+      // get all buildings that have had a booking from any user
+      sqlquery = "SELECT DISTINCT r.building_name as building_name FROM room r JOIN booking b ON b.room_id = r.id ORDER BY building_name";
+    }
+    // execute sql query
+    db.query(sqlquery, [userId], (err, results) => {
+      if (err) {
+        console.error(err.message);
+        reject(err);        // if there is an error reject the Promise
+      } else {
+        resolve(results);   // the Promise is resolved with the result of the query
+      }
+    });
+  });
+}
+
+
 // sort booking functions:
 function sortByBuilding(bookings) {
   bookings.sort(function (a, b) {
@@ -392,16 +443,30 @@ function sortByStatus(bookings) {
 }
 
 app.get("/bookings-list", isLoggedIn, function (req, res) {
-  bookings = getBookings();
   loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
+  var userId = req.session.userid;
   var email = req.session.email;
-  //console.log(loggedInMessage + " " + userrole);
-  res.render("bookings-list.ejs", {
-    loggedInMessage,
-    userrole,
-    email,
-    bookings,
+  bookings = getBookings();
+  // get all the database result sets that are required for this page
+  // get them from asynchronus functions so they can be re-used
+  // on different pages, pass the function requests in an array as part of Promise.all
+  Promise.all([
+    getRoomTypes("bookings-list", userId),           // Promise.all[0]
+    getBuildingNames("bookings-list", userId)        // Promise.all[1]
+  ])
+  .then(([roomTypes, buildingNames]) => {           // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
+    res.render("bookings-list.ejs", {
+      loggedInMessage,
+      userrole,
+      email,
+      bookings,
+      roomTypes,
+      buildingNames
+    });
+  })
+  .catch(error => {
+    console.log("Error getting data from database calls");
   });
 });
 
@@ -409,6 +474,7 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
   console.log(req.body); // Add this line
   var loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
+  var userId = req.session.userid;
   var email = req.session.email;
   var bookings = getBookings(); // Assume this gets the initial bookings
   
@@ -429,19 +495,37 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
           return;
   }
 
+  // build the result - note there are two versions one for an ajax
   // Check if the request is an Ajax request
+  Promise.all([
+    getRoomTypes("bookings-list", userId ),           // Promise.all[0]
+    getBuildingNames("bookings-list", userId)         // Promise.all[1]
+  ])
+  .then(([roomTypes, buildingNames]) => {             // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
+    res.render("bookings-list.ejs", {
+      loggedInMessage,
+      userrole,
+      email,
+      bookings,
+      roomTypes,
+      buildingNames
+    });
+  })
+  .catch(error => {
+    console.log("Error getting data from database calls");
+  });
+
+/* jb I removed this because of the addition of roomType and buildingNames the code for partial view didn't work
+  the ajax code in the page gets the result and extracts the booking-list div from it and updates the one
+  in the page, but because the other elements of the page were failing (due to roomTypes and roomNames)
+  the buttons stopped working.
   if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
       // Return only the partial view necessary for updating the bookings list
       res.render("bookings-list", { bookings: bookings });
     } else {
-      // Return the entire page for non-Ajax requests
-      res.render("bookings-list.ejs", {
-          loggedInMessage,
-          userrole,
-          email,
-          bookings,
-      });
+      // return the whole page
   }
+  */
 });
 
 
@@ -449,6 +533,7 @@ app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
   bookings = getBookings();
   loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
+  var userId = req.session.userid;
   var email = req.session.email;
   var queryProcess;
   var startingTimeslot = req.body.timeslot.replace("starting from ", "");
@@ -463,8 +548,8 @@ app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
   var filters = {
     date: req.body.date,
     timeslot: startingTimeslot + "-" + endingTimeslot,
-    building: req.body.building[0],
-    roomType: req.body.building[1],
+    building: req.body.buildingName,
+    roomType: req.body.roomType,
     minSeats: req.body.seating,
     duration: req.body.durationRange,
   };
@@ -513,11 +598,22 @@ app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
     filteredBookings.push(bookings[i]);
   }
   bookings = filteredBookings;
-  res.render("bookings-list.ejs", {
-    loggedInMessage,
-    userrole,
-    email,
-    filteredBookings,
+  Promise.all([
+    getRoomTypes("bookings-list", userId),           // Promise.all[0]
+    getBuildingNames("bookings-list", userId)        // Promise.all[1]
+  ])
+  .then(([roomTypes, buildingNames]) => {           // if you had more data calls above you name it here, the first variable is the result of promise.all[0] etc.
+    res.render("bookings-list.ejs", {
+      loggedInMessage,
+      userrole,
+      email,
+      bookings,
+      roomTypes,
+      buildingNames
+    });
+  })
+  .catch(error => {
+    console.log("Error getting data from database calls");
   });
   //res.send(filteredBookings);
 });

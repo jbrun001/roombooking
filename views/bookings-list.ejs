@@ -33,20 +33,22 @@
                     <% } %>
                 </select>
                 <p>Building</p>
-                <select placeholder="Field 2" id="building" name="building">
-                    <option value="">Select...</option>
-                    <option value="RHB">Richard Hoggart Building</option>
-                    <option value="PSH">Professor Stuart Hall Building</option>
-                    <option value="WHB">Whitehead Building</option>
-                    <option value="MMM">Margaret MacMillan Building</option>
+                <select placeholder="Field 2" id="buildingNames" name="buildingNames">
+                    <option value="ALL">Select...</option>
+                    <!--  the first one in the list has the display value select but the actual value of ALL so
+                    we can exluded it from the SQL -->
+                    <% for (let i = 0; i < buildingNames.length; i++) { %>
+                        <option value="<%= buildingNames[i].building_name %>"><%= buildingNames[i].building_name %></option>
+                    <% } %>
                 </select>
                 <p>Room Type</p>
-                <select placeholder="Field 2" id="building" name="building">
-                    <option value="">Select...</option>
-                    <option value="Lecture theatre">Lecture theatre</option>
-                    <option value="Seminar room">Seminar room</option>
-                    <option value="Piano room">Piano room</option>
-                    <option value="Promotional table / stall">Promotional table / stall</option>
+                <select placeholder="Field 2" id="roomType" name="roomType">
+                    <!--  the first one in the list has the display value select but the actual value of ALL so
+                    we can exluded it from the SQL -->
+                    <option value="ALL">Select...</option>
+                    <% for (let i = 0; i < roomTypes.length; i++) { %>
+                        <option value="<%= roomTypes[i].room_type %>"><%= roomTypes[i].room_type %></option>
+                    <% } %>
                 </select>
                 <p>Seating Available</p>
                 <input type="range" min="1" max="100" value="1" class="slider" name="seating" oninput="updateSeatValue(this.value)">

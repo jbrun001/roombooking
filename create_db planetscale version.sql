@@ -51,18 +51,58 @@ VALUES  ('309','RHB','classroom', 10, 'https://commons.wikimedia.org/wiki/File:5
 
 CREATE TABLE booking (
     # changed from booking_id to id so can see difference between primary and foreign keys
+    # changed booking_status to varchar(50) from varchar(10) to allow for length of status values
     id INT AUTO_INCREMENT,
     PRIMARY KEY(id),
     booking_start DATETIME,
     booking_end DATETIME,
     booking_reason VARCHAR(50),
-    booking_status VARCHAR(10),
+    booking_status VARCHAR(50),
     is_risk_assessment_approved BOOLEAN,
     confirmed_on DATETIME,
     cancelled_on DATETIME,
     user_id INT,
     room_id INT
 );
+
+# test data - each user 2,3 & 4 has bookings the month of the booking is the same as the user_id
+# which is a simple way of checking the data against the logged in user
+# 2024-02 - is user 2 jake@123.com
+# 2024-03 - is user 3 coordinator@123.com
+# 2024-04 - is user 4 admin@123.com
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-02-16 10:00:00','2024-02-16 12:00:00','Awaiting Approval',2,8);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-02-16 13:00:00','2024-02-16 14:00:00','Awaiting Approval',2,9);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-02-16 14:00:00','2024-02-16 15:00:00','Approved',2,10);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-02-16 16:00:00','2024-02-16 17:00:00','Approved',2,11);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-02-16 15:00:00','2024-02-16 16:00:00','Denied',2,12);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-02-17 10:00:00','2024-02-16 12:00:00','Awaiting Approval',2,8);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-02-17 13:00:00','2024-02-16 14:00:00','Awaiting Approval',2,9);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-02-17 14:00:00','2024-02-16 15:00:00','Approved',2,10);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-02-17 16:00:00','2024-02-16 17:00:00','Approved',2,11);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-02-17 15:00:00','2024-02-16 16:00:00','Denied',2,12);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-03-16 10:00:00','2024-03-16 12:00:00','Awaiting Approval',3,8);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-03-16 13:00:00','2024-03-16 14:00:00','Awaiting Approval',3,9);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-03-16 14:00:00','2024-03-16 15:00:00','Approved',3,10);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-03-16 16:00:00','2024-03-16 17:00:00','Approved',3,11);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-03-16 15:00:00','2024-03-16 16:00:00','Denied',3,12);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-03-17 10:00:00','2024-03-16 12:00:00','Awaiting Approval',3,8);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-03-17 13:00:00','2024-03-16 14:00:00','Awaiting Approval',3,9);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-03-17 14:00:00','2024-03-16 15:00:00','Approved',3,10);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-03-17 16:00:00','2024-03-16 17:00:00','Approved',3,11);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-03-17 15:00:00','2024-03-16 16:00:00','Denied',3,12);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-04-16 10:00:00','2024-04-16 12:00:00','Awaiting Approval',4,8);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-04-16 13:00:00','2024-04-16 14:00:00','Awaiting Approval',4,9);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-04-16 14:00:00','2024-04-16 15:00:00','Approved',4,10);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-04-16 16:00:00','2024-04-16 17:00:00','Approved',4,11);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-04-16 15:00:00','2024-04-16 16:00:00','Denied',4,12);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-04-17 10:00:00','2024-04-16 12:00:00','Awaiting Approval',4,8);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-04-17 13:00:00','2024-04-16 14:00:00','Awaiting Approval',4,9);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-04-17 14:00:00','2024-04-16 15:00:00','Approved',4,10);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-04-17 16:00:00','2024-04-16 17:00:00','Approved',4,11);
+INSERT INTO booking (booking_start, booking_end, booking_status, user_id, room_id) VALUES ('2024-04-17 15:00:00','2024-04-16 16:00:00','Denied',4,12);
+
+
+
 
 CREATE TABLE risk_assessment (
     # changed from assessmentid to id so can see difference between primary and foreign keys
