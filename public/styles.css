@@ -438,3 +438,24 @@ input {
     padding-right: 25%;
     margin-bottom: 1rem;
 }
+
+/* used to make the list data animate in, so the user can see the data has changed */
+@keyframes newDataLoadedEffect {
+    /* fade */
+    from { opacity: 0; }
+    to { opacity: 1; }
+    
+    /* change background 
+    0%, 100% {
+        background-color: #ffffff; 
+    }
+    */
+}
+
+.newDataLoadedEffect {
+    animation: newDataLoadedEffect 0.1s 1 ease-in-out;
+    
+    /* pulse background
+    animation: newDataLoadedEffect 0.1s 1 ease-in-out;
+    */
+}

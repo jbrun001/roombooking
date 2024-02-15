@@ -258,8 +258,8 @@ function getBookings(pageName,userId) {
           r.building_name as building,
           r.capacity as minSeats,
           r.room_type as roomType,
-          DATE_FORMAT(b.booking_start, '%d/%m/%Y') as date,
-          CONCAT(DATE_FORMAT(b.booking_start, '%H%i'),'-',DATE_FORMAT(b.booking_end, '%H%i')) as timeslot,
+          DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+          CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
           r.picture_URL as pictureURL,
           u.email as bookedBy,
           b.booking_status as Status,
@@ -277,8 +277,8 @@ function getBookings(pageName,userId) {
           r.building_name as building,
           r.capacity as minSeats,
           r.room_type as roomType,
-          DATE_FORMAT(b.booking_start, '%d/%m/%Y') as date,
-          CONCAT(DATE_FORMAT(b.booking_start, '%H%i'),'-',DATE_FORMAT(b.booking_end, '%H%i')) as timeslot,
+          DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+          CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
           r.picture_URL as pictureURL,
           u.email as bookedBy,
           b.booking_status as Status,
@@ -535,9 +535,9 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
   // build the result - note there are two versions one for an ajax
   // Check if the request is an Ajax request
   Promise.all([
-    getRoomTypes("bookings-list", userId ),           // Promise.all[0]
+    getRoomTypes("bookings-list", userId ),            // Promise.all[0]
     getBuildingNames("bookings-list", userId),         // Promise.all[1]
-    getBookings("bookings-list",userId)               // Promise.all[2]
+    getBookings("bookings-list",userId)                // Promise.all[2]
   ])
   .then(([roomTypes, buildingNames, bookings]) => {             // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
   // Your existing sorting logic here...
@@ -602,7 +602,7 @@ app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
   var filters = {
     date: req.body.date,
     timeslot: startingTimeslot + "-" + endingTimeslot,
-    building: req.body.buildingName,
+    building: req.body.building,
     roomType: req.body.roomType,
     minSeats: req.body.seating,
     duration: req.body.durationRange,
@@ -657,6 +657,7 @@ app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
         console.log("min seats failed: " + bookings[i].minSeats);
         continue;
       }
+console.log("added: " + bookings[i]);
       filteredBookings.push(bookings[i]);
     }
     bookings = filteredBookings;
