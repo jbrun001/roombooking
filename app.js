@@ -866,6 +866,8 @@ app.get("/rooms-list", isLoggedIn, (req, res) => {
     minSeats: 1,
     duration: "",
   }
+  var timeslot = ""
+  if (filters.timeslot != "-NaN:NaN") timeslot = filters.timeslot;  // used to pass into the page for the select button
   Promise.all([
     getRoomTypes("rooms-list", userId ),            // Promise.all[0]
     getBuildingNames("rooms-list", userId),         // Promise.all[1]
@@ -878,7 +880,8 @@ app.get("/rooms-list", isLoggedIn, (req, res) => {
       email,
       rooms,
       roomTypes,
-      buildingNames
+      buildingNames,
+      timeslot
     });
   })
   .catch(error => {
@@ -907,9 +910,10 @@ app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
     building: req.body.building,
     roomType: req.body.roomType,
     minSeats: req.body.seating,
-    duration: req.body.durationRange
+    duration: req.body.durationRange,
   };
-  console.log("before promise call rooms-list filters: ");
+  var timeslot = ""
+  if (filters.timeslot != "-NaN:NaN") timeslot = filters.timeslot;  // used to pass into the page for the select button
   console.log(filters);
   Promise.all([
     getRoomTypes("rooms-list", userId),           // Promise.all[0]
@@ -925,7 +929,8 @@ app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
       email,
       rooms,
       roomTypes,
-      buildingNames
+      buildingNames,
+      timeslot
     });
   })
   .catch(error => {
