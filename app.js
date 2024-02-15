@@ -399,25 +399,32 @@ function getBuildingNames(pageName,userId){
 }
 
 // get rooms the database for the book room page, and also apply filters if there are any
+// if there is a date and a timeslot filled in then remove any rooms that have a booking that 
+// overlaps with the date and times we looking for
 function getRooms(filters) {
   console.log("getRooms setting promise");
   return new Promise((resolve, reject) => {
     var sqlquery = "";
     console.log("getRooms inside promise");
-    // if nothing in the filter, or no date set in the filter - just get all the rooms and other filter criteria are added after the if else
-    console.log("getRooms: " + filters);
-    if (filters.date == "") {
+    // if the filter date OR there is no selecton for start time and duration then get all the rooms and other filter criteria are added after the if else
+    if (filters.date == "" || filters.timeslot == "-NaN:NaN") {
       sqlquery = `
           SELECT r.id as roomId, r.room_number as roomNumber, r.building_name as building, r.capacity as capacity,
           r.picture_URL as pictureURL, r.room_type as roomType
           FROM room r WHERE r.is_accepting_bookings = 1 `
     } else {
-      // if a date is in the filter, do all the work to remove rooms that are already booked for the date, duration and timeslots in the filter
+      // if we have a data and a timeslot do all the work to remove rooms that are already booked for the date, duration and timeslots in the filter
       // this needs a version of ben's code in the app post bookings-list-filtered to extract these values from the filter
-      var startTime = '10:00';
-      var endTime = '12:00';
       var selectedDate = filters.date;
-      var duration = '120';
+      var timeslots = filters.timeslot.split("-");
+      var startTime = timeslots[0];
+      var endTime = timeslots[1];
+      // calclate duration in mins from the filter timeslot
+      var intStartTime = timeslots[0].split(":").map(Number);
+      var durationStart = intStartTime[0] * 60 + intStartTime[1];
+      var intEndTime = timeslots[1].split(":").map(Number);
+      var durationEnd = intEndTime[0] * 60 + intEndTime[1];
+      var overallDuration = durationEnd - durationStart;
       // this isn't functioning and needs more work - at the moment the code doesn't run
       // and gives a database error.  The SQL is ok, but something else is wrong - probably need to simplify this
       sqlquery = `
@@ -449,7 +456,7 @@ function getRooms(filters) {
                 booking_end > DATE_ADD('` + selectedDate + `', INTERVAL '` +  endTime + `' HOUR_MINUTE)
               )
             OR (
-              booking_end > DATE_ADD(booking_start, INTERVAL '` + duration + `' MINUTE)
+              booking_end > DATE_ADD(booking_start, INTERVAL '` + overallDuration + `' MINUTE)
               AND booking_start <= DATE_ADD('` + selectedDate + `', INTERVAL '` + startTime + `' HOUR_MINUTE)
             )
         )
@@ -900,7 +907,7 @@ app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
     building: req.body.building,
     roomType: req.body.roomType,
     minSeats: req.body.seating,
-    duration: bookingMinutes,
+    duration: req.body.durationRange
   };
   console.log("before promise call rooms-list filters: ");
   console.log(filters);
