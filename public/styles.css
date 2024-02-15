@@ -326,6 +326,16 @@ button:hover {
     border-bottom: 1px solid #eee;
 }
 
+.rooms-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.rooms-list li {
+    padding: 5px 0;
+    border-bottom: 1px solid #eee;
+}
+
 input::-webkit-inner-spin-button,
 input::-webkit-clear-button {
     display: block;

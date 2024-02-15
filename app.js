@@ -246,7 +246,7 @@ app.get("/login-success", isLoggedIn, function (req, res) {
   res.render("login-success.ejs", { loggedInMessage, userrole, email });
 });
 
-// temporary booking data:
+// get booking data from the database
 function getBookings(pageName,userId) {
   return new Promise((resolve, reject) => {
     sqlquery = "";
@@ -254,37 +254,22 @@ function getBookings(pageName,userId) {
       // only get the room types that the logged in user has made bookings for
       sqlquery = `
         SELECT 
-          r.room_number as roomNumber,
-          r.building_name as building,
-          r.capacity as minSeats,
-          r.room_type as roomType,
-          DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+          r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
+          r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
           CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
-          r.picture_URL as pictureURL,
-          u.email as bookedBy,
-          b.booking_status as Status,
-          b.id as bookingId,
-          r.id as roomId,
-          u.id as userId
+          r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
+          b.id as bookingId, r.id as roomId, u.id as userId
         FROM booking b JOIN room r ON b.room_id = r.id JOIN user_account u ON b.user_id = u.id
         WHERE u.id = ?
         ORDER BY b.booking_status, b.booking_start desc`
     } else {
       // get all bookings from any user
-      sqlquery = `
-        SELECT 
-          r.room_number as roomNumber,
-          r.building_name as building,
-          r.capacity as minSeats,
-          r.room_type as roomType,
-          DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+      sqlquery = ` 
+        SELECT  r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
+          r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
           CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
-          r.picture_URL as pictureURL,
-          u.email as bookedBy,
-          b.booking_status as Status,
-          b.id as bookingId,
-          r.id as roomId,
-          u.id as userId
+          r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status, 
+          b.id as bookingId, r.id as roomId, u.id as userId
         FROM booking b JOIN room r ON b.room_id = r.id JOIN user_account u ON b.user_id = u.id
         ORDER BY b.booking_status, b.booking_start desc`
     }
@@ -363,8 +348,8 @@ function getBookings(pageName,userId) {
   */
 }
 
-// gets the rooms to be displayed in the filter from the database
-// some pages require all the rooms, others require this list to be filtered
+// gets the roomtypes to be displayed in the filter from the database
+// some pages require all the roomtypes, others require this list to be filtered
 // this function uses a Promise, which means that the code waits for a result when
 // used with promise all in the route code.
 function getRoomTypes(pageName,userId){
@@ -413,6 +398,82 @@ function getBuildingNames(pageName,userId){
   });
 }
 
+// get rooms the database for the book room page, and also apply filters if there are any
+function getRooms(filters) {
+  console.log("getRooms setting promise");
+  return new Promise((resolve, reject) => {
+    var sqlquery = "";
+    console.log("getRooms inside promise");
+    // if nothing in the filter, or no date set in the filter - just get all the rooms and other filter criteria are added after the if else
+    console.log("getRooms: " + filters);
+    if (filters.date == "") {
+      sqlquery = `
+          SELECT r.id as roomId, r.room_number as roomNumber, r.building_name as building, r.capacity as capacity,
+          r.picture_URL as pictureURL, r.room_type as roomType
+          FROM room r WHERE r.is_accepting_bookings = 1 `
+    } else {
+      // if a date is in the filter, do all the work to remove rooms that are already booked for the date, duration and timeslots in the filter
+      // this needs a version of ben's code in the app post bookings-list-filtered to extract these values from the filter
+      var startTime = '10:00';
+      var endTime = '12:00';
+      var selectedDate = filters.date;
+      var duration = '120';
+      // this isn't functioning and needs more work - at the moment the code doesn't run
+      // and gives a database error.  The SQL is ok, but something else is wrong - probably need to simplify this
+      sqlquery = `
+      SELECT r.id as roomId, r.room_number as roomNumber, r.building_name as building, r.capacity as capacity,
+      r.picture_URL as pictureURL, r.room_type as roomType  
+      FROM room r
+      # exclude any room that has a booking that overlaps with the currently searched window
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM booking b
+        WHERE b.room_id = r.id
+        AND (
+              (
+                b.booking_start < DATE_ADD('` + selectedDate + `', INTERVAL '` + startTime + `' HOUR_MINUTE) 
+                AND 
+                b.booking_end > DATE_ADD('` + selectedDate + `', INTERVAL '` +  endTime + `' HOUR_MINUTE)
+              )
+        )
+      )   
+      # this excludes any room that has a booking that overlaps with the timeslot we want to book
+      AND r.id NOT IN (
+        SELECT room_id
+        FROM booking
+        WHERE DATE(booking_start) = '` + selectedDate + `'
+        AND (
+              (
+                booking_start < DATE_ADD('` + selectedDate + `', INTERVAL '` + startTime + `' HOUR_MINUTE) 
+                AND 
+                booking_end > DATE_ADD('` + selectedDate + `', INTERVAL '` +  endTime + `' HOUR_MINUTE)
+              )
+            OR (
+              booking_end > DATE_ADD(booking_start, INTERVAL '` + duration + `' MINUTE)
+              AND booking_start <= DATE_ADD('` + selectedDate + `', INTERVAL '` + startTime + `' HOUR_MINUTE)
+            )
+        )
+      ) AND r.is_accepting_bookings = 1 `
+    }
+    // add any other filters to the end of the query
+    
+    if (filters.building != "") sqlquery = sqlquery + " AND r.building_name = '" + filters.building + "' ";
+    if (filters.roomType != "") sqlquery = sqlquery + " AND r.room_type = '" + filters.roomType + "' ";
+    if (filters.minSeats != "") sqlquery = sqlquery + " AND r.capacity >=  '" + filters.minSeats + "' ";
+    sqlquery = sqlquery + " ORDER BY r.room_number";
+    
+    // execute sql query
+    console.log("getRooms sqlquery: " + sqlquery);
+    db.query(sqlquery, (err, results) => {
+      if (err) {
+        console.error(err.message);
+        reject(err);        // if there is an error reject the Promise
+      } else {
+        resolve(results);   // the Promise is resolved with the result of the query
+      }
+    });
+  });
+}
 
 // sort booking functions:
 function sortByBuilding(bookings) {
@@ -531,7 +592,6 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
   var userId = req.session.userid;
   var email = req.session.email;
   // var bookings = getBookings(); // Assume this gets the initial bookings
-  
 
   // build the result - note there are two versions one for an ajax
   // Check if the request is an Ajax request
@@ -782,23 +842,90 @@ app.post("/filtered", isLoggedIn, (req, res) => {
     res.render("filtered.ejs", { result });
   });
 });
-app.get("/book-room", isLoggedIn, (req, res) => {
+
+// this is the route that displays all the rooms so a user can select one and make a booking - renamed from book-room to match other list pages
+app.get("/rooms-list", isLoggedIn, (req, res) => {
+  console.log(req.body); // Add this line
+  var loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var userId = req.session.userid;
+  var email = req.session.email;
+  // set the filters to empty when we first use the page
+  var filters = {
+    date: "",
+    timeslot: "-NaN:NaN",
+    building: "",
+    roomType: "",
+    minSeats: 1,
+    duration: "",
+  }
+  Promise.all([
+    getRoomTypes("rooms-list", userId ),            // Promise.all[0]
+    getBuildingNames("rooms-list", userId),         // Promise.all[1]
+    getRooms(filters)                               // Promise.all[2]
+  ])
+  .then(([roomTypes, buildingNames, rooms]) => {    // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
+    res.render("rooms-list.ejs", {
+      loggedInMessage,
+      userrole,
+      email,
+      rooms,
+      roomTypes,
+      buildingNames
+    });
+  })
+  .catch(error => {
+    console.log("Error getting data from database calls");
+  });
+});
+
+// route for the filter in the rooms-list page
+app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
   loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
+  var userId = req.session.userid;
   var email = req.session.email;
-  //console.log(loggedInMessage + " " + userrole);
-  var bookings = [];
-  // temporarily fill bookings:
-  var tempBooking = {
-    roomNumber: 256,
-    building: "RHB",
-    Layout: "Small Tiered Lecture Room",
+  var startingTimeslot = req.body.timeslot.replace("starting from ", "");
+  var bookingDuration = req.body.durationRange;
+  var bookingHours = Math.floor(bookingDuration / 60);
+  var bookingMinutes = bookingDuration % 60;
+  var startingTimeSplit = startingTimeslot.split(":");
+  var endingTimeslot =
+    String(parseInt(startingTimeSplit[0]) + bookingHours).padStart(2, "0") +
+    ":" +
+    String(parseInt(startingTimeSplit[1]) + bookingMinutes).padStart(2, "0");
+  var filters = {
+    date: req.body.date,
+    timeslot: startingTimeslot + "-" + endingTimeslot,
+    building: req.body.building,
+    roomType: req.body.roomType,
+    minSeats: req.body.seating,
+    duration: bookingMinutes,
   };
-  for (let i = 0; i < 5; i++) {
-    bookings.push(tempBooking);
-  }
-  res.render("book-room.ejs", { loggedInMessage, userrole, email, bookings });
+  console.log("before promise call rooms-list filters: ");
+  console.log(filters);
+  Promise.all([
+    getRoomTypes("rooms-list", userId),           // Promise.all[0]
+    getBuildingNames("rooms-list", userId),       // Promise.all[1]
+    getRooms(filters)                             // Promise.all[2]
+  ])
+  .then(([roomTypes, buildingNames, rooms]) => {           // if you had more data calls above you name it here, the first variable is the result of promise.all[0] etc.
+    //console.log(bookings);
+    console.log(filters);
+    res.render("rooms-list.ejs", {
+      loggedInMessage,
+      userrole,
+      email,
+      rooms,
+      roomTypes,
+      buildingNames
+    });
+  })
+  .catch(error => {
+    console.log("Error getting data from database calls");
+  });
 });
+
 
 app.get("/view-requests", isLoggedIn, function (req, res) {
   loggedInMessage = getLoggedInUser(req);
