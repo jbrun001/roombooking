@@ -521,6 +521,7 @@ app.get("/bookings-list", isLoggedIn, function (req, res) {
   .catch(error => {
     console.log("Error getting data from database calls");
   });
+  filteredBookingsGlobal = [];
 });
 
 app.post("/bookings-list", isLoggedIn, function (req, res) {
@@ -537,9 +538,12 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
   Promise.all([
     getRoomTypes("bookings-list", userId ),            // Promise.all[0]
     getBuildingNames("bookings-list", userId),         // Promise.all[1]
-    getBookings("bookings-list",userId)                // Promise.all[2]
+    getBookings("bookings-list", userId)                // Promise.all[2]
   ])
   .then(([roomTypes, buildingNames, bookings]) => {             // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
+    if (filteredBookingsGlobal.length > 0){
+        bookings = filteredBookingsGlobal;
+    }
   // Your existing sorting logic here...
     switch (req.body.orderSelection) {
       case "o_b_Room":
@@ -583,7 +587,7 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
   */
 });
 
-
+var filteredBookingsGlobal = [];
 app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
   loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
@@ -619,49 +623,49 @@ app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
     console.log(filters);
     var filteredBookings = [];
     for (var i = 0; i < bookings.length; i++) {
-      console.log(bookings[i]);
+      //console.log(bookings[i]);
       if (bookings[i].date != filters.date && filters.date != "") {
-        console.log("date failed: " + bookings[i].date);
+        //console.log("date failed: " + bookings[i].date);
         continue;
       }
       if (
         bookings[i].timeslot != filters.timeslot &&
         filters.timeslot != "-NaN:NaN"
       ) {
-        console.log("timeslot failed: " + bookings[i].timeslot);
+        //console.log("timeslot failed: " + bookings[i].timeslot);
         continue;
       } else if (filters.duration > 0) {
         var bookingTimeslot = bookings[i].timeslot.split("-");
         var bookingStartTime = bookingTimeslot[0].split(":").map(Number);
-        console.log(bookingStartTime);
+        //console.log(bookingStartTime);
         var bookingStart = bookingStartTime[0] * 60 + bookingStartTime[1];
         var bookingEndTime = bookingTimeslot[1].split(":").map(Number);
-        console.log(bookingEndTime);
+        //console.log(bookingEndTime);
         var bookingEnd = bookingEndTime[0] * 60 + bookingEndTime[1];
         var overallDuration = bookingEnd - bookingStart;
-        console.log(i + "; " + overallDuration);
+        //console.log(i + "; " + overallDuration);
         if (overallDuration != filters.duration) {
-          console.log("duration failed: " + overallDuration);
+          //console.log("duration failed: " + overallDuration);
           continue;
         }
       }
       if (bookings[i].building != filters.building && filters.building != "") {
-        console.log("building failed: " + bookings[i].building);
+        //console.log("building failed: " + bookings[i].building);
         continue;
       }
       if (bookings[i].roomType != filters.roomType && filters.roomType != "") {
-        console.log("roomtype failed: " + bookings[i].roomType);
+        //console.log("roomtype failed: " + bookings[i].roomType);
         continue;
       }
-      if (bookings[i].minSeats <= filters.minSeats && minSeats >= 1) {
-        console.log("min seats failed: " + bookings[i].minSeats);
+      if (bookings[i].minSeats <= filters.minSeats && filters.minSeats >= 1) {
+        //console.log("min seats failed: " + bookings[i].minSeats);
         continue;
       }
-console.log("added: " + bookings[i]);
+      //console.log("added: " + bookings[i]);
       filteredBookings.push(bookings[i]);
     }
     bookings = filteredBookings;
-
+    filteredBookingsGlobal = filteredBookings;
     res.render("bookings-list.ejs", {
       loggedInMessage,
       userrole,
