@@ -227,13 +227,6 @@ app.post("/registered", isLoggedIn, function (req, res) {
   });
 });
 
-// test route to display the user_account table - remove in final version.
-app.get("/test", (req, res) => {
-  db.query("SELECT * FROM user_account", function (err, rows, fields) {
-    if (err) throw err;
-    res.send(rows);
-  });
-});
 
 // this route is the template for all pages when the user is logged in
 // there is an extra check to make sure that the user is currently logged in
@@ -283,69 +276,6 @@ function getBookings(pageName,userId) {
       }
     });
   });
-/* test data without using the database
-  var bookings = [];
-  // temporarily fill bookings:
-  var tempBooking1 = {
-    roomNumber: 256,
-    building: "RHB",
-    minSeats: 10,
-    roomType: "Seminar room",
-    date: "2024-01-16",
-    timeslot: "10:00-12:00",
-    bookedBy: "Emily Rain",
-    Status: "Awaiting Approval",
-  };
-  var tempBooking2 = {
-    roomNumber: 306,
-    building: "RHB",
-    minSeats: 10,
-    roomType: "Seminar room",
-    date: "2024-01-16",
-    timeslot: "11:00-13:00",
-    bookedBy: "Noah Tambala",
-    Status: "Awaiting Approval",
-  };
-  var tempBooking3 = {
-    roomNumber: "LG02",
-    building: "PSH",
-    minSeats: 10,
-    roomType: "Lecture theatre",
-    date: "2024-01-16",
-    timeslot: "10:00-12:00",
-    bookedBy: "Spike Elliot",
-    Status: "Approved",
-  };
-  var tempBooking4 = {
-    roomNumber: 124,
-    building: "WHB",
-    minSeats: 10,
-    roomType: "Seminar room",
-    date: "2024-01-16",
-    timeslot: "14:00-17:00",
-    bookedBy: "Syed Sahaf",
-    Status: "Approved",
-  };
-  var tempBooking5 = {
-    roomNumber: "BLK3",
-    building: "RHB",
-    minSeats: 10,
-    roomType: "Seminar room",
-    date: "2024-01-16",
-    timeslot: "16:00-18:00",
-    bookedBy: "Abdul Jinadu",
-    Status: "Denied",
-  };
-  bookings.push(tempBooking1);
-  bookings.push(tempBooking2);
-  bookings.push(tempBooking3);
-  bookings.push(tempBooking4);
-  bookings.push(tempBooking5);
-  //for (let i = 0; i < 5; i++) {
-  //    bookings.push(tempBooking);
-  //}
-  return bookings;
-  */
 }
 
 // gets the roomtypes to be displayed in the filter from the database
@@ -401,11 +331,9 @@ function getBuildingNames(pageName,userId){
 // get rooms the database for the book room page, and also apply filters if there are any
 // if there is a date and a timeslot filled in then remove any rooms that have a booking that 
 // overlaps with the date and times we looking for
-function getRooms(filters) {
-  console.log("getRooms setting promise");
+function getRooms(filters,listOrder) {
   return new Promise((resolve, reject) => {
     var sqlquery = "";
-    console.log("getRooms inside promise");
     // if the filter date OR there is no selecton for start time and duration then get all the rooms and other filter criteria are added after the if else
     if (filters.date == "" || filters.timeslot == "-NaN:NaN") {
       sqlquery = `
@@ -425,13 +353,13 @@ function getRooms(filters) {
       var intEndTime = timeslots[1].split(":").map(Number);
       var durationEnd = intEndTime[0] * 60 + intEndTime[1];
       var overallDuration = durationEnd - durationStart;
-      // this isn't functioning and needs more work - at the moment the code doesn't run
-      // and gives a database error.  The SQL is ok, but something else is wrong - probably need to simplify this
       sqlquery = `
       SELECT r.id as roomId, r.room_number as roomNumber, r.building_name as building, r.capacity as capacity,
       r.picture_URL as pictureURL, r.room_type as roomType  
       FROM room r
-      # exclude any room that has a booking that overlaps with the currently searched window
+      # If there are ANY number of bookings for this room that start before the timeslot
+      # and end after the timeslot exclude the room.  The fixes the issue where multiple bookings on
+      # a room in the timescale could create duplicate rooms.  Which would have happened if we joined rooms and bookings
       WHERE NOT EXISTS (
         SELECT 1
         FROM booking b
@@ -444,7 +372,9 @@ function getRooms(filters) {
               )
         )
       )   
-      # this excludes any room that has a booking that overlaps with the timeslot we want to book
+      # from that list above
+      # exlude any room that has a booking that starts before the timeslot and finishes after the timeslot
+      # OR exclude any room that has a booking that overlaps with the timeslot
       AND r.id NOT IN (
         SELECT room_id
         FROM booking
@@ -463,14 +393,14 @@ function getRooms(filters) {
       ) AND r.is_accepting_bookings = 1 `
     }
     // add any other filters to the end of the query
-    
     if (filters.building != "") sqlquery = sqlquery + " AND r.building_name = '" + filters.building + "' ";
     if (filters.roomType != "") sqlquery = sqlquery + " AND r.room_type = '" + filters.roomType + "' ";
     if (filters.minSeats != "") sqlquery = sqlquery + " AND r.capacity >=  '" + filters.minSeats + "' ";
-    sqlquery = sqlquery + " ORDER BY r.room_number";
+    // add the "order by" string
+    sqlquery = sqlquery + " " + listOrder;
     
     // execute sql query
-    console.log("getRooms sqlquery: " + sqlquery);
+    // console.log("getRooms sqlquery: " + sqlquery);
     db.query(sqlquery, (err, results) => {
       if (err) {
         console.error(err.message);
@@ -567,7 +497,6 @@ app.get("/bookings-list", isLoggedIn, function (req, res) {
   var userrole = req.session.user_role;
   var userId = req.session.userid;
   var email = req.session.email;
-  // bookings = getBookings();
   // get all the database result sets that are required for this page
   // get them from asynchronus functions so they can be re-used
   // on different pages, pass the function requests in an array as part of Promise.all
@@ -587,7 +516,7 @@ app.get("/bookings-list", isLoggedIn, function (req, res) {
     });
   })
   .catch(error => {
-    console.log("Error getting data from database calls");
+    console.log("Error getting data from database calls or in the code above");
   });
   filteredBookingsGlobal = [];
 });
@@ -598,20 +527,16 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
   var userrole = req.session.user_role;
   var userId = req.session.userid;
   var email = req.session.email;
-  // var bookings = getBookings(); // Assume this gets the initial bookings
-
-  // build the result - note there are two versions one for an ajax
-  // Check if the request is an Ajax request
   Promise.all([
-    getRoomTypes("bookings-list", userId ),            // Promise.all[0]
-    getBuildingNames("bookings-list", userId),         // Promise.all[1]
+    getRoomTypes("bookings-list", userId ),             // Promise.all[0]
+    getBuildingNames("bookings-list", userId),          // Promise.all[1]
     getBookings("bookings-list", userId)                // Promise.all[2]
   ])
   .then(([roomTypes, buildingNames, bookings]) => {             // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
     if (filteredBookingsGlobal.length > 0){
         bookings = filteredBookingsGlobal;
     }
-  // Your existing sorting logic here...
+    // Your existing sorting logic here...
     switch (req.body.orderSelection) {
       case "o_b_Room":
           bookings = sortByBuilding(bookings);
@@ -638,20 +563,8 @@ app.post("/bookings-list", isLoggedIn, function (req, res) {
     });
   })
   .catch(error => {
-    console.log("Error getting data from database calls");
+    console.log("Error getting data from database calls or in the code above");
   });
-
-/* jb I removed this because of the addition of roomType and buildingNames the code for partial view didn't work
-  the ajax code in the page gets the result and extracts the booking-list div from it and updates the one
-  in the page, but because the other elements of the page were failing (due to roomTypes and roomNames)
-  the buttons stopped working.
-  if (req.headers['x-requested-with'] === 'XMLHttpRequest') {
-      // Return only the partial view necessary for updating the bookings list
-      res.render("bookings-list", { bookings: bookings });
-    } else {
-      // return the whole page
-  }
-  */
 });
 
 var filteredBookingsGlobal = [];
@@ -678,7 +591,6 @@ app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
     minSeats: req.body.seating,
     duration: req.body.durationRange,
   };
-  // bookings = getBookings();
 
   Promise.all([
     getRoomTypes("bookings-list", userId),           // Promise.all[0]
@@ -743,7 +655,7 @@ app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
     });
   })
   .catch(error => {
-    console.log("Error getting data from database calls");
+    console.log("Error getting data from database calls or in the code above");
   });
   //res.send(filteredBookings);
 });
@@ -852,26 +764,45 @@ app.post("/filtered", isLoggedIn, (req, res) => {
 
 // this is the route that displays all the rooms so a user can select one and make a booking - renamed from book-room to match other list pages
 app.get("/rooms-list", isLoggedIn, (req, res) => {
-  console.log(req.body); // Add this line
   var loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var userId = req.session.userid;
   var email = req.session.email;
-  // set the filters to empty when we first use the page
-  var filters = {
-    date: "",
-    timeslot: "-NaN:NaN",
-    building: "",
-    roomType: "",
-    minSeats: 1,
-    duration: "",
+  // get the filters from the user session, else initialise the filters
+  var filters = {};
+  if (req.session.roomListFilters) filters = req.session.roomListFilters
+  else {
+    filters = {
+      date: "",
+      timeslot: "-NaN:NaN",
+      building: "",
+      roomType: "",
+      minSeats: 1,
+      duration: "",
+    }
+    // save the current filters in the user session
+    req.session.roomListFilters = filters;
   }
+  // manage the ordering of the data - if the user has re-ordered the list
+  var listOrder = "";
+  switch (req.session.roomListOrder) {
+    case "o_b_Capacity":
+        listOrder = " ORDER BY r.capacity DESC";
+        break;
+    case "o_b_Building":
+        listOrder = " ORDER BY r.building_name, r.room_number";
+        break;
+    default:
+        listOrder = " ORDER BY r.building_name, r.room_number";
+        break;
+  }
+  // if the filter has a date and a timeslot then create a string to be passed to the page which gets shown inside the book button
   var timeslot = ""
-  if (filters.timeslot != "-NaN:NaN") timeslot = filters.timeslot;  // used to pass into the page for the select button
+  if (filters.timeslot != "-NaN:NaN" && date !="") timeslot = filters.timeslot;  
   Promise.all([
     getRoomTypes("rooms-list", userId ),            // Promise.all[0]
     getBuildingNames("rooms-list", userId),         // Promise.all[1]
-    getRooms(filters)                               // Promise.all[2]
+    getRooms(filters,listOrder)                     // Promise.all[2]
   ])
   .then(([roomTypes, buildingNames, rooms]) => {    // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
     res.render("rooms-list.ejs", {
@@ -885,43 +816,72 @@ app.get("/rooms-list", isLoggedIn, (req, res) => {
     });
   })
   .catch(error => {
-    console.log("Error getting data from database calls");
+    console.log("Error getting data from database calls or in the code above");
   });
 });
 
-// route for the filter in the rooms-list page
+// route for the filter and ordering in the rooms-list page
+// this route is re-used for filtering AND ordering, if there no req.body.orderSelection
+// then we are processing filtering, otherwise we are processing ordering
 app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
   loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var userId = req.session.userid;
   var email = req.session.email;
-  var startingTimeslot = req.body.timeslot.replace("starting from ", "");
-  var bookingDuration = req.body.durationRange;
-  var bookingHours = Math.floor(bookingDuration / 60);
-  var bookingMinutes = bookingDuration % 60;
-  var startingTimeSplit = startingTimeslot.split(":");
-  var endingTimeslot =
-    String(parseInt(startingTimeSplit[0]) + bookingHours).padStart(2, "0") +
-    ":" +
-    String(parseInt(startingTimeSplit[1]) + bookingMinutes).padStart(2, "0");
-  var filters = {
-    date: req.body.date,
-    timeslot: startingTimeslot + "-" + endingTimeslot,
-    building: req.body.building,
-    roomType: req.body.roomType,
-    minSeats: req.body.seating,
-    duration: req.body.durationRange,
-  };
+  var filters = {};
+  // work out if we are posting to filter the list or order the list
+  // if the POST doesn't contain req.body.orderSelection then we are have a post that is filtering
+  if (!req.body.orderSelection) {
+    var startingTimeslot = req.body.timeslot.replace("starting from ", "");
+    var bookingDuration = req.body.durationRange;
+    var bookingHours = Math.floor(bookingDuration / 60);
+    var bookingMinutes = bookingDuration % 60;
+    var startingTimeSplit = startingTimeslot.split(":");
+    var endingTimeslot =
+      String(parseInt(startingTimeSplit[0]) + bookingHours).padStart(2, "0") +
+      ":" +
+      String(parseInt(startingTimeSplit[1]) + bookingMinutes).padStart(2, "0");
+    filters = {
+      date: req.body.date,
+      timeslot: startingTimeslot + "-" + endingTimeslot,
+      building: req.body.building,
+      roomType: req.body.roomType,
+      minSeats: req.body.seating,
+      duration: req.body.durationRange,
+    }  
+    // save the current filters in the user session, this is so they can be re-used when there is no filter POSTED
+    req.session.roomListFilters = filters
+  } else {
+    filters = req.session.roomListFilters;
+    // save the orderSelection
+    req.session.roomListOrder = req.body.orderSelection;
+  } 
+  // get the current list order from the session and if not present initialise the order
+  // if (!req.session.roomListOrder) req.session.roomListOrder = ""
+  // manage the ordering of the data - if the user has re-ordered the list
+  var listOrder = "";
+  //console.log("session.roomListOrder: " + req.session.roomListOrder);
+  switch (req.session.roomListOrder) {
+    case "o_b_Capacity":
+        listOrder = " ORDER BY r.capacity DESC";
+        break;
+    case "o_b_Building":
+        listOrder = " ORDER BY r.building_name, r.room_number";
+        break;
+    default:
+        listOrder = " ORDER BY r.building_name, r.room_number";
+        break;
+  }
   var timeslot = ""
-  if (filters.timeslot != "-NaN:NaN") timeslot = filters.timeslot;  // used to pass into the page for the select button
+  // if the user has selected a date and a timeslot then show this on the button
+  if (filters.timeslot != "-NaN:NaN" && filters.date != "") timeslot = filters.timeslot;  // used to pass into the page for the select button
   console.log(filters);
   Promise.all([
     getRoomTypes("rooms-list", userId),           // Promise.all[0]
     getBuildingNames("rooms-list", userId),       // Promise.all[1]
-    getRooms(filters)                             // Promise.all[2]
+    getRooms(filters,listOrder)                   // Promise.all[2]
   ])
   .then(([roomTypes, buildingNames, rooms]) => {           // if you had more data calls above you name it here, the first variable is the result of promise.all[0] etc.
-    //console.log(bookings);
     console.log(filters);
     res.render("rooms-list.ejs", {
       loggedInMessage,
@@ -934,7 +894,7 @@ app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
     });
   })
   .catch(error => {
-    console.log("Error getting data from database calls");
+    console.log("Error getting data from database calls or in the code above");
   });
 });
 

@@ -99,9 +99,9 @@
         <div class="right-column">
             <h2 class="current-bookings-title">Available Rooms</h2>
             <div class="order-by-button-wrapper">
-                <form id = "orderForm" class="card-wrapper" action="/rooms-list" method="POST">
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Building">Not done: </br>Order by Building</button>
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Capacity">Not done: </br>Order by Capacity</button>
+                <form id = "orderForm" class="card-wrapper" action="/rooms-list-filtered" method="POST">
+                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Building">Order by Building</button>
+                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Capacity">Order by Capacity</button>
                 </form>
                 <script>
                     // Attach the event listener to the form
@@ -155,7 +155,7 @@
                                     </div>
                                 </div>
                                 <div class="card-column">
-                                    <a href="" class="button-link">Book</br><%=timeslot%></a>
+                                    <a href="/make-booking.ejs" class="button-link">Book</br><%=timeslot%></a>
                                 </div>
                             </div>
                         </div>
