@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookit / Add Booking</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <%- include('header-nomenu') %>
+    <div class="view-booking-content">
+        <h2>Add Booking</h2>
+        <ul class="view-booking-column-list">
+            <li><strong>Booked by:</strong> <%=email%></li>
+            <li><strong>Date:</strong> <%=selectedDate%></li>
+            <li><strong>Building:</strong> <%=room[0].building%></li>
+            <li><strong>Status:</strong> Not booked</li>
+            <li><strong>Role:</strong> <%=userrole%></li>
+            <li><strong>Timeslot:</strong> <%=selectedTimeslot%></li>
+            <li><strong>Room Number:</strong> <%=room[0].roomNumber%></li>
+            <li><strong>Seating Requested:</strong> <%=room[0].capacity%></li>
+        </ul>
+        <!-- TO DO: Temporary solution for now until better alternative found -->
+        <form id = "orderForm" class="view-booking-content" action="/add-booking-submit" method="POST">
+            <div class="view-booking-input">
+                <p><strong>Risk Assessment 1</strong></p>
+                <textarea name="risk1" label="Risk1" rows="8" cols="200"></textarea>
+                <p><strong>Risk Assessment 2</strong></p>
+                <textarea name="risk2" label="Risk2" rows="8" cols="200"></textarea>
+            </div>
+            
+            <div class="view-booking-button">
+                <a href="/rooms-list" class="button-link">Cancel</a>
+                <input type="hidden" label="selectedTimeslot" name="selectedTimeslot" value="<%=selectedTimeslot%>">
+                <input type="hidden" label="selectedDate" name="selectedDate" value="<%=selectedDate%>"> 
+                <input type="hidden" label="roomId" name="roomId" value="<%=room[0].roomId%>"> 
+                <button class="button-link" name="confirm" type="submit" value="">Request Booking</button>
+            </div>
+        </form>
+    </div>
+    <%- include('footer') %>
+    </body>
+</html>

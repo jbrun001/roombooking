@@ -949,6 +949,179 @@ app.get("/edit-booking", isLoggedIn, (req, res) => {
   res.render("edit-booking.ejs", { loggedInMessage, userrole, email });
 });
 
+// this displays the room details from the database and the 
+// booking information passed into the page from the room-list is roomId, selectedDate and selectedTimeSlot
+app.post("/add-booking", isLoggedIn, (req, res) => {
+  loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var email = req.session.email;
+  // console.log("add_booking email: " + req.session.email + "userrole: " + req.session.user_role);
+  // get the data from the URL that is POSTED to this page
+  var roomId = req.body.roomId;
+  var selectedDate = req.body.selectedDate;
+  var selectedTimeslot = req.body.selectedTimeslot;
+  // get the room data - we have the userrole and the email aready from the session data
+  let sqlquery = `
+    SELECT  r.id AS roomId, r.room_number AS roomNumber, r.building_name AS building, 
+            r.capacity AS capacity, r.picture_URL AS pictureURL, 
+            r.room_type AS roomType
+    FROM room r 
+    WHERE r.id = ?`;
+  // note for view-bookings
+  // For getting all the fields from the booking once it's created - this is for view-booking etc 
+  // this is SQL that you can paste into msql command line - this needs the final line to be 
+  // passed bookingId
+  // `SELECT  r.id AS roomId, r.room_number AS roomNumber, r.building_name AS building, 
+  // r.capacity AS capacity, r.picture_URL AS pictureURL, ra.risk1, ra.risk2, b.booking_status,
+  // # add other fields from booking (b) and risk_assessment (ra) as needed
+  // r.room_type AS roomType
+  // FROM room r JOIN booking b ON b.room_id = r.id LEFT JOIN risk_assessment ra ON ra.booking_id = b.id
+  // WHERE b.id = 30;`
+
+  // execute sql query
+  db.query(sqlquery, roomId, (err, result) => {
+      if (err) {
+        console.log("add-booking db query error");
+        console.error(err.message);
+        res.render("/bookings-list");
+      }
+      let pageData = Object.assign({}, {loggedInMessage}, {userrole}, {email}, {room:result}, {selectedDate}, {selectedTimeslot});
+      res.render("add-booking.ejs", pageData);
+    }
+  )
+});
+
+/**
+ * Inserts or updates a booking.
+ * the mode parameter is checked and based on that different SQL can be run
+ * this was implemented as a function so it can return the id of any insert that it performs
+ * but it can also be used for updates it can be used in a Promise.All if the queries can come back in any order
+ * or it can be used 
+ * @param {*} mode                 mode can be INSERT or UPDATE_STATUS or UPDATE_RISK_ASSESS_APPROVAL
+ * @param {*} changedDataFields    Array: The fields, in order, that are to replaced the SQLQuery parameters
+ * @returns                        id of record inserted only if this is an insertion, else returns the record set
+ */
+function insertUpdateBooking(mode,changedDataFields) {
+  return new Promise((resolve, reject) => {
+    var sqlquery = "";
+    if (mode == "INSERT") {    
+      sqlquery = `
+        INSERT INTO booking 
+          (booking_start, booking_end, booking_reason, booking_status,
+          is_risk_assessment_approved, confirmed_on, cancelled_on, user_id, room_id)
+          VALUES (
+          ?, ?, NULL, "Awaiting Approval",
+          0, NULL, NULL, ?, ?)
+        `
+    }
+    if (mode == "UPDATE_STATUS") {
+      sqlquery = `
+        UPDATE booking SET booking_status = ? where id = ?' 
+      `
+    }
+    if (mode == "UPDATE_RISK_ASSESS_APPROVAL") {
+      sqlquery = `
+        UPDATE booking SET is_risk_assessemnt_approved = ? where id = ?' 
+      `
+    }
+    console.log("insertUpdateBooking: " + sqlquery);
+    // add more modes here as necessary
+    // execute sql query
+    db.query(sqlquery, changedDataFields, (err, results) => {
+      if (err) {
+        console.error(err.message);
+        reject(err);        // if there is an error reject the Promise
+      } else {
+        if (mode == "INSERT") {
+          resolve(results.insertId);   // this returns the id for the record inserted which we can use in other queries
+        } else {
+          resolve(results);
+        }
+      }
+    });
+  });
+}
+
+/**
+ * Inserts or updates a risk assessment.
+ * the mode parameter is checked and based on that different SQL can be run
+ * this was implemented as a function so it can return the id of any insert that it performs
+ * but it can also be used for updates it can be used in a Promise.All if the queries can come back in any order
+ * or it can be used 
+ * @param {*} mode                 mode can be INSERT 
+ * @param {*} changedDataFields    Array: The fields, in order, that are to replaced the SQLQuery parameters
+ * @returns                        record set from the database
+ */
+// inserts the new risk assessment, same logic as insertUpdateBooking
+function insertUpdateRiskAssessment(mode,changedDataFields) {
+  return new Promise((resolve, reject) => {
+    var sqlquery = "";
+    if (mode == "INSERT") {    
+      sqlquery = `
+        INSERT INTO risk_assessment 
+          (risk1, risk2, is_approved, approved_by, booking_id)
+        VALUES (?, ?, 0, NULL, ?)
+      `
+    }
+    // add more modes here as necessary for updating etc
+    // execute sql query
+    console.log("insertUpdateRiskAssessment: " + sqlquery);
+    db.query(sqlquery, changedDataFields, (err, results) => {
+      if (err) {
+        console.error(err.message);
+        reject(err);        // if there is an error reject the Promise
+      } else {
+        resolve(results);   // the Promise is resolved with the result of the query
+      }
+    });
+  });
+}
+
+// this processes the booking when the confirm button is pressed
+app.post("/add-booking-submit", isLoggedIn, (req, res) => {
+  loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var email = req.session.email;
+  var userId = req.session.userid;
+
+  // sanitising the input
+  const selectedDate = sanitiseHtml(req.body.selectedDate);
+  const selectedTimeslot = sanitiseHtml(req.body.selectedTimeslot);
+  const roomId = sanitiseHtml(req.body.roomId);
+  const bookingStart = selectedDate + " " + selectedTimeslot.split("-")[0];
+  const bookingEnd = selectedDate + " " + selectedTimeslot.split("-")[1];
+  const risk1 = sanitiseHtml(req.body.risk1);
+  const risk2 = sanitiseHtml(req.body.risk2);
+  //console.log("selected timeslot:" + selectedTimeslot);
+  //console.log("booking start: " + bookingStart);
+  //console.log("booking end: " + bookingEnd);
+  var bookingData = [bookingStart,bookingEnd, userId, roomId];
+  var riskAssessmentData = [risk1,risk2];
+  //console.log("booking data: " + bookingData);
+  //console.log("riskAssessmentData data: " + riskAssessmentData);
+
+  // these updates need to happen sequentially so this doesn't use promise.all 
+  // the booking needs to be created and then the id that was just created in the booking table
+  // needs to be used to then create the risk assessment table entry
+  // there are two functions the first is called (it returns bookingId)
+  // then this is used for the second function
+  insertUpdateBooking("INSERT", bookingData)
+    .then((bookingId) => {
+      // add the bookingId that has been returned from the booking insert to the end of the 
+      // data passed to the insertUpdateRiskAssessment
+      riskAssessmentData.push(bookingId);
+      return insertUpdateRiskAssessment("INSERT", riskAssessmentData);
+    })
+    .then((riskAssessmentResult) => {
+      console.log('Risk assessment updated with result:', riskAssessmentResult);
+      res.send('<p>Booking and risk assessment inserted successfully!</p></br><a href="/login-success">Click to go back to the menu</a>');
+    })
+    .catch((error) => {
+      console.error('An error occurred:', error);
+    });
+    
+});
+
 //this route displays when a room has been added successfully
 app.get("/add-room-success", isLoggedIn, (req, res) => {
   res.send(
@@ -956,24 +1129,7 @@ app.get("/add-room-success", isLoggedIn, (req, res) => {
   );
 });
 
-app.get("/filter", isLoggedIn, (req, res) => {
-  res.render("filter.ejs");
-});
-app.post("/filtered", isLoggedIn, (req, res) => {
-  //  returned a value called capacity which is the capacity of the room
 
-  const capacity = parseInt(req.body.capacity);
-  let sqlquery = "SELECT * FROM room WHERE capacity >= ? ";
-  // execute sql query
-  db.query(sqlquery, [capacity], (err, result) => {
-    if (err) {
-      console.error(err.message);
-      return res.send("Error in adding room");
-    }
-    // redirecting to a success page if the room was added successfully
-    res.render("filtered.ejs", { result });
-  });
-});
 
 // this is the route that displays all the rooms so a user can select one and make a booking - renamed from book-room to match other list pages
 app.get("/rooms-list", isLoggedIn, (req, res) => {
@@ -1010,8 +1166,12 @@ app.get("/rooms-list", isLoggedIn, (req, res) => {
         break;
   }
   // if the filter has a date and a timeslot then create a string to be passed to the page which gets shown inside the book button
-  var timeslot = ""
-  if (filters.timeslot != "-NaN:NaN" && date !="") timeslot = filters.timeslot;  
+  var selectedTimeslot = "";
+  var selectedDate = "";
+  if (filters.timeslot != "-NaN:NaN" && filters.date !="") {
+    selectedTimeslot = filters.timeslot;
+    selectedDate = filters.date;
+  }  
   Promise.all([
     getRoomTypes("rooms-list", userId ),            // Promise.all[0]
     getBuildingNames("rooms-list", userId),         // Promise.all[1]
@@ -1025,7 +1185,8 @@ app.get("/rooms-list", isLoggedIn, (req, res) => {
       rooms,
       roomTypes,
       buildingNames,
-      timeslot
+      selectedTimeslot,
+      selectedDate
     });
   })
   .catch(error => {
@@ -1085,9 +1246,12 @@ app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
         listOrder = " ORDER BY r.building_name, r.room_number";
         break;
   }
-  var timeslot = ""
-  // if the user has selected a date and a timeslot then show this on the button
-  if (filters.timeslot != "-NaN:NaN" && filters.date != "") timeslot = filters.timeslot;  // used to pass into the page for the select button
+  var selectedTimeslot = "";
+  var selectedDate = "";
+  if (filters.timeslot != "-NaN:NaN" && filters.date !="") {
+    selectedTimeslot = filters.timeslot;
+    selectedDate = filters.date;
+  } 
   console.log(filters);
   Promise.all([
     getRoomTypes("rooms-list", userId),           // Promise.all[0]
@@ -1103,7 +1267,8 @@ app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
       rooms,
       roomTypes,
       buildingNames,
-      timeslot
+      selectedTimeslot,
+      selectedDate
     });
   })
   .catch(error => {

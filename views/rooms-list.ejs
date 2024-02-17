@@ -155,7 +155,18 @@
                                     </div>
                                 </div>
                                 <div class="card-column">
-                                    <a href="/make-booking.ejs" class="button-link">Book</br><%=timeslot%></a>
+                                    <%if (selectedTimeslot != "") { %>
+                                        <form id = "orderForm" class="card-wrapper" action="/add-booking" method="POST">
+                                            <input type="hidden" name="roomId" value="<%=rooms[i].roomId%>">
+                                            <input type="hidden" name="selectedDate" value="<%=selectedDate%>"> 
+                                            <input type="hidden" name="selectedTimeslot" value="<%=selectedTimeslot%>">
+                                            <button class="button-link" name="roomId" type="submit" value="<%=rooms[i].roomId%>">Book</BR><%=selectedDate %></br><%=selectedTimeslot%></button>
+                                        </form>
+                                    <% } else { %>
+                                        <div class="card-wrapper>
+                                            <button class="button-link" name="book" type="submit" value="">To make a booking for this room, select a date and timeslot in the filter.</button>
+                                        </div>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>
