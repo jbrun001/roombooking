@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bookit / Rooms List</title>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
@@ -99,9 +99,9 @@
         <div class="right-column">
             <h2 class="current-bookings-title">Available Rooms</h2>
             <div class="order-by-button-wrapper">
-                <form id = "orderForm" class="card-wrapper" action="/rooms-list" method="POST">
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Building">Not done: </br>Order by Building</button>
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Capacity">Not done: </br>Order by Capacity</button>
+                <form id = "orderForm" class="card-wrapper" action="/rooms-list-filtered" method="POST">
+                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Building">Order by Building</button>
+                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Capacity">Order by Capacity</button>
                 </form>
                 <script>
                     // Attach the event listener to the form
@@ -155,7 +155,18 @@
                                     </div>
                                 </div>
                                 <div class="card-column">
-                                    <a href="" class="button-link">Select</a>
+                                    <%if (selectedTimeslot != "") { %>
+                                        <form id = "orderForm" class="card-wrapper" action="/add-booking" method="POST">
+                                            <input type="hidden" name="roomId" value="<%=rooms[i].roomId%>">
+                                            <input type="hidden" name="selectedDate" value="<%=selectedDate%>"> 
+                                            <input type="hidden" name="selectedTimeslot" value="<%=selectedTimeslot%>">
+                                            <button class="button-link" name="roomId" type="submit" value="<%=rooms[i].roomId%>">Book</BR><%=selectedDate %></br><%=selectedTimeslot%></button>
+                                        </form>
+                                    <% } else { %>
+                                        <div class="card-wrapper>
+                                            <button class="button-link" name="book" type="submit" value="">To make a booking for this room, select a date and timeslot in the filter.</button>
+                                        </div>
+                                    <% } %>
                                 </div>
                             </div>
                         </div>

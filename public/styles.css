@@ -61,7 +61,9 @@ h2 {
 .login-container,
 .welcome-container,
 .register-container,
-.form-container {
+.form-container, 
+.credits-container, 
+.faq-container {
     text-align: center;
     background: white;
     padding: 2em;
