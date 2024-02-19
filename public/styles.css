@@ -75,6 +75,12 @@ h2 {
     /* Push down to make space for fixed header */
 }
 
+.welcome-container {
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 4rem;
+}
+
 .login-container,
 .welcome-container h1,
 .register-container {
@@ -470,4 +476,32 @@ input {
     /* pulse background
     animation: newDataLoadedEffect 0.1s 1 ease-in-out;
     */
+}
+
+#booking-request-button {
+    width: 18%;
+}
+
+#booking-cancel-button {
+    width: 15%;
+}
+
+#booking-selection-wrapper {
+    width: 89%;
+    margin-bottom: 2rem;
+}
+
+.booking-successful-confirmation {
+    background-color: #00720b; 
+    border: 2px solid #388e3c; 
+    border-radius: 0.5rem; 
+    padding: 1rem; 
+    width: 50%; 
+    text-align: center; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+    color: white; 
+    margin-bottom: 0%;
+    margin-top: 10%;
+    margin-left: auto;
+    margin-right: auto;
 }

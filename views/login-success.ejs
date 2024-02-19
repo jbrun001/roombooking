@@ -10,6 +10,11 @@
 <body>
     <%- include('header-nomenu') %>
     <div class="content">
+        <% try{ if (bookingSuccessful == true) { %>
+            <h2 class="booking-successful-confirmation">
+                Your booking has been successfully requested!
+            </h2>
+        <% } } catch(err){} %>
         <div class="welcome-container">
             <% switch (userrole) {
                 case "coordinator": %>

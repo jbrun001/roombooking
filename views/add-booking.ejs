@@ -30,12 +30,12 @@
                 <textarea name="risk2" label="Risk2" rows="8" cols="200"></textarea>
             </div>
             
-            <div class="view-booking-button">
-                <a href="/rooms-list" class="button-link">Cancel</a>
+            <div class="view-booking-button" id="booking-selection-wrapper">
+                <a href="/rooms-list" class="button-link" id="booking-cancel-button">Cancel</a>
                 <input type="hidden" label="selectedTimeslot" name="selectedTimeslot" value="<%=selectedTimeslot%>">
                 <input type="hidden" label="selectedDate" name="selectedDate" value="<%=selectedDate%>"> 
                 <input type="hidden" label="roomId" name="roomId" value="<%=room[0].roomId%>"> 
-                <button class="button-link" name="confirm" type="submit" value="">Request Booking</button>
+                <button class="button-link" id="booking-request-button" name="confirm" type="submit" value="">Request Booking</button>
             </div>
         </form>
     </div>

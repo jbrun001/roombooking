@@ -1123,7 +1123,9 @@ app.post("/add-booking-submit", isLoggedIn, (req, res) => {
     })
     .then((riskAssessmentResult) => {
       console.log('Risk assessment updated with result:', riskAssessmentResult);
-      res.send('<p>Booking and risk assessment inserted successfully!</p></br><a href="/login-success">Click to go back to the menu</a>');
+      var bookingSuccessful = true;
+      //res.send('<p>Booking and risk assessment inserted successfully!</p></br><a href="/login-success">Click to go back to the menu</a>');
+      res.render("login-success.ejs", { loggedInMessage, userrole, email, bookingSuccessful });
     })
     .catch((error) => {
       console.error('An error occurred:', error);
