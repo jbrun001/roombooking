@@ -238,6 +238,15 @@ app.post("/registered", isLoggedIn, function (req, res) {
   });
 });
 
+app.get("/credits", (req, res) => {
+  loggedInMessage = getLoggedInUser(req);
+  res.render("credits.ejs", { loggedInMessage });
+});
+
+app.get("/faq", (req, res) => {
+  loggedInMessage = getLoggedInUser(req);
+  res.render("faq.ejs", { loggedInMessage });
+});
 
 // this route is the template for all pages when the user is logged in
 // there is an extra check to make sure that the user is currently logged in
