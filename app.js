@@ -1359,7 +1359,7 @@ app.get("/edit-room", isLoggedIn, (req, res) => {
   });
 });
 
-app.post("/edit-room", isLoggedIn, (req, res) => {
+app.post("/edit-room-success", isLoggedIn, (req, res) => {
   //sql changes to room table
   sqlquery = "UPDATE room SET room_number = ?, building_name = ?, room_type = ?, capacity = ?, picture_URL = ?, is_accepting_bookings = ? WHERE id = ?";
   db.query(sqlquery, (err, result) => {
