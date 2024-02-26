@@ -942,12 +942,94 @@ app.post("/add-room", isLoggedIn, (req, res) => {
   );
 });
 
+
+//----------------------------------------VIEW BOOKING--------------------------------------------------------
 app.get("/view-booking", isLoggedIn, (req, res) => {
   loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var email = req.session.email;
   //console.log(loggedInMessage + " " + userrole);
   res.render("view-booking.ejs", { loggedInMessage, userrole, email });
+});
+
+function getBookingById(bookingId) {
+  return new Promise((resolve, reject) => {
+      const query = 'SELECT * FROM booking WHERE id = ?';
+      db.query(query, [bookingId], (error, results) => {
+          if (error) {
+              reject(error);
+          } else {
+              if (results.length > 0) {
+                  resolve(results[0]); // Assuming booking ID is unique
+              } else {
+                  resolve(null); // No booking found for the given ID
+              }
+          }
+      });
+  });
+}
+
+
+app.get("/view-booking/:id", isLoggedIn, (req, res) => {  
+  loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var email = req.session.email;
+  //console.log(loggedInMessage + " " + userrole);
+  
+    try{
+    // get the booking id from the url
+    const bookingId = req.params.id;
+    getBookingById(bookingId);
+      const query =
+    `
+        SELECT 
+        r.room_number as roomNumber, 
+        r.building_name as building, r.capacity as minSeats,
+        r.room_type as roomType, 
+        DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+        CONCAT(DATE_FORMAT(b.booking_start, '%H'),
+        ':',
+        DATE_FORMAT(b.booking_start,'%i'),
+        '-',
+        DATE_FORMAT(b.booking_end, '%H'),
+        ':'
+        ,DATE_FORMAT(b.booking_end,'%i')) as timeslot,
+        r.picture_URL as pictureURL, 
+        u.email as bookedBy, 
+        b.booking_status as Status,
+        b.id as bookingId, 
+        r.id as roomId, 
+        u.id as userId
+        FROM booking b
+        JOIN user_account u ON b.user_id = u.id
+        JOIN room r ON b.room_id = r.id
+        LEFT JOIN risk_assessment ra ON b.id = ra.booking_id
+        WHERE b.id = ?
+      `;
+
+    db.query(query, [bookingId], (err, result) => {
+      if(err){
+        console.log("WHAT THE HECK")
+      } else{
+        //var bookingDetails = result;
+        console.log(result);
+        //res.send(result);
+        //bookingDetails = Object.assign({}, { loggedInMessage }, { userrole }, { email }, { result });
+        res.render("view-booking.ejs", {loggedInMessage, userrole, email, result});
+      }
+    })
+    // }
+    // console.log(bookingDetails);
+    // if(bookingDetails) {
+    //   // res.render("view-booking.ejs", {bookingDetails});
+    //   res.send(bookingDetails);
+
+    // } else{
+    //   res.render ("bookings-list.ejs");
+  } catch(error){
+  console.error("Error retrieving booking details:", error);
+ /*  res.status(500).send("Internal Server Error"); */
+  }  
 });
 
 app.get("/edit-booking", isLoggedIn, (req, res) => {

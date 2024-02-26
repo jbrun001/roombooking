@@ -1,25 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookit / View Booking</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/x-icon" href="favicon.ico">
-</head>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Bookit / View Booking </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="/styles.css">
+        <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    </head>
 <body>
     <%- include('header-nomenu') %>
     <div class="view-booking-content">
         <h2>View Booking</h2>
         <ul class="view-booking-column-list">
-            <li><strong>Booked by:</strong> Emily Rain</li>
-            <li><strong>Date:</strong> 16 Jan 2024</li>
-            <li><strong>Building:</strong> RHB</li>
-            <li><strong>Status:</strong> Awaiting Approval</li>
-            <li><strong>Role:</strong> Society Leader</li>
-            <li><strong>Timeslot:</strong> 10:00-12:00</li>
-            <li><strong>Room Number:</strong> 256</li>
-            <li><strong>Seating Requested:</strong> 8</li>
+            <% console.log("result"); %>
+            <% console.log(result); %>
+            <li><strong>Booked by:</strong> <%= result[0].bookedBy %></li>
+            <li><strong>Date:</strong> <%= result[0].date %></li>
+            <li><strong>Building:</strong> <%= result[0].building %></li>
+            <li><strong>Status:</strong> <%= result[0].Status %></li>
+            <li><strong>Timeslot:</strong> <%= result[0].timeslot %></li>
+            <li><strong>Room Number:</strong> <%= result[0].roomNumber %></li>
+            <li><strong>Seating Requested:</strong> <%= result[0].minSeats %></li>
         </ul>
         <div class="view-booking-editbutton"><a href="/edit-booking" class="button-link">Edit</a></div>
         <!-- TO DO: Temporary solution for now until better alternative found -->
