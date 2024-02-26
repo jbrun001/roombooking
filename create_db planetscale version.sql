@@ -46,8 +46,35 @@ CREATE TABLE room (
     building_name VARCHAR(50)
 );
 
-INSERT INTO room (room_number, building_name, room_type, capacity, picture_URL, is_accepting_bookings)
-VALUES  ('309','RHB','classroom', 10, 'https://commons.wikimedia.org/wiki/File:5th_Floor_Lecture_Hall.jpg#/media/File:5th_Floor_Lecture_Hall.jpg',TRUE);
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('258',18,'https://i.imgur.com/Z4H2s6D.png',1,'Lecture Theatre', 'RHB');  
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('257',20,'https://i.imgur.com/sXfkTSb.png',1,'Seminar Room','RHB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('256',77,'https://i.imgur.com/pcE27w3.png',1,'Seminar Room','RHB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('203',8,'https://i.imgur.com/zgPIP3n.png',1,'Seminar Room','RHB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('112',40,'https://i.imgur.com/OPbJ5ob.jpg',1,'Seminar Room','RHB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('300a',42,'https://i.imgur.com/MOTYwtL.jpg',1,'Seminar Room','RHB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('307',65,'https://i.imgur.com/CaYpdDm.png',1,'Seminar Room',RHB);
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('308',31,'https://i.imgur.com/gfiWfjE.png',1,'Seminar Room','RHB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('355',25,'https://i.imgur.com/PBSpuPv.png',1,'Seminar Room','RHB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('309',109,'https://i.imgur.com/0qlH3ZT.jpeg',1,'Lecture Theatre','RHB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('144',46,'https://i.imgur.com/2Dqg4Pc.png',1,'Lecture Theatre','RHB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('342',60,'',1,'Lecture Theatre','RHB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('208',44,'https://i.imgur.com/SAjcIBP.png',1,'Seminar Room','WB');
+INSERT INTO room (room_number, capacity,picture_URL, is_accepting_bookings, room_type, building_name)
+VALUES  ('219',45,'https://i.imgur.com/0VVR6By.png',1,'Seminar Room','WB');
+
 
 CREATE TABLE booking (
     # changed from booking_id to id so can see difference between primary and foreign keys
