@@ -17,7 +17,7 @@
                     <label for="currentRooms">Current Rooms:</label>
                     <select id ="currentRoooms" name="currentRooms">
                         <% for (let i = 0; i < rooms.length; i++) { %>
-                        <option value="roomNumber"><%= rooms[i].room_number %></option>
+                        <option value="id"><%= rooms[i].room_number %></option>
                         <% } %>
                     </select>
                 </div>
@@ -49,8 +49,8 @@
                 <div class="input-group">
                     <label for="isAcceptingBookings">Accepting Bookings:</label>
                     <select id="isAcceptingBookings" name="isAcceptingBookings">
-                        <option value="true">Yes</option>
-                        <option value="false">No</option>
+                        <option value="1">Yes</option>
+                        <option value="0">No</option>
                     </select>
                 </div>
                 <button type="submit" class="button-link">Confirm Changes</button>
