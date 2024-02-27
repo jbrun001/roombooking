@@ -1183,7 +1183,9 @@ app.get("/view-booking/:id", isLoggedIn, (req, res) => {
         b.booking_status as Status,
         b.id as bookingId, 
         r.id as roomId, 
-        u.id as userId
+        u.id as userId,
+        ra.risk1 as risk1,
+        ra.risk2 as risk2
         FROM booking b
         JOIN user_account u ON b.user_id = u.id
         JOIN room r ON b.room_id = r.id
