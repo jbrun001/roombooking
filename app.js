@@ -301,6 +301,21 @@ function getBookings(pageName, userId, filters, listOrder) {
         WHERE booking_status = "Awaiting Approval"
       `;
     }
+    if (pageName === "approved-list") {
+      // this is the base query all additionl filters will be appended later in the code
+      // the requests list shows *all* bookings whith booking status of "Awaiting Approval"
+      sqlquery = `
+        SELECT 
+        r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
+        r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+        CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
+        r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
+        b.id as bookingId, r.id as roomId, u.id as userId
+        FROM booking b JOIN room r ON b.room_id = r.id JOIN user_account u ON b.user_id = u.id
+        WHERE booking_status = "Approved"
+      `;
+    }
+    
     // code from here applies to any page displaying bookings with a filter on it
     // add the selection criteria for selecting bookings on the selected date
     if (filters.date != "")
@@ -727,8 +742,8 @@ app.post("/bookings-list-filtered", isLoggedIn, function (req, res) {
       break;
   }
   Promise.all([
-    getRoomTypes("booking-list", userId), // Promise.all[0]
-    getBuildingNames("booking-list", userId), // Promise.all[1]
+    getRoomTypes("bookings-list", userId), // Promise.all[0]
+    getBuildingNames("bookings-list", userId), // Promise.all[1]
     getBookings("bookings-list", userId, filters, listOrder), // Promise.all[2]
   ])
     .then(([roomTypes, buildingNames, bookings]) => {
@@ -894,6 +909,152 @@ app.post("/requests-list-filtered", isLoggedIn, function (req, res) {
       );
     });
 });
+
+
+/**
+ * approved-list route
+ * this route renders a list page with a filter and shows ALL approved bookings
+ * approved bookings are those with a booking_status of "Approved"
+ *  */ 
+app.get("/approved-list", isLoggedIn, (req, res) => {
+  var loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var userId = req.session.userid;
+  var email = req.session.email;
+  // get the filters from the user session, else initialise the filters
+  var filters = {};
+  if (req.session.approvedListFilters) filters = req.session.approvedListFilters;
+  else {
+    filters = {
+      date: "",
+      timeslot: "-NaN:NaN",
+      building: "",
+      roomType: "",
+      minSeats: 1,
+      duration: "",
+    };
+    // save the current filters in the user session
+    req.session.approvedListFilters = filters;
+  }
+  // manage the ordering of the data - if the user has re-ordered the list
+  var listOrder = "";
+  switch (req.session.approvedListOrder) {
+    case "o_b_Room":
+      listOrder = " ORDER BY r.building_name, r.room_number";
+      break;
+    case "o_b_Time":
+      listOrder = " ORDER BY b.booking_start";
+      break;
+    case "o_b_Status":
+      listOrder = " ORDER BY b.booking_status";
+      break;
+    default:
+      listOrder = " ORDER BY b.booking_start";
+      break;
+  }
+  Promise.all([
+    getRoomTypes("approved-list", userId), // Promise.all[0]
+    getBuildingNames("approved-list", userId), // Promise.all[1]
+    getBookings("approved-list", userId, filters, listOrder), // Promise.all[2]
+  ])
+    .then(([roomTypes, buildingNames, bookings]) => {
+      // if you had more data just add the name of it here first variable is the result of promise.all[0] etc.
+      res.render("approved-list.ejs", {
+        loggedInMessage,
+        userrole,
+        email,
+        bookings,
+        roomTypes,
+        buildingNames,
+      });
+    })
+    .catch((error) => {
+      console.log(
+        "Error getting data from database calls or in the code above"
+      );
+    });
+});
+
+/**
+ * approved-list-filtered
+ * this route is the target for the filter form and the order by form in approved-list.ejs
+ */
+app.post("/approved-list-filtered", isLoggedIn, function (req, res) {
+  loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var userId = req.session.userid;
+  var email = req.session.email;
+  var filters = {};
+  // work out if we are posting to filter the list or order the list
+  // if the POST doesn't contain req.body.orderSelection then we are have a post that is filtering
+  if (!req.body.orderSelection) {
+    var startingTimeslot = req.body.timeslot.replace("starting from ", "");
+    var bookingDuration = req.body.durationRange;
+    var bookingHours = Math.floor(bookingDuration / 60);
+    var bookingMinutes = bookingDuration % 60;
+    var startingTimeSplit = startingTimeslot.split(":");
+    var endingTimeslot =
+      String(parseInt(startingTimeSplit[0]) + bookingHours).padStart(2, "0") +
+      ":" +
+      String(parseInt(startingTimeSplit[1]) + bookingMinutes).padStart(2, "0");
+    filters = {
+      date: req.body.date,
+      timeslot: startingTimeslot + "-" + endingTimeslot,
+      building: req.body.building,
+      roomType: req.body.roomType,
+      minSeats: req.body.seating,
+      duration: req.body.durationRange,
+    };
+    // save the current filters in the user session, this is so they can be re-used when there is no filter POSTED
+    req.session.approvedListFilters = filters;
+  } else {
+    filters = req.session.approvedListFilters;
+    // save the orderSelection
+    req.session.approvedListOrder = req.body.orderSelection;
+  }
+  // get the current list order from the session and if not present initialise the order
+  // if (!req.session.approvedListOrder) req.session.approvedListOrder = ""
+  // manage the ordering of the data - if the user has re-ordered the list
+  var listOrder = "";
+  //console.log("session.approvedListOrder: " + req.session.approvedListOrder);
+  switch (req.session.approvedListOrder) {
+    case "o_b_Room":
+      listOrder = " ORDER BY r.building_name, r.room_number";
+      break;
+    case "o_b_Time":
+      listOrder = " ORDER BY b.booking_start";
+      break;
+    case "o_b_Status":
+      listOrder = " ORDER BY b.booking_status";
+      break;
+    default:
+      listOrder = " ORDER BY b.booking_start";
+      break;
+  }
+  Promise.all([
+    getRoomTypes("approved-list", userId), // Promise.all[0]
+    getBuildingNames("approved-list", userId), // Promise.all[1]
+    getBookings("approved-list", userId, filters, listOrder), // Promise.all[2]
+  ])
+    .then(([roomTypes, buildingNames, bookings]) => {
+      // if you had more data calls above you name it here, the first variable is the result of promise.all[0] etc.
+      console.log(filters);
+      res.render("approved-list.ejs", {
+        loggedInMessage,
+        userrole,
+        email,
+        bookings,
+        roomTypes,
+        buildingNames,
+      });
+    })
+    .catch((error) => {
+      console.log(
+        "Error getting data from database calls or in the code above"
+      );
+    });
+});
+
 
 //this route is used to display the add-room page
 app.get("/add-room", isLoggedIn, (req, res) => {
@@ -1310,34 +1471,8 @@ app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
     });
 });
 
-app.get("/view-accepted", isLoggedIn, function (req, res) {
-  loggedInMessage = getLoggedInUser(req);
-  var userrole = req.session.user_role;
-  var email = req.session.email;
-  //console.log(loggedInMessage + " " + userrole);
-  var bookings = [];
-  // temporarily fill bookings:
-  var tempBooking = {
-    roomNumber: 256,
-    building: "RHB",
-    date: "16 Jan 2024",
-    timeslot: "10:00-12:00",
-    bookedBy: "Emily Rain",
-    Status: "Awaiting Approval",
-  };
-  for (let i = 0; i < 5; i++) {
-    bookings.push(tempBooking);
-  }
-  res.render("view-accepted.ejs", {
-    loggedInMessage,
-    userrole,
-    email,
-    bookings,
-  });
-});
 
 //edit room page to edit room using code from view bookings and add room
-
 app.get("/edit-room", isLoggedIn, (req, res) => {
   // checking for admin role
   if (req.session.user_role !== "admin") {
