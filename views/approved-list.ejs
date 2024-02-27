@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookit / Booking Requests List</title>
+    <title>Bookit / Approved Bookings List</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="/styles.css">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
     <%- include('header-menu') %>
     <div class="content-list">
         <div class="left-column">
             <p>Here are the filters</p>
-            <form id = "filterForm" action="/requests-list-filtered" method="POST">
+            <form id = "filterForm" action="/approved-list-filtered" method="POST">
                 <div class="date">
                     <input type="date" name="date" />
                 </div>
@@ -82,7 +82,7 @@
                             url: $(this).attr('action'),
                             data: $(this).serialize(), // Serialize form data for submission
                             success: function(response) {
-                                // Update the requests list with the response
+                                // Update the bookings list with the response
                                 $('.bookings-list').html($(response).find('.bookings-list').html());
                                 // remove the new data animation if it has already been added
                                 $('.bookings-list').removeClass('newDataLoadedEffect');
@@ -97,9 +97,9 @@
             </script>
         </div>
         <div class="right-column">
-            <h2 class="current-bookings-title">Bookings Awaiting Approval</h2>
+            <h2 class="current-bookings-title">Approved Bookings</h2>
             <div class="order-by-button-wrapper">
-                <form id = "orderForm" class="card-wrapper" action="/bookings-list-filtered" method="POST">
+                <form id = "orderForm" class="card-wrapper" action="/approved-list-filtered" method="POST">
                     <button class="button-link" name="orderSelection" type="submit" value="o_b_Room">Order by Building</button>
                     <button class="button-link" name="orderSelection" type="submit" value="o_b_Time">Order by Time</button>
                 </form>
