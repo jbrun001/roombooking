@@ -34,7 +34,7 @@
                     <textarea rows="8" cols="200" readonly><%= result[0].risk2 %></textarea>
                 </div>
                 <div class="view-booking-button">
-                    <a href="/bookings-list" class="button-link">Back</a>
+                    <a href="/login-success" class="button-link" onclick="event.preventDefault(); window.history.back();">Back</a>
                     <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
                     <button class="button-link" name="confirm" type="submit" value="">Edit</button>
                 </div>
