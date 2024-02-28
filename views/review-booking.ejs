@@ -47,7 +47,7 @@
                     <button class="button-link" name="reviewAction" type="submit" value="rejectRisk">Reject Risk</button>
                 </form>
             <% } %>
-            <% if (result[0].isApproved == 1) {%>
+            <% if (result[0].isApproved != null) {%>
                 <form id = "approveBooking" action="/review-booking-submit" method="POST">
                     <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
                     <button class="button-link" name="reviewAction" type="submit" value="approveBooking">Approve Booking</button>
