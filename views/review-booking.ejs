@@ -13,8 +13,6 @@
     <div class="view-booking-content">
         <h2>Review Booking</h2>
         <ul class="view-booking-column-list">
-            <% console.log("result"); %>
-            <% console.log(result); %>
             <li><strong>Booked by:</strong> <%= result[0].bookedBy %></li>
             <li><strong>Date:</strong> <%= result[0].date %></li>
             <li><strong>Building:</strong> <%= result[0].building %></li>
@@ -22,17 +20,47 @@
             <li><strong>Timeslot:</strong> <%= result[0].timeslot %></li>
             <li><strong>Room Number:</strong> <%= result[0].roomNumber %></li>
             <li><strong>Seating Requested:</strong> <%= result[0].minSeats %></li>
+            <li><strong>Risk Assessment:</strong>
+                <% if (result[0].isApproved == 1) { %>Approved
+                <% } else if ((result[0].isApproved == 0 || result[0].isApproved === null) && result[0].approvedBy != null) { %>Rejected
+                <% } else {%>Not yet reviewed 
+                <% } %>
+            </li>
         </ul>
-        <div class="view-booking-editbutton"><a href="/edit-booking" class="button-link">Edit</a></div>
-        <!-- TO DO: Temporary solution for now until better alternative found -->
+
         <div class="view-booking-input">
             <p><strong>Risk Assessment 1</strong></p>
             <textarea rows="8" cols="200" readonly><%= result[0].risk1 %></textarea>
             <p><strong>Risk Assessment 2</strong></p>
             <textarea rows="8" cols="200" readonly><%= result[0].risk2 %></textarea>
         </div>
-        <div class="view-booking-button"><a href="/bookings-list" class="button-link">Back</a></div>
+        <div class="view-booking-button">
+            <a href="/approved-list" class="button-link">Back</a>
+            <% console.log(result[0].isApproved + " approved by: >" + result[0].approvedBy +"< type: " + typeof result[0].approvedBy); %>
+            <% if ((result[0].isApproved === null || result[0].isApproved == 0) && result[0].approvedBy == null) {%>
+                <form id = "approveRisk" action="/review-booking-submit" method="POST">
+                    <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
+                    <button class="button-link" name="reviewAction" type="submit" value="approveRisk">Approve Risk</button>
+                </form>
+                <form id = "rejectRisk" action="/review-booking-submit" method="POST">
+                    <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
+                    <button class="button-link" name="reviewAction" type="submit" value="rejectRisk">Reject Risk</button>
+                </form>
+            <% } %>
+            <% if (result[0].isApproved == 1) {%>
+                <form id = "approveBooking" action="/review-booking-submit" method="POST">
+                    <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
+                    <button class="button-link" name="reviewAction" type="submit" value="approveBooking">Approve Booking</button>
+                </form>
+                <form id = "rejectBooking" action="/review-booking-submit" method="POST">
+                    <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
+                    <button class="button-link" name="reviewAction" type="submit" value="rejectBooking">Reject Booking</button>
+                </form>
+            <% } %>
+        </div>
+
     </div>
     <%- include('footer') %>
 </body>
 </html>
+

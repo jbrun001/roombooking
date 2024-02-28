@@ -21,9 +21,11 @@
             <li><strong>Room Number:</strong> <%= result[0].roomNumber %></li>
             <li><strong>Seating Requested:</strong> <%= result[0].minSeats %></li>
             <li><strong>Risk Assessment:</strong>
-                <% if (result[0].isApproved == '1') { %>Approved
-                <% } else { %>Not Approved
-                <% } %></li>
+                <% if (result[0].isApproved == 1) { %>Approved
+                <% } else if ((result[0].isApproved == 0 || result[0].isApproved === null) && result[0].approvedBy != null) { %>Rejected
+                <% } else {%>Not yet reviewed 
+                <% } %>
+            </li>
         </ul>
         <% if (result[0].Status = "Awaiting Approval" && result[0].isApproved != '1') { %>
             <form id = "updateAction" class="view-booking-content" action="/edit-booking-submit" method="POST">

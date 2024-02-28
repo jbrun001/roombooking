@@ -21,9 +21,11 @@
             <li><strong>Room Number:</strong> <%= result[0].roomNumber %></li>
             <li><strong>Seating Requested:</strong> <%= result[0].minSeats %></li>
             <li><strong>Risk Assessment:</strong>
-                <% if (result[0].isApproved == '1') { %>Approved
-                <% } else { %>Not Approved
-                <% } %></li>
+                <% if (result[0].isApproved == 1) { %>Approved
+                <% } else if ((result[0].isApproved == 0 || result[0].isApproved === null) && result[0].approvedBy != null) { %>Rejected
+                <% } else {%>Not yet reviewed 
+                <% } %>
+            </li>
         </ul>
         <% if (result[0].Status == 'Awaiting Approval' && result[0].isApproved != '1') { %>
             <form id = "editAction" class="view-booking-content" action="/edit-booking" method="POST">
@@ -46,7 +48,9 @@
                 <p><strong>Risk Assessment 2</strong></p>
                 <textarea rows="8" cols="200" readonly><%= result[0].risk2 %></textarea>
             </div>
-            <div class="view-booking-button"><a href="/bookings-list" class="button-link">Back</a></div>
+            <div class="view-booking-button">
+                <a href="/login-success" class="button-link" onclick="event.preventDefault(); window.history.back();">Back</a>
+            </div>
         <% } %>
     </div>
     <%- include('footer') %>

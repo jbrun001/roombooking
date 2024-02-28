@@ -1185,7 +1185,8 @@ app.get("/view-booking/:id", isLoggedIn, (req, res) => {
         u.id as userId,
         ra.risk1 as risk1,
         ra.risk2 as risk2,
-        ra.is_approved as isApproved
+        ra.is_approved as isApproved,
+        ra.approved_by as approvedBy
         FROM booking b
         JOIN user_account u ON b.user_id = u.id
         JOIN room r ON b.room_id = r.id
@@ -1206,6 +1207,123 @@ app.get("/view-booking/:id", isLoggedIn, (req, res) => {
   console.error("Error retrieving booking details:", error);
  /*  res.status(500).send("Internal Server Error"); */
   }  
+});
+
+app.get("/review-booking/:id", isLoggedIn, (req, res) => {  
+  loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var email = req.session.email;
+  const bookingId = sanitiseHtml(req.params.id);
+  const query =
+  `
+    SELECT 
+    r.room_number as roomNumber, 
+    r.building_name as building, r.capacity as minSeats,
+    r.room_type as roomType, 
+    DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+    CONCAT(DATE_FORMAT(b.booking_start, '%H'),
+    ':',
+    DATE_FORMAT(b.booking_start,'%i'),
+    '-',
+    DATE_FORMAT(b.booking_end, '%H'),
+    ':'
+    ,DATE_FORMAT(b.booking_end,'%i')) as timeslot,
+    r.picture_URL as pictureURL, 
+    u.email as bookedBy, 
+    b.booking_status as Status,
+    b.id as bookingId, 
+    r.id as roomId, 
+    u.id as userId,
+    ra.risk1 as risk1,
+    ra.risk2 as risk2,
+    ra.is_approved as isApproved,
+    ra.approved_by as approvedBy
+    FROM booking b
+    JOIN user_account u ON b.user_id = u.id
+    JOIN room r ON b.room_id = r.id
+    LEFT JOIN risk_assessment ra ON b.id = ra.booking_id
+    WHERE b.id = ?
+  `;
+
+  db.query(query, [bookingId], (err, result) => {
+    if(err){
+      console.log(err)
+    } else{
+      console.log(result);
+      res.render("review-booking.ejs", {loggedInMessage, userrole, email, result});
+    }
+  }) 
+});
+
+
+/**
+ * review-booking-submit
+ * target for the actions on the review booking page
+ * reviewActions: rejectRisk, approveRisk, approveBooking, rejectBooking
+ */
+app.post("/review-booking-submit", isLoggedIn, (req, res) => {
+  loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var email = req.session.email;
+  var userId = req.session.userid;
+  var bookingId = sanitiseHtml(req.body.bookingId);
+  var reviewAction = sanitiseHtml(req.body.reviewAction);
+  var bookingData = [];
+  var riskAssessmentData = [];
+  var bookingUpdateResult = "";
+  // Format the current date and time so it can be used in the update statements 
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  const hours = String(now.getHours()).padStart(2, '0');
+  const minutes = String(now.getMinutes()).padStart(2, '0');
+  const seconds = String(now.getSeconds()).padStart(2, '0');
+  const nowDateTime = `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  // manage booking approval and rejection
+  if (reviewAction == "rejectBooking" || reviewAction == "approveBooking") {
+    // we need to update the confirmed_date and the booking_status and we are updating the bookingId
+    bookingData = [nowDateTime];
+    if (reviewAction == "rejectBooking") bookingData.push("Denied")
+    else bookingData.push("Approved")
+    bookingData.push(bookingId);
+    console.log(reviewAction + " booking data: " + bookingData[0] + ", " + bookingData[1] + ", " +  bookingData[2] );
+    insertUpdateBooking("UPDATE_STATUS_CONFIRMED_ON", bookingData)
+      .then((bookingUpdateResult) => {
+        res.redirect("/requests-list");
+      })
+      .catch((error) => {
+        console.error("update booking status: An error occurred:", error);
+      });
+  }
+  // manage risk assessment approval and rejection
+  // the risk assessment needs updating in the risk assessment table
+  // this requires that we know the current user who is the approver
+  // we also need to update a field in the booking table that shows if the risk assessment is approved.
+  if (reviewAction == "rejectRisk" || reviewAction == "approveRisk") {
+    // current user is the approved_by
+    riskAssessmentData = [userId];
+    // 0 in isApproved = rejected, 1 in isApproved = approved
+    if (reviewAction == "rejectRisk") riskAssessmentData.push(0)
+    else riskAssessmentData.push(1)
+    // this is the record we are updating
+    riskAssessmentData.push(bookingId);
+    console.log(reviewAction + " riskAssessmentData: " + riskAssessmentData[0] + ", " + riskAssessmentData[1] + ", " + riskAssessmentData[2] );
+    insertUpdateRiskAssessment("UPDATE_APPROVED_APPROVED_BY", riskAssessmentData)
+      // when that update is complete update the bookings table 
+      .then((bookingUpdateResult) => {
+        if (reviewAction == "approveRisk") bookingData = [1,bookingId];
+        if (reviewAction == "rejectRisk") bookingData = [0,bookingId];
+        insertUpdateBooking("UPDATE_RISK_ASSESS_APPROVAL",bookingData)
+      })
+      // when that update is complete - redirect
+      .then((riskAssessmentResult) => {
+        res.redirect("/requests-list");
+      })
+      .catch((error) => {
+        console.error("update booking status: An error occurred:", error);
+      });
+  }
 });
 
 app.post("/edit-booking", isLoggedIn, (req, res) => {
@@ -1234,7 +1352,8 @@ app.post("/edit-booking", isLoggedIn, (req, res) => {
     u.id as userId,
     ra.risk1 as risk1,
     ra.risk2 as risk2,
-    ra.is_approved as isApproved
+    ra.is_approved as isApproved,
+    ra.approved_by as approvedBy
     FROM booking b
     JOIN user_account u ON b.user_id = u.id
     JOIN room r ON b.room_id = r.id
@@ -1339,12 +1458,17 @@ function insertUpdateBooking(mode, changedDataFields) {
     }
     if (mode == "UPDATE_STATUS") {
       sqlquery = `
-        UPDATE booking SET booking_status = ? where id = ?' 
+        UPDATE booking SET booking_status = ? where id = ?
+      `;
+    }
+    if (mode == "UPDATE_STATUS_CONFIRMED_ON") {
+      sqlquery = `
+        UPDATE booking SET confirmed_on = ?, booking_status = ? where id = ? 
       `;
     }
     if (mode == "UPDATE_RISK_ASSESS_APPROVAL") {
       sqlquery = `
-        UPDATE booking SET is_risk_assessemnt_approved = ? where id = ?' 
+        UPDATE booking SET is_risk_assessment_approved = ? where id = ? 
       `;
     }
     console.log("insertUpdateBooking: " + sqlquery);
@@ -1387,6 +1511,12 @@ function insertUpdateRiskAssessment(mode, changedDataFields) {
       `;
     }
     // add more modes here as necessary for updating etc
+    if (mode == "UPDATE_APPROVED_APPROVED_BY") {
+      sqlquery = `
+        UPDATE risk_assessment SET  approved_by = ?, is_approved = ?
+        WHERE booking_id = ?
+      `;
+    }
     // execute sql query
     console.log("insertUpdateRiskAssessment: " + sqlquery);
     db.query(sqlquery, changedDataFields, (err, results) => {
