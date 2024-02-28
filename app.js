@@ -1185,7 +1185,8 @@ app.get("/view-booking/:id", isLoggedIn, (req, res) => {
         r.id as roomId, 
         u.id as userId,
         ra.risk1 as risk1,
-        ra.risk2 as risk2
+        ra.risk2 as risk2,
+        ra.is_approved as isApproved
         FROM booking b
         JOIN user_account u ON b.user_id = u.id
         JOIN room r ON b.room_id = r.id
@@ -1218,7 +1219,7 @@ app.get("/view-booking/:id", isLoggedIn, (req, res) => {
   }  
 });
 
-app.get("/edit-booking", isLoggedIn, (req, res) => {
+app.post("/edit-booking", isLoggedIn, (req, res) => {
   loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var email = req.session.email;
@@ -1244,17 +1245,6 @@ app.post("/add-booking", isLoggedIn, (req, res) => {
             r.room_type AS roomType
     FROM room r 
     WHERE r.id = ?`;
-  // note for view-bookings
-  // For getting all the fields from the booking once it's created - this is for view-booking etc
-  // this is SQL that you can paste into msql command line - this needs the final line to be
-  // passed bookingId
-  // `SELECT  r.id AS roomId, r.room_number AS roomNumber, r.building_name AS building,
-  // r.capacity AS capacity, r.picture_URL AS pictureURL, ra.risk1, ra.risk2, b.booking_status,
-  // # add other fields from booking (b) and risk_assessment (ra) as needed
-  // r.room_type AS roomType
-  // FROM room r JOIN booking b ON b.room_id = r.id LEFT JOIN risk_assessment ra ON ra.booking_id = b.id
-  // WHERE b.id = 30;`
-
   // execute sql query
   db.query(sqlquery, roomId, (err, result) => {
     if (err) {
@@ -1736,25 +1726,8 @@ app.post("/edit-room", isLoggedIn, (req, res) => {
   var userId = req.session.userid;
   // sanitising the input
   const roomId = parseInt(sanitiseHtml(req.body.roomId));
-
-  // get the room types from the database
-/*
-  const query = `
-    SELECT id as roomId, room_number as roomNumber, 
-      building_name as buildingName, picture_URL as pictureURL,
-      capacity, is_accepting_bookings as isAcceptingBookings,
-      room_type as roomType FROM room WHERE id = ?
-  `;
-  console.log("edit room: " + roomId);
-  db.query(query,[roomId],(err, result) => {
-    if (err) {
-      console.error(err.message);
-      return res.send("Error fetching rooms");
-    }
-    // pass the roomTypes to the add-room page
-    res.render("edit-room", { rooms: result });
-  });
-*/
+  // because we're using getRooms to get the room data we need to initialise these params
+  // that the function uses
   const listOrder = " ORDER BY r.id";
   const filters = {};
   Promise.all([
