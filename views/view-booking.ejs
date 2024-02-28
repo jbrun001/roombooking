@@ -26,15 +26,28 @@
                 <% } %></li>
         </ul>
         <% if (result[0].Status == 'Awaiting Approval' && result[0].isApproved != '1') { %>
-            <div class="view-booking-editbutton"><a href="/edit-booking" class="button-link">Edit</a></div>
+            <form id = "editAction" class="view-booking-content" action="/edit-booking" method="POST">
+                <div class="view-booking-input">
+                    <p><strong>Risk Assessment 1</strong></p>
+                    <textarea rows="8" cols="200" readonly><%= result[0].risk1 %></textarea>
+                    <p><strong>Risk Assessment 2</strong></p>
+                    <textarea rows="8" cols="200" readonly><%= result[0].risk2 %></textarea>
+                </div>
+                <div class="view-booking-button">
+                    <a href="/bookings-list" class="button-link">Back</a>
+                    <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
+                    <button class="button-link" name="confirm" type="submit" value="">Edit</button>
+                </div>
+            </form>
+        <% } else { %>
+            <div class="view-booking-input">
+                <p><strong>Risk Assessment 1</strong></p>
+                <textarea rows="8" cols="200" readonly><%= result[0].risk1 %></textarea>
+                <p><strong>Risk Assessment 2</strong></p>
+                <textarea rows="8" cols="200" readonly><%= result[0].risk2 %></textarea>
+            </div>
+            <div class="view-booking-button"><a href="/bookings-list" class="button-link">Back</a></div>
         <% } %>
-        <div class="view-booking-input">
-            <p><strong>Risk Assessment 1</strong></p>
-            <textarea rows="8" cols="200" readonly><%= result[0].risk1 %></textarea>
-            <p><strong>Risk Assessment 2</strong></p>
-            <textarea rows="8" cols="200" readonly><%= result[0].risk2 %></textarea>
-        </div>
-        <div class="view-booking-button"><a href="/bookings-list" class="button-link">Back</a></div>
     </div>
     <%- include('footer') %>
 </body>

@@ -1158,8 +1158,7 @@ app.get("/view-booking/:id", isLoggedIn, (req, res) => {
   loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var email = req.session.email;
-  //console.log(loggedInMessage + " " + userrole);
-  
+  //console.log(loggedInMessage + " " + userrole);  
     try{
     // get the booking id from the url
     const bookingId = req.params.id;
@@ -1196,23 +1195,13 @@ app.get("/view-booking/:id", isLoggedIn, (req, res) => {
 
     db.query(query, [bookingId], (err, result) => {
       if(err){
-        console.log("WHAT THE HECK")
+        console.log(err)
       } else{
         //var bookingDetails = result;
         console.log(result);
-        //res.send(result);
-        //bookingDetails = Object.assign({}, { loggedInMessage }, { userrole }, { email }, { result });
         res.render("view-booking.ejs", {loggedInMessage, userrole, email, result});
       }
     })
-    // }
-    // console.log(bookingDetails);
-    // if(bookingDetails) {
-    //   // res.render("view-booking.ejs", {bookingDetails});
-    //   res.send(bookingDetails);
-
-    // } else{
-    //   res.render ("bookings-list.ejs");
   } catch(error){
   console.error("Error retrieving booking details:", error);
  /*  res.status(500).send("Internal Server Error"); */
@@ -1223,9 +1212,69 @@ app.post("/edit-booking", isLoggedIn, (req, res) => {
   loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var email = req.session.email;
-  //console.log(loggedInMessage + " " + userrole);
-  res.render("edit-booking.ejs", { loggedInMessage, userrole, email });
+  var bookingId = sanitiseHtml(req.body.bookingId);
+  const query =  `
+    SELECT 
+    r.room_number as roomNumber, 
+    r.building_name as building, r.capacity as minSeats,
+    r.room_type as roomType, 
+    DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+    CONCAT(DATE_FORMAT(b.booking_start, '%H'),
+    ':',
+    DATE_FORMAT(b.booking_start,'%i'),
+    '-',
+    DATE_FORMAT(b.booking_end, '%H'),
+    ':'
+    ,DATE_FORMAT(b.booking_end,'%i')) as timeslot,
+    r.picture_URL as pictureURL, 
+    u.email as bookedBy, 
+    b.booking_status as Status,
+    b.id as bookingId, 
+    r.id as roomId, 
+    u.id as userId,
+    ra.risk1 as risk1,
+    ra.risk2 as risk2,
+    ra.is_approved as isApproved
+    FROM booking b
+    JOIN user_account u ON b.user_id = u.id
+    JOIN room r ON b.room_id = r.id
+    LEFT JOIN risk_assessment ra ON b.id = ra.booking_id
+    WHERE b.id = ?
+  `;
+
+  db.query(query, [bookingId], (err, result) => {
+    if(err) console.log("edit-booking: error in sql query: " + err)
+    else {
+      console.log("edit-booking result data: " + result);
+      res.render("edit-booking.ejs", {loggedInMessage, userrole, email, result});
+    } 
+  })
 });
+
+app.post("/edit-booking-submit", isLoggedIn, (req, res) => {
+  loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var email = req.session.email;
+  var bookingId = sanitiseHtml(req.body.bookingId);
+  var risk1 = sanitiseHtml(req.body.risk1);
+  var risk2 = sanitiseHtml(req.body.risk2);
+
+  const query =  `
+    UPDATE risk_assessment SET risk1 = ?, risk2 = ? WHERE booking_id = ?
+  `;
+
+  // select statement for testing before adding in update
+  //const query = 'select * from risk_assessment where ? != 0 and ? !=0 and ? = booking_id'
+
+  db.query(query, [risk1, risk2, bookingId], (err, result) => {
+    if(err) console.log("edit-booking: error in sql query: " + err)
+    else {
+      res.redirect("/bookings-list");
+    } 
+  })
+});
+
+
 
 // this displays the room details from the database and the
 // booking information passed into the page from the room-list is roomId, selectedDate and selectedTimeSlot
