@@ -74,13 +74,17 @@
 
                 // Attach the event listener to the form
                 $(document).ready(function() {
-                    $('#filterForm').submit(function(e) {
-                        e.preventDefault(); // Prevent default form submission
+                    // v1 submit the form every time the data change
+                    $('#filterForm').find('input, select, range').on('change', function() {
+                    //$('#filterForm').submit(function(e) {
+                    //    e.preventDefault(); // Prevent default form submission
                         $.ajax({
                             // Send the form data to the server
                             type: "POST",
-                            url: $(this).attr('action'),
-                            data: $(this).serialize(), // Serialize form data for submission
+                            // url: $(this).attr('action'),
+                            url: '/bookings-list-filtered',
+                            // data: $(this).serialize(), // Serialize form data for submission
+                            data: $('#filterForm').serialize(),
                             success: function(response) {
                                 // Update the bookings list with the response
                                 $('.bookings-list').html($(response).find('.bookings-list').html());
