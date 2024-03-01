@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookit / Bookings List</title>
+    <title>Bookit / Edit Room / find a room</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -13,7 +13,7 @@
     <div class="content-list">
         <div class="left-column">
             <p>Here are the filters</p>
-            <form id = "filterForm" action="/bookings-list-filtered" method="POST">
+            <form id = "filterForm" action="/edit-rooms-list-filtered" method="POST">
                 <div class="date">
                     <input type="date" name="date" />
                 </div>
@@ -74,26 +74,22 @@
 
                 // Attach the event listener to the form
                 $(document).ready(function() {
-                    // v1 submit the form every time the data change
-                    $('#filterForm').find('input, select, range').on('change', function() {
-                    //$('#filterForm').submit(function(e) {
-                    //    e.preventDefault(); // Prevent default form submission
+                    $('#filterForm').submit(function(e) {
+                        e.preventDefault(); // Prevent default form submission
                         $.ajax({
                             // Send the form data to the server
                             type: "POST",
-                            // url: $(this).attr('action'),
-                            url: '/bookings-list-filtered',
-                            // data: $(this).serialize(), // Serialize form data for submission
-                            data: $('#filterForm').serialize(),
+                            url: $(this).attr('action'),
+                            data: $(this).serialize(), // Serialize form data for submission
                             success: function(response) {
                                 // Update the bookings list with the response
-                                $('.bookings-list').html($(response).find('.bookings-list').html());
+                                $('.rooms-list').html($(response).find('.rooms-list').html());
                                 // remove the new data animation if it has already been added
-                                $('.bookings-list').removeClass('newDataLoadedEffect');
+                                $('.rooms-list').removeClass('newDataLoadedEffect');
                                 // force the animation to run again
-                                void $('.bookings-list')[0].offsetWidth;
+                                void $('.rooms-list')[0].offsetWidth;
                                 // re-add the animation on the new data
-                                $('.bookings-list').addClass('newDataLoadedEffect');
+                                $('.rooms-list').addClass('newDataLoadedEffect');
                             }
                         });
                     });
@@ -101,17 +97,15 @@
             </script>
         </div>
         <div class="right-column">
-            <h2 class="current-bookings-title">Current bookings</h2>
+            <h2 class="current-bookings-title">Search for a room to edit</h2>
             <div class="order-by-button-wrapper">
-                <form id = "orderForm" class="card-wrapper" action="/bookings-list-filtered" method="POST">
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Room">Order by Building</button>
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Time">Order by Time</button>
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Status">Order by Status</button>
+                <form id = "orderForm" class="card-wrapper" action="/edit-rooms-list-filtered" method="POST">
+                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Building">Order by Building</button>
+                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Capacity">Order by Capacity</button>
                 </form>
                 <script>
                     // Attach the event listener to the form
                     $(document).ready(function() {
-                        console.log("Checking bookings");
                         // Attach the event listener to buttons within the form
                         $('#orderForm .button-link').on('click', function(e) {
                             e.preventDefault(); // Prevent default button action
@@ -127,13 +121,13 @@
                                 data: formData, // Include the clicked button value explicitly
                                 success: function(response) {
                                     // Update the bookings list with the response
-                                    $('.bookings-list').html($(response).find('.bookings-list').html());
+                                    $('.rooms-list').html($(response).find('.rooms-list').html());
                                     // remove the new data animation if it has already been added
-                                    $('.bookings-list').removeClass('newDataLoadedEffect');
+                                    $('.rooms-list').removeClass('newDataLoadedEffect');
                                     // force the animation to run again
-                                    void $('.bookings-list')[0].offsetWidth;
+                                    void $('.rooms-list')[0].offsetWidth;
                                     // re-add the animation on the new data
-                                    $('.bookings-list').addClass('newDataLoadedEffect');
+                                    $('.rooms-list').addClass('newDataLoadedEffect');
                                 }
                             });
                         });
@@ -141,39 +135,38 @@
                     </script>                                
             </div>
             <!-- This is where the list will go -->
-            <ul class="bookings-list">
+            <ul class="rooms-list">
                 <!-- TO DO: Have for loop iterate through all rooms matching filter criteria -->
-                <% for (let i = 0; i < bookings.length; i++) { %>
+                <% for (let i = 0; i < rooms.length; i++) { %>
                     <li>
                         <div class="card-wrapper">
-                            <img src="<%=bookings[i].pictureURL%>" alt="Room Preview Image" class="room-preview-image">
+                            <img src="<%=rooms[i].pictureURL%>" alt="Room Preview Image" class="room-preview-image">
                             <div class="card-outline">
                                 <div class="card-column">
                                     <div class="room-data">
-                                        <div>Room Number: <%=bookings[i].roomNumber%></div>
-                                        <div>Building: <%=bookings[i].building%></div>
-                                    </div>
-                                    <div class="time-data">
-                                        <div>Date: <%=bookings[i].date%></div>
-                                        <div>Timeslot: <%=bookings[i].timeslot%></div>
+                                        <div>Room Number: <%=rooms[i].roomNumber%></div>
+                                        <div>Building: <%=rooms[i].building%></div>
                                     </div>
                                 </div>
                                 <div class="card-column">
                                     <div class="user-data">
-                                        <div>Booked by: <%=bookings[i].bookedBy%></div>
-                                        <div>Status: <%=bookings[i].Status%></div>
+                                        <div>Room Type: <%=rooms[i].roomType%></div>
+                                        <div>Seating Capacity: <%=rooms[i].capacity%></div>
                                     </div>
                                 </div>
                                 <div class="card-column">
-                                    <a href="/view-booking/<%=bookings[i].bookingId%>" class="button-link">View</a>
+                                    <form id = "actionButtons" class="card-wrapper" action="/edit-room" method="POST">
+                                        <input type="hidden" name="roomId" value="<%=rooms[i].roomId%>">
+                                        <button class="button-link" name="editSubmit" type="submit">Edit</button>
+                                    </form>
                                 </div>
                             </div>
                         </div>
                     </li>
                 <% } %>
             </ul>
-            <% if (bookings.length == 0) { %>
-                <h2 class="none-found">No bookings found :(</h2>
+            <% if (rooms.length == 0) { %>
+                <h2 class="none-found">No rooms found :(</h2>
             <% } %>
         </div>
     </div>

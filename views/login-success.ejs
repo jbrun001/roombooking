@@ -30,12 +30,15 @@
             <a href="/rooms-list" class="button-link">Book Room</a>
             <a href="/bookings-list" class="button-link">View Bookings</a>
             <% if(userrole == "coordinator"){ %>
-                <a href="#" class="button-link">View Requests</a>
-                <a href="#" class="button-link">View Accepted</a>
+                <a href="/requests-list" class="button-link">View Requests</a>
+                <a href="/approved-list" class="button-link">View Approved</a>
             <% } %>
             <% if(userrole == "admin"){ %>
+                <a href="/requests-list" class="button-link">View Requests</a>
+                <a href="/approved-list" class="button-link">View Approved</a>
                 <a href="/register" class="button-link">Register User</a>
-                <a href="add-room" class="button-link">Add Room</a>
+                <a href="/add-room" class="button-link">Add Room</a>
+                <a href="/edit-rooms-list" class="button-link">Edit Rooms</a>
             <% } %>
         </div>
     </div>

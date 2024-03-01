@@ -14,43 +14,41 @@
             <h1>Edit Room</h1>
             <form action="/edit-room-success" method="post">
                 <div class="input-group">
-                    <label for="currentRooms">Current Rooms:</label>
-                    <select id ="currentRoooms" name="currentRooms">
-                        <% for (let i = 0; i < rooms.length; i++) { %>
-                        <option value="id"><%= rooms[i].room_number %></option>
-                        <% } %>
-                    </select>
+                    <input type="hidden" id="roomId" name="roomId" value="<%= rooms[0].roomId %>" required>
                 </div>
-
                 <div class="input-group">
                     <label for="roomNumber">Room Number:</label>
-                    <input type="text" id="room_number" name="roomNumber" required>
+                    <input type="text" id="room_number" name="roomNumber" value="<%= rooms[0].roomNumber %>" required>
                 </div>
                 <div class="input-group">
                     <label for="buildingName">Building Name:</label>
-                    <input type="text" id="building_name" name="buildingName" required>
+                    <select id="building_name" name="buildingName" required>
+                        <% for (let i = 0; i < buildingNames.length; i++) { %>
+                            <option value="<%= buildingNames[i].building_name %>" <%= buildingNames[i].building_name == rooms[0].buildingName ? 'selected' : '' %>><%= buildingNames[i].building_name %></option>
+                        <% } %>
+                    </select>
                 </div>
                 <div class="input-group">
                     <label for="capacity">Capacity:</label>
-                    <input type="number" id="capacity" name="capacity" required>
+                    <input type="number" id="capacity" name="capacity" value="<%= rooms[0].capacity %>" required>
                 </div>
                 <div class="input-group">
                     <label for="roomType">Room Type:</label>
                     <select id="roomType" name="roomType" required>
-                        <% for (let i = 0; i < rooms.length; i++) { %>
-                            <option value="<%= rooms[i].room_type %>"><%= rooms[i].room_type %></option>
+                        <% for (let i = 0; i < roomTypes.length; i++) { %>
+                            <option value="<%= roomTypes[i].room_type %>" <%= roomTypes[i].room_type == rooms[0].roomType ? 'selected' : '' %>><%= roomTypes[i].room_type %></option>
                         <% } %>
                     </select>
                 </div>                
                 <div class="input-group">
                     <label for="pictureURL">Picture URL:</label>
-                    <input type="text" id="pictureURL" name="pictureURL">
+                    <input type="text" id="pictureURL" name="pictureURL" value="<%= rooms[0].pictureURL %>" >
                 </div>
                 <div class="input-group">
                     <label for="isAcceptingBookings">Accepting Bookings:</label>
                     <select id="isAcceptingBookings" name="isAcceptingBookings">
-                        <option value="1">Yes</option>
-                        <option value="0">No</option>
+                        <option value="1" <%= rooms[0].isAcceptingBookings == '1' ? 'selected' : '' %>>Yes</option>
+                        <option value="0" <%= rooms[0].isAcceptingBookings == '0' ? 'selected' : '' %>>No</option>
                     </select>
                 </div>
                 <button type="submit" class="button-link">Confirm Changes</button>

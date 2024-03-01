@@ -156,7 +156,7 @@
                                 </div>
                                 <div class="card-column">
                                     <%if (selectedTimeslot != "") { %>
-                                        <form id = "orderForm" class="card-wrapper" action="/add-booking" method="POST">
+                                        <form id = "actionButtons" class="card-wrapper" action="/add-booking" method="POST">
                                             <input type="hidden" name="roomId" value="<%=rooms[i].roomId%>">
                                             <input type="hidden" name="selectedDate" value="<%=selectedDate%>"> 
                                             <input type="hidden" name="selectedTimeslot" value="<%=selectedTimeslot%>">

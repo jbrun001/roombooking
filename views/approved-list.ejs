@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bookit / Bookings List</title>
+    <title>Bookit / Approved Bookings List</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
@@ -13,7 +13,7 @@
     <div class="content-list">
         <div class="left-column">
             <p>Here are the filters</p>
-            <form id = "filterForm" action="/bookings-list-filtered" method="POST">
+            <form id = "filterForm" action="/approved-list-filtered" method="POST">
                 <div class="date">
                     <input type="date" name="date" />
                 </div>
@@ -74,17 +74,13 @@
 
                 // Attach the event listener to the form
                 $(document).ready(function() {
-                    // v1 submit the form every time the data change
-                    $('#filterForm').find('input, select, range').on('change', function() {
-                    //$('#filterForm').submit(function(e) {
-                    //    e.preventDefault(); // Prevent default form submission
+                    $('#filterForm').submit(function(e) {
+                        e.preventDefault(); // Prevent default form submission
                         $.ajax({
                             // Send the form data to the server
                             type: "POST",
-                            // url: $(this).attr('action'),
-                            url: '/bookings-list-filtered',
-                            // data: $(this).serialize(), // Serialize form data for submission
-                            data: $('#filterForm').serialize(),
+                            url: $(this).attr('action'),
+                            data: $(this).serialize(), // Serialize form data for submission
                             success: function(response) {
                                 // Update the bookings list with the response
                                 $('.bookings-list').html($(response).find('.bookings-list').html());
@@ -101,12 +97,11 @@
             </script>
         </div>
         <div class="right-column">
-            <h2 class="current-bookings-title">Current bookings</h2>
+            <h2 class="current-bookings-title">Approved Bookings</h2>
             <div class="order-by-button-wrapper">
-                <form id = "orderForm" class="card-wrapper" action="/bookings-list-filtered" method="POST">
+                <form id = "orderForm" class="card-wrapper" action="/approved-list-filtered" method="POST">
                     <button class="button-link" name="orderSelection" type="submit" value="o_b_Room">Order by Building</button>
                     <button class="button-link" name="orderSelection" type="submit" value="o_b_Time">Order by Time</button>
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Status">Order by Status</button>
                 </form>
                 <script>
                     // Attach the event listener to the form
