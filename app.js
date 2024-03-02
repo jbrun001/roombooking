@@ -320,7 +320,7 @@ function getBookings(pageName, userId, filters, listOrder) {
     
     // code from here applies to any page displaying bookings with a filter on it
     // add the selection criteria for selecting bookings on the selected date
-    console.log("filters date: >" + filters.date + "<");
+    //console.log("filters date: >" + filters.date + "<");
     if (filters.date != '') {
       sqlParameters.push(filters.date);
       sqlParameters.push(filters.date);

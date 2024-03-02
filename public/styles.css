@@ -318,12 +318,12 @@ button:hover {
     padding: 10px;
 }
 
-.bookings-list {
+.data-list {
     list-style-type: none;
     padding: 0;
 }
 
-.bookings-list li {
+.data-list li {
     padding: 5px 0;
     border-bottom: 1px solid #eee;
 }

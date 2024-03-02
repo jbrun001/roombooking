@@ -1,0 +1,87 @@
+<p>Here are the filters</p>
+<form id = "filterForm" action="/bookings-list-filtered" method="POST">
+    <div class="date">
+        <input type="date" name="date" />
+    </div>
+    <p>Duration</p>
+    <!-- <input type="range" step="30" min="30" max="240" value="60" class="slider" id="myRange1"> -->
+    <input type="range" name="durationRange" step="30" min="30" max="240" value="60" class="slider" id="timeSlider" oninput="updateTimeDisplay(this.value)" />
+    <input type="time" name="durationNumber" step="1800" min="00:30:00" max="04:00:00" value="01:00:00" id="timeDisplay" oninput="updateTimeSlider(this.value)" />
+    <p>Time Slot</p>
+    <select placeholder="Choose timeslot" id="timeSlot" name="timeslot">
+        <option value="">Select...</option>
+        <% for (let i = 9; i <= 21; i++) { %>
+            <% for (let j = 0; j < 31; j += 30) { %>
+                <% var hours = String(i).padStart(2, "0"); %>
+                <% var minutes = String(j).padStart(2, "0"); %>
+                <option value="starting from <%=hours + ":" + minutes%>">starting from <%=hours + ":" + minutes%></option>
+            <% } %>
+        <% } %>
+    </select>
+    <p>Building</p>
+    <select placeholder="Field 2" id="building" name="building">
+        <option value="">Select...</option>
+        <% for (let i = 0; i < buildingNames.length; i++) { %>
+            <option value="<%= buildingNames[i].building_name %>"><%= buildingNames[i].building_name %></option>
+        <% } %>
+    </select>
+    <p>Room Type</p>
+    <select placeholder="Field 2" id="roomType" name="roomType">
+        <option value="">Select...</option>
+        <% for (let i = 0; i < roomTypes.length; i++) { %>
+            <option value="<%= roomTypes[i].room_type %>"><%= roomTypes[i].room_type %></option>
+        <% } %>
+    </select>
+    <p>Seating Available</p>
+    <input type="range" min="1" max="100" value="1" class="slider" name="seating" oninput="updateSeatValue(this.value)">
+    <p id="seatValue">Seating Available: 1</p>
+    <!-- <button type="submit">Confirm</button> -->
+</form>
+<script>
+    function updateTimeDisplay(val) {
+        var stringVal = "0" + Math.floor(val / 60) + ":" + ("0" + (val % 60)).slice(-2);
+        document.querySelector("#timeDisplay").value = stringVal;
+    }
+    function updateTimeSlider(val) {
+        var hoursMinutes = val.split(":");
+        console.log(hoursMinutes);
+        var totalTime = parseInt(hoursMinutes[0]) * 60 + parseInt(hoursMinutes[1]);
+        document.querySelector("#timeSlider").value = totalTime;
+        if (document.querySelector("#timeDisplay").value > "04:00") {
+            document.querySelector("#timeDisplay").value = "04:00";
+        } 
+        if (document.querySelector("#timeDisplay").value < "00:30") {
+            document.querySelector("#timeDisplay").value = "00:30";
+        } 
+    }
+    function updateSeatValue(val) {
+        document.getElementById('seatValue').innerText = 'Seating Available: ' + val;
+    }
+
+    // Attach the event listener to the form
+    $(document).ready(function() {
+        // v1 submit the form every time the data change
+        $('#filterForm').find('input, select, range').on('change', function() {
+        //$('#filterForm').submit(function(e) {
+        //    e.preventDefault(); // Prevent default form submission
+            $.ajax({
+                // Send the form data to the server
+                type: "POST",
+                // url: $(this).attr('action'),
+                url: '/' + window.location.pathname.split('/').pop() + '-filtered',
+                // data: $(this).serialize(), // Serialize form data for submission
+                data: $('#filterForm').serialize(),
+                success: function(response) {
+                    // Update the bookings list with the response
+                    $('.data-list').html($(response).find('.data-list').html());
+                    // remove the new data animation if it has already been added
+                    $('.data-list').removeClass('newDataLoadedEffect');
+                    // force the animation to run again
+                    void $('.data-list')[0].offsetWidth;
+                    // re-add the animation on the new data
+                    $('.data-list').addClass('newDataLoadedEffect');
+                }
+            });
+        });
+    });
+</script>
