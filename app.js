@@ -266,11 +266,20 @@ app.get("/login-success", isLoggedIn, function (req, res) {
   res.render("login-success.ejs", { loggedInMessage, userrole, email });
 });
 
-// getBookings - revised edition
-// this can be called by any page that displays a list of booking
-// add additional if (pageName === 's to change the base SQL to include different criteria for different lists
-// for example the "bookings-list" criteria only shows those bookings for the current user
-// but that might not be what's needed for other pages.  The rest of the code stays the same.
+/**
+ * getBookings
+ * this function gets bookings data this is called from the routes the function returns a data set from the MySQL database
+ * the parameters control what data is returned.  Different routes require different data sets
+ * @param {*} pageName  - specifies the calling route this is used to control which SQL statement is executed
+ *                        valid values are       
+ *                        - "bookings-list", "approved-list", "requests-list"
+ * @param {*} userId    - the userID of the currently logged in user - some lists only show data for the current user
+ * @param {*} filters   - this is an object containing the values of the filter on the page
+ *                        it's required to make sure that when the results are returned the filters are applied to that data
+ * @param {*} listOrder - this is the order of the list of data that is returned
+ * @returns promise     - this returns a promise object, it's used here because we need multiple sql queries for each page
+ *                      - getBookings is just one of those data sets.
+ */
 function getBookings(pageName, userId, filters, listOrder) {
   return new Promise((resolve, reject) => {
     var sqlquery = "";
@@ -794,7 +803,7 @@ app.get("/requests-list", isLoggedIn, (req, res) => {
   var email = req.session.email;
   // get the filters from the user session, else initialise the filters
   var filters = {};
-  if (req.session.bookingListFilters) filters = req.session.bookingListFilters;
+  if (req.session.requestsListFilters) filters = req.session.requestsListFilters;
   else {
     filters = {
       date: "",
@@ -805,11 +814,11 @@ app.get("/requests-list", isLoggedIn, (req, res) => {
       duration: "",
     };
     // save the current filters in the user session
-    req.session.bookingListFilters = filters;
+    req.session.requestsListFilters = filters;
   }
   // manage the ordering of the data - if the user has re-ordered the list
   var listOrder = "";
-  switch (req.session.bookingListOrder) {
+  switch (req.session.requestsListOrder) {
     case "o_b_Room":
       listOrder = " ORDER BY r.building_name, r.room_number";
       break;
