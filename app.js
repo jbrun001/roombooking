@@ -273,9 +273,11 @@ app.get("/login-success", isLoggedIn, function (req, res) {
 // but that might not be what's needed for other pages.  The rest of the code stays the same.
 function getBookings(pageName, userId, filters, listOrder) {
   return new Promise((resolve, reject) => {
-    sqlquery = "";
+    var sqlquery = "";
+    var sqlParameters = [];
     if (pageName === "bookings-list") {
       // this is the base query all additionl filters will be appended later in the code
+      sqlParameters.push(userId);
       sqlquery = `
         SELECT 
         r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
@@ -318,58 +320,64 @@ function getBookings(pageName, userId, filters, listOrder) {
     
     // code from here applies to any page displaying bookings with a filter on it
     // add the selection criteria for selecting bookings on the selected date
-    if (filters.date != "")
+    console.log("filters date: >" + filters.date + "<");
+    if (filters.date != '') {
+      sqlParameters.push(filters.date);
+      sqlParameters.push(filters.date);
       sqlquery =
         sqlquery +
         ` 
-    AND (
-      b.booking_start >= DATE_ADD('` +
-        filters.date +
-        `', INTERVAL '00:01' HOUR_MINUTE) 
-      AND 
-      b.booking_end <= DATE_ADD('` +
-        filters.date +
-        `', INTERVAL '23:59' HOUR_MINUTE)
-    ) 
-    `;
-    // if we have a timeslot then add the selection criteria for this
-    if (filters.timeslot != "-NaN:NaN") {
+          AND (
+            b.booking_start >= DATE_ADD( ?
+              , INTERVAL '00:01' HOUR_MINUTE) 
+            AND 
+            b.booking_end <= DATE_ADD( ?
+              , INTERVAL '23:59' HOUR_MINUTE)
+          ) 
+        `;
+    }
+    // if we have a timeslot and a date then add the selection criteria for this
+    if (filters.timeslot != "-NaN:NaN" && filters.date != '') {
       // split the timeslot up so we have start and end times
       var selectedDate = filters.date;
       var timeslots = filters.timeslot.split("-");
       var startTime = timeslots[0];
       var endTime = timeslots[1];
+      sqlParameters.push(selectedDate);
+      sqlParameters.push(startTime);
+      sqlParameters.push(selectedDate);
+      sqlParameters.push(endTime);
       sqlquery =
         sqlquery +
         ` 
         AND (
-          b.booking_start >= DATE_ADD('` +
-        selectedDate +
-        `', INTERVAL '` +
-        startTime +
-        `' HOUR_MINUTE) 
+          b.booking_start >= DATE_ADD( ?, INTERVAL ? HOUR_MINUTE) 
           AND 
-          b.booking_end <= DATE_ADD('` +
-        selectedDate +
-        `', INTERVAL '` +
-        endTime +
-        `' HOUR_MINUTE)
+          b.booking_end <= DATE_ADD( ?, INTERVAL ? HOUR_MINUTE)
         ) 
       `;
     }
     // add any other filters to the end of the query
-    if (filters.building != "")
+    if (filters.building != "") {
+      sqlParameters.push(filters.building);
       sqlquery =
-        sqlquery + " AND r.building_name = '" + filters.building + "' ";
-    if (filters.roomType != "")
-      sqlquery = sqlquery + " AND r.room_type = '" + filters.roomType + "' ";
-    if (filters.minSeats != "")
-      sqlquery = sqlquery + " AND r.capacity >=  '" + filters.minSeats + "' ";
+        sqlquery + " AND r.building_name = ? ";
+    }
+    if (filters.roomType != "") {
+      sqlParameters.push(filters.roomType);
+      sqlquery = sqlquery + " AND r.room_type = ? ";
+    }
+    if (filters.minSeats != "") {
+      sqlParameters.push(filters.minSeats);
+      sqlquery = sqlquery + " AND r.capacity >=  ? ";
+
+    }
     // add the "order by" string
     sqlquery = sqlquery + " " + listOrder;
     // console.log("get bookings sql: " + sqlquery);
+    //console.log("get booking sqlParameters: " + sqlParameters);
     // execute sql query
-    db.query(sqlquery, [userId], (err, results) => {
+    db.query(sqlquery, sqlParameters, (err, results) => {
       if (err) {
         console.error(err.message);
         reject(err); // if there is an error reject the Promise
@@ -440,8 +448,10 @@ function getBuildingNames(pageName, userId) {
 function getRooms(pageName, filters, listOrder, roomId) {
   return new Promise((resolve, reject) => {
     var sqlquery = "";
+    var sqlParameters = [];
     // if calling from edit room we only need one record and there are no other where clauses
     if (pageName === "edit-room") {
+      sqlParameters.push(roomId);
       sqlquery = `
         SELECT id as roomId, room_number as roomNumber, 
         building_name as buildingName, picture_URL as pictureURL,
@@ -468,6 +478,18 @@ function getRooms(pageName, filters, listOrder, roomId) {
         var intEndTime = timeslots[1].split(":").map(Number);
         var durationEnd = intEndTime[0] * 60 + intEndTime[1];
         var overallDuration = durationEnd - durationStart;
+        sqlParameters.push(selectedDate);
+        sqlParameters.push(startTime);
+        sqlParameters.push(selectedDate);
+        sqlParameters.push(endTime);
+        sqlParameters.push(selectedDate);
+        sqlParameters.push(selectedDate);
+        sqlParameters.push(startTime);
+        sqlParameters.push(selectedDate);
+        sqlParameters.push(endTime);
+        sqlParameters.push(overallDuration);
+        sqlParameters.push(selectedDate);
+        sqlParameters.push(startTime);
         sqlquery =
           `
         SELECT r.id as roomId, r.room_number as roomNumber, r.building_name as building, r.capacity as capacity,
@@ -482,17 +504,9 @@ function getRooms(pageName, filters, listOrder, roomId) {
           WHERE b.room_id = r.id
           AND (
                 (
-                  b.booking_start < DATE_ADD('` +
-          selectedDate +
-          `', INTERVAL '` +
-          startTime +
-          `' HOUR_MINUTE) 
+                  b.booking_start < DATE_ADD( ?, INTERVAL ? HOUR_MINUTE) 
                   AND 
-                  b.booking_end > DATE_ADD('` +
-          selectedDate +
-          `', INTERVAL '` +
-          endTime +
-          `' HOUR_MINUTE)
+                  b.booking_end > DATE_ADD(?, INTERVAL ? HOUR_MINUTE)
                 )
           )
         )   
@@ -502,51 +516,43 @@ function getRooms(pageName, filters, listOrder, roomId) {
         AND r.id NOT IN (
           SELECT room_id
           FROM booking
-          WHERE DATE(booking_start) = '` +
-          selectedDate +
-          `'
+          WHERE DATE(booking_start) = ?
           AND (
                 (
-                  booking_start < DATE_ADD('` +
-          selectedDate +
-          `', INTERVAL '` +
-          startTime +
-          `' HOUR_MINUTE) 
+                  booking_start < DATE_ADD( ? , INTERVAL ? HOUR_MINUTE) 
                   AND 
-                  booking_end > DATE_ADD('` +
-          selectedDate +
-          `', INTERVAL '` +
-          endTime +
-          `' HOUR_MINUTE)
+                  booking_end > DATE_ADD( ? , INTERVAL ? HOUR_MINUTE)
                 )
               OR (
-                booking_end > DATE_ADD(booking_start, INTERVAL '` +
-          overallDuration +
-          `' MINUTE)
-                AND booking_start <= DATE_ADD('` +
-          selectedDate +
-          `', INTERVAL '` +
-          startTime +
-          `' HOUR_MINUTE)
+                booking_end > DATE_ADD(booking_start, INTERVAL ? MINUTE)
+                AND booking_start <= DATE_ADD( ? , INTERVAL ? HOUR_MINUTE)
               )
           )
         ) AND r.is_accepting_bookings = 1 `;
       }
       // add any other filters to the end of the query
-      if (filters.building != "")
+      if (filters.building != "") {
+        sqlParameters.push(filters.building);
         sqlquery =
-          sqlquery + " AND r.building_name = '" + filters.building + "' ";
-      if (filters.roomType != "")
-        sqlquery = sqlquery + " AND r.room_type = '" + filters.roomType + "' ";
-      if (filters.minSeats != "")
-        sqlquery = sqlquery + " AND r.capacity >=  '" + filters.minSeats + "' ";
+          sqlquery + " AND r.building_name = ? ";
+      }
+      if (filters.roomType != "") {
+        sqlParameters.push(filters.roomType);
+        sqlquery = sqlquery + " AND r.room_type = ? ";
+      }
+      if (filters.minSeats != "") {
+        sqlParameters.push(filters.minSeats);
+        sqlquery = sqlquery + " AND r.capacity >=  ? ";
+
+      }
     }
     // add the "order by" string
     sqlquery = sqlquery + " " + listOrder;
 
     // execute sql query
-    // console.log("getRooms sqlquery: " + sqlquery);
-    db.query(sqlquery, (err, results) => {
+    //console.log("getRooms sqlquery: " + sqlquery);
+    //console.log("getrooms sqlParameters: " + sqlParameters);
+    db.query(sqlquery, sqlParameters, (err, results) => {
       if (err) {
         console.error(err.message);
         reject(err); // if there is an error reject the Promise
