@@ -3,5 +3,33 @@
         <img src="/logo.png" alt="Bookit Logo">
     </div>
     <div class="app-name">Bookit</div>
+    <!-- Dark Mode Toggle Button -->
+    <div class="theme-toggle">
+        <label for="dark-mode-toggle">Dark Mode</label>
+        <input type="checkbox" id="dark-mode-toggle"/>
+    </div>
     <div class="logged-in-as"><%= loggedInMessage %></div>
+    <script>
+        const toggleSwitch = document.getElementById('dark-mode-toggle');
+        toggleSwitch.addEventListener('change', switchTheme, false);
+    
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }    
+        }
+    
+        // Check for saved user preferences on page load.
+        const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'dark') {
+                toggleSwitch.checked = true;
+            }
+        }
+    </script>
 </header>
