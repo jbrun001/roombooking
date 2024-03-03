@@ -92,6 +92,14 @@
             var todaysDate = today.toISOString().substr(0, 10);
             console.log(todaysDate);
             $('#dateSelect').attr('min', todaysDate);
+            
+            // if the user manually types in a date from the past then set it to the min date:
+            $('#dateSelect').on('input', function() {
+                var input = $(this).val();
+                if (input < todaysDate) {
+                    $(this).val(todaysDate);
+                }
+            });
         }
     });
 </script>

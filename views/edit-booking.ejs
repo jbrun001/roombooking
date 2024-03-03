@@ -31,11 +31,25 @@
             <form id = "updateAction" class="view-booking-content" action="/edit-booking-submit" method="POST">
                 <div class="view-booking-input">
                     <p><strong>Risk Assessment 1</strong></p>
-                    <textarea name="risk1" id="risk1" rows="8" cols="200"><%= result[0].risk1 %></textarea>
+                    <textarea id="risk1" maxlength="200" name="risk1" label="Risk1" rows="8" cols="200" oninput="updateCharCount('risk1', 'countRisk1')"><%= result[0].risk1 %></textarea>
+                    <div id="countRisk1">0/200</div>
                     <p><strong>Risk Assessment 2</strong></p>
-                    <textarea name="risk2" id="risk2" rows="8" cols="200"><%= result[0].risk2 %></textarea>
+                    <textarea id="risk2" maxlength="200" name="risk2" label="Risk2" rows="8" cols="200" oninput="updateCharCount('risk2', 'countRisk2')"><%= result[0].risk2 %></textarea>
+                    <div id="countRisk2">0/200</div>
                 </div>
-                
+                <script>
+                    function updateCharCount(textarea, count) {
+                        var textarea = document.getElementById(textarea);
+                        var charCount = document.getElementById(count);
+                        var charsLeft = textarea.value.length;
+                        charCount.innerText = (charsLeft) + "/200";
+                        if (charsLeft == 200) {
+                            charCount.style.color = "red";
+                        } else {
+                            charCount.style.color = "";
+                        }
+                    }
+                </script>
                 <div class="view-booking-button">
                     <a href="/view-booking/<%= result[0].bookingId %>" class="button-link">Back</a>
                     <input type="hidden" label="bookingId" name="bookingId" value="<%= result[0].bookingId %>"> 
