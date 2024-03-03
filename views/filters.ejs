@@ -33,9 +33,10 @@
         <% } %>
     </select>
     <p>Seating Available</p>
-    <input type="range" min="1" max="100" value="1" class="slider" name="seating" oninput="updateSeatValue(this.value)">
+    <input id="seatSlider" type="range" min="1" max="100" value="1" class="slider" name="seating" oninput="updateSeatValue(this.value)">
     <p id="seatValue">Seating Available: 1</p>
-    <!-- <button type="submit">Confirm</button> -->
+    <p>RESET FILTERS:</p>
+    <input id="filterReset" type="reset">
 </form>
 <script>
     function updateTimeDisplay(val) {
@@ -61,9 +62,19 @@
     // Attach the event listener to the form
     $(document).ready(function() {
         // v1 submit the form every time the data change
-        $('#filterForm').find('input, select, range').on('change', function() {
-        //$('#filterForm').submit(function(e) {
-        //    e.preventDefault(); // Prevent default form submission
+        $('#filterForm').find('input, select, range').on('change', updateListData);
+        $('#filterForm').on('reset', function() {
+            updateSeatValue(1);
+            // 5ms delay to allow the form to reset before handling defaults:
+            setTimeout(function() {
+                // update list with default values:
+                updateListData();
+            }, 5);
+            
+        });
+        function updateListData() {
+            //$('#filterForm').submit(function(e) {
+            //    e.preventDefault(); // Prevent default form submission
             $.ajax({
                 // Send the form data to the server
                 type: "POST",
@@ -82,7 +93,7 @@
                     $('.data-list').addClass('newDataLoadedEffect');
                 }
             });
-        });
+        }
     });
     $(function(){
         var url = window.location.pathname.split('/').pop();
@@ -92,7 +103,7 @@
             var todaysDate = today.toISOString().substr(0, 10);
             console.log(todaysDate);
             $('#dateSelect').attr('min', todaysDate);
-            
+
             // if the user manually types in a date from the past then set it to the min date:
             $('#dateSelect').on('input', function() {
                 var input = $(this).val();

@@ -300,7 +300,7 @@ button:hover {
     padding: 10px;
     align-content: flex-start;
 
-    button {
+    button, #filterReset {
         width: 100%;
         padding: 1em;
         border: none;
@@ -310,6 +310,12 @@ button:hover {
         font-size: 1em;
         cursor: pointer;
         transition: background-color 0.3s;
+        text-align: center;
+        padding-bottom: 18%;
+    }
+
+    #filterReset {
+        background-color: #ff4242;
     }
 }
 
