@@ -471,3 +471,123 @@ input {
     animation: newDataLoadedEffect 0.1s 1 ease-in-out;
     */
 }
+
+/* =============================DARK MODE CSS============================= */
+
+/* Dark Mode Toggle Styles */
+.theme-toggle {
+    display: flex;
+    align-items: center;
+    margin-left: auto;
+}
+
+/* Dark Mode Base Styles */
+[data-theme="dark"] body{
+    background-color: #121212;
+    color: #ffffff;
+}
+
+/* Dark Mode for specific components */
+[data-theme="dark"] .top-menu,
+[data-theme="dark"] .footer,
+[data-theme="dark"] .button-link,
+[data-theme="dark"] .footer-link,
+[data-theme="dark"] .card-outline,
+[data-theme="dark"] .card-content,
+[data-theme="dark"] .card-column,
+[data-theme="dark"] .tooltip {
+    background: #222222;
+    color: #dddddd; /* This color is for text and may be changed as needed for contrast */
+}
+
+/* Dark Mode for input labels */
+[data-theme="dark"] .input-group label {
+    color: #ffffff; 
+}
+
+/* Dark Mode for container elements */
+[data-theme="dark"] .login-container,
+[data-theme="dark"] .welcome-container,
+[data-theme="dark"] .register-container,
+[data-theme="dark"] .form-container, 
+[data-theme="dark"] .credits-container, 
+[data-theme="dark"] .faq-container {
+    background: #333333; 
+    color: #ffffff; 
+    padding: 2em; 
+    box-shadow: 0 4px 6px rgba(255, 255, 255, 0.1); 
+    border: 1px solid #444444; 
+}
+
+/* Dark Mode for text elements */
+[data-theme="dark"] h1, [data-theme="dark"] h2, [data-theme="dark"] h3, [data-theme="dark"] h4, [data-theme="dark"] h5, [data-theme="dark"] h6 {
+    color: #ffffff;
+}
+
+/* Dark Mode for links */
+[data-theme="dark"] a {
+    color: #bb86fc; 
+}
+
+/* Dark Mode for form elements */
+[data-theme="dark"] input[type="text"], 
+[data-theme="dark"] input[type="email"], 
+[data-theme="dark"] input[type="password"], 
+[data-theme="dark"] textarea, 
+[data-theme="dark"] select,
+[data-theme="dark"] input[type="text"]:focus, 
+[data-theme="dark"] input[type="email"]:focus, 
+[data-theme="dark"] input[type="password"]:focus, 
+[data-theme="dark"] textarea:focus, 
+[data-theme="dark"] select:focus {
+    background-color: #333333;
+    color: #e0e0e0;
+}
+
+/* Dark Mode for input elements */
+[data-theme="dark"] input {
+    background-color: #333333;
+    color: #e0e0e0;
+}
+
+/* Dark Mode for buttons */
+[data-theme="dark"] .button-link {
+    background: #5419f5; 
+    color: #ffffff; 
+}
+
+/* Dark Mode for button hover states */
+[data-theme="dark"] .button-link:hover {
+    background-color: #0000C6;
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0);
+}
+
+[data-theme="dark"] .footer-link {
+    background: #66BB6A; 
+    color: #ffffff; 
+}
+[data-theme="dark"] .footer-link:hover{
+    background-color: #009083;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Dark Mode for button hover states */
+[data-theme="dark"] .button-link:hover {
+    background-color: #bb86fc; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); 
+}
+
+/* Dark Mode for custom styles */
+[data-theme="dark"] .border-dark {
+    border-color: #e0e0e0;
+}
+
+/* Dark Mode for shadows */
+[data-theme="dark"] .shadow-dark {
+    box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
+}
+
+/*for logged-in-as*/
+[data-theme="dark"] .logged-in-as {
+    color: #ffffff;
+}
