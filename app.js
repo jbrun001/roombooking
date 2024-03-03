@@ -965,6 +965,7 @@ app.get("/approved-list", isLoggedIn, (req, res) => {
   //}
   // manage the ordering of the data - if the user has re-ordered the list
   var listOrder = "";
+  console.log(req.session.approvedListOrder);
   switch (req.session.approvedListOrder) {
     case "o_b_Room":
       listOrder = " ORDER BY r.building_name, r.room_number";
@@ -974,6 +975,9 @@ app.get("/approved-list", isLoggedIn, (req, res) => {
       break;
     case "o_b_Status":
       listOrder = " ORDER BY b.booking_status";
+      break;
+    case "o_b_Recent_Approved":
+      listOrder = " ORDER BY b.confirmed_on DESC";
       break;
     default:
       listOrder = " ORDER BY b.booking_start";
@@ -1053,6 +1057,9 @@ app.post("/approved-list-filtered", isLoggedIn, function (req, res) {
       break;
     case "o_b_Status":
       listOrder = " ORDER BY b.booking_status";
+      break;
+    case "o_b_Recent_Approved":
+      listOrder = " ORDER BY b.confirmed_on DESC";
       break;
     default:
       listOrder = " ORDER BY b.booking_start";
