@@ -457,6 +457,20 @@ input {
     margin-bottom: 1rem;
 }
 
+#approved-order-button-wrapper {
+    padding-left: 0%;
+    padding-right: 0%;
+}
+
+#approved-order-button-wrapper * {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#approved-order-button-wrapper .button-link {
+    margin-right: 5%;
+}
+
 /* used to make the list data animate in, so the user can see the data has changed */
 @keyframes newDataLoadedEffect {
     /* fade */
