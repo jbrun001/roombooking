@@ -1,7 +1,7 @@
 <p>Here are the filters</p>
 <form id = "filterForm" action="/bookings-list-filtered" method="POST">
     <div class="date">
-        <input type="date" name="date" />
+        <input type="date" id="dateSelect" name="date" />
     </div>
     <p>Duration</p>
     <!-- <input type="range" step="30" min="30" max="240" value="60" class="slider" id="myRange1"> -->
@@ -83,5 +83,15 @@
                 }
             });
         });
+    });
+    $(function(){
+        var url = window.location.pathname.split('/').pop();
+        console.log(url);
+        if (url == "rooms-list") {
+            var today = new Date();
+            var todaysDate = today.toISOString().substr(0, 10);
+            console.log(todaysDate);
+            $('#dateSelect').attr('min', todaysDate);
+        }
     });
 </script>
