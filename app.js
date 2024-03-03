@@ -659,9 +659,11 @@ app.get("/bookings-list", isLoggedIn, (req, res) => {
   var userId = req.session.userid;
   var email = req.session.email;
   // get the filters from the user session, else initialise the filters
+  // commented code that loaded the filters from the session
+  // when the user opens this page or refreshes the page the filters are now reset
   var filters = {};
-  if (req.session.bookingListFilters) filters = req.session.bookingListFilters;
-  else {
+  // if (req.session.bookingListFilters) filters = req.session.bookingListFilters;
+  // else {
     filters = {
       date: "",
       timeslot: "-NaN:NaN",
@@ -672,7 +674,7 @@ app.get("/bookings-list", isLoggedIn, (req, res) => {
     };
     // save the current filters in the user session
     req.session.bookingListFilters = filters;
-  }
+  // }
   // manage the ordering of the data - if the user has re-ordered the list
   var listOrder = "";
   switch (req.session.bookingListOrder) {
@@ -803,8 +805,8 @@ app.get("/requests-list", isLoggedIn, (req, res) => {
   var email = req.session.email;
   // get the filters from the user session, else initialise the filters
   var filters = {};
-  if (req.session.requestsListFilters) filters = req.session.requestsListFilters;
-  else {
+  //if (req.session.requestsListFilters) filters = req.session.requestsListFilters;
+  //else {
     filters = {
       date: "",
       timeslot: "-NaN:NaN",
@@ -815,7 +817,7 @@ app.get("/requests-list", isLoggedIn, (req, res) => {
     };
     // save the current filters in the user session
     req.session.requestsListFilters = filters;
-  }
+  //}
   // manage the ordering of the data - if the user has re-ordered the list
   var listOrder = "";
   switch (req.session.requestsListOrder) {
@@ -948,8 +950,8 @@ app.get("/approved-list", isLoggedIn, (req, res) => {
   var email = req.session.email;
   // get the filters from the user session, else initialise the filters
   var filters = {};
-  if (req.session.approvedListFilters) filters = req.session.approvedListFilters;
-  else {
+  //if (req.session.approvedListFilters) filters = req.session.approvedListFilters;
+  //else {
     filters = {
       date: "",
       timeslot: "-NaN:NaN",
@@ -960,7 +962,7 @@ app.get("/approved-list", isLoggedIn, (req, res) => {
     };
     // save the current filters in the user session
     req.session.approvedListFilters = filters;
-  }
+  //}
   // manage the ordering of the data - if the user has re-ordered the list
   var listOrder = "";
   switch (req.session.approvedListOrder) {
@@ -1606,8 +1608,8 @@ app.get("/rooms-list", isLoggedIn, (req, res) => {
   var email = req.session.email;
   // get the filters from the user session, else initialise the filters
   var filters = {};
-  if (req.session.roomListFilters) filters = req.session.roomListFilters;
-  else {
+  //if (req.session.roomListFilters) filters = req.session.roomListFilters;
+  //else {
     filters = {
       date: "",
       timeslot: "-NaN:NaN",
@@ -1618,7 +1620,7 @@ app.get("/rooms-list", isLoggedIn, (req, res) => {
     };
     // save the current filters in the user session
     req.session.roomListFilters = filters;
-  }
+  //}
   // manage the ordering of the data - if the user has re-ordered the list
   var listOrder = "";
   switch (req.session.roomListOrder) {
@@ -1761,8 +1763,8 @@ app.get("/edit-rooms-list", isLoggedIn, (req, res) => {
   var email = req.session.email;
   // get the filters from the user session, else initialise the filters
   var filters = {};
-  if (req.session.editRoomListFilters) filters = req.session.editRoomListFilters;
-  else {
+  //if (req.session.editRoomListFilters) filters = req.session.editRoomListFilters;
+  //else {
     filters = {
       date: "",
       timeslot: "-NaN:NaN",
@@ -1773,7 +1775,7 @@ app.get("/edit-rooms-list", isLoggedIn, (req, res) => {
     };
     // save the current filters in the user session
     req.session.editRoomListFilters = filters;
-  }
+  //}
   // manage the ordering of the data - if the user has re-ordered the list
   var listOrder = "";
   switch (req.session.roomListOrder) {
