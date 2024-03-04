@@ -225,6 +225,7 @@ button:hover {
 
 .card-wrapper {
     display: inline-flex;
+    width: 100%;
 }
 
 .card-wrapper>* {
@@ -284,7 +285,8 @@ button:hover {
     /* Aligns items to the start of the container */
     justify-content: flex-start;
     /* Aligns the content to the start (left side) of the container */
-    margin-right: auto;
+    margin-right: 1rem;
+    width: 100%;
 }
 
 .left-column {
@@ -320,6 +322,7 @@ button:hover {
 }
 
 .right-column {
+    width: 100%;
     padding: 10px;
     border-left: 1px solid #ddd;
     /* separator between left and right columns */
@@ -333,6 +336,7 @@ button:hover {
 .data-list {
     list-style-type: none;
     padding: 0;
+    width: 100%;
 }
 
 .data-list li {
@@ -455,11 +459,8 @@ input {
 }
 
 .order-by-button-wrapper {
-    display: inline-flex;
-    float: left;
-    width: 100%;
-    padding-left: 25%;
-    padding-right: 25%;
+    margin: auto;
+    width: 60%;
     margin-bottom: 1rem;
 }
 
@@ -475,6 +476,13 @@ input {
 
 #approved-order-button-wrapper .button-link {
     margin-right: 5%;
+}
+
+.room-preview-img {
+    height: 100%;
+    width: 17%;
+    object-fit: cover;
+    aspect-ratio: 4 / 3;
 }
 
 /* used to make the list data animate in, so the user can see the data has changed */
