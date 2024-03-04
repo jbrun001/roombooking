@@ -213,37 +213,70 @@ app.get("/register", isLoggedIn, function (req, res) {
     res.render("register.ejs", newData);
   });
 });
+
+
 // the form in register.ejs has a target of /registered which will get managed by this code.
 // this form uses http POST
 app.post("/registered", isLoggedIn, function (req, res) {
-  // before we send the input fields which will be displayed on the page
-  // make sure they don't contain any dangerous HTML for cross site scripting
   var email = sanitiseHtml(req.body.email);
   var password = sanitiseHtml(req.body.password);
   var userrole = sanitiseHtml(req.body.userrole);
   var societyname = sanitiseHtml(req.body.societyname);
   var module = sanitiseHtml(req.body.module);
-  var hashedPassword = hashPassword(password);
-  let sqlqueryuser =
-    "INSERT INTO user_account (email, password, user_role, society_name, module) VALUES (?,?,?,?,?)";
-  // execute sql query
-  let newuser = [
-    email.toLowerCase(),
-    hashedPassword,
-    userrole,
-    societyname,
-    module,
-  ];
-  db.query(sqlqueryuser, newuser, (err, result) => {
-    // if error display login page
+
+  //pasword regex to check if the password meets the requirements
+  var passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
+
+  // Check if the password meets the requirements
+  if (!passwordRegex.test(password)) {
+    db.query("SELECT * FROM lookup_user_role", (err, data) => {
+      if (err) {
+        console.error(err.message);
+        return res.redirect("/");
+      }
+      // render the register-error page with the error message
+      res.render("register-error.ejs", {
+        errorMessage: "Password must be at least 8 characters long and include at least one lowercase letter, one uppercase letter, and one digit.",
+        formValues: { email, userrole, societyname, module }, 
+        allUserRoles: data
+      });
+    });
+  } else {
+    var hashedPassword = hashPassword(password);
+    let sqlqueryuser = "INSERT INTO user_account (email, password, user_role, society_name, module) VALUES (?,?,?,?,?)";
+    let newuser = [email.toLowerCase(), hashedPassword, userrole, societyname, module];
+
+    db.query(sqlqueryuser, newuser, (err, result) => {
+      if (err) {
+        console.error(err.message);
+        res.redirect("/");
+      } else {
+        res.redirect("/login-success");
+      }
+    });
+  }
+});
+
+// register error page route
+app.get("/register-error", function (req, res) {
+  const errorMessage = "An error has occurred during registration. Please try again.";
+
+  // Get all user roles from the database
+  db.query("SELECT * FROM lookup_user_role", (err, data) => {
     if (err) {
-      res.redirect("/");
-      return console.error(err.message);
-    } else {
-      res.redirect("/login-success");
+      console.error(err.message);
+      return res.redirect("/");
     }
+
+    //render the register-error page with the error message
+    res.render("register-error.ejs", {
+      errorMessage: errorMessage,
+      formValues: {}, 
+      allUserRoles: data 
+    });
   });
 });
+
 
 app.get("/credits", (req, res) => {
   loggedInMessage = getLoggedInUser(req);
