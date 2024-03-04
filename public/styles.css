@@ -395,6 +395,57 @@ input {
     display: block;
 }
 
+/* =============================FAQ BOOKING CSS============================= */
+
+.faq-container ul {
+    list-style-type: none; 
+    padding-left: 0; 
+    margin-left: 0;
+}
+
+.faq-container li {
+    margin-bottom: 20px; 
+    padding: 10px;
+    border-radius: 4px;
+    background-color: #f2f2f2; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    text-align: left; 
+}
+
+.faq-container h3 {
+    display: inline; 
+}
+
+/* =============================CREDITS CSS============================= */
+
+.credits-container {
+    text-align: center; 
+    background-color: #ffffff; 
+    padding: 1em 2em;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); 
+    width: 60%; 
+    margin: 100px auto 50px; 
+}
+
+.credits-container h1 {
+    color: #333; 
+    margin-bottom: 20px; 
+}
+
+.credits-container ul {
+    list-style-type: none; 
+    padding: 0;
+    margin: 0; 
+}
+
+.credits-container li {
+    padding: 10px 0; 
+    border-bottom: 0.2em solid #dddddd; 
+    color: #222222; 
+    font-size: 1.1em; 
+}
+
 /* =============================VIEW BOOKING CSS============================= */
 
 .view-booking-content {
@@ -531,7 +582,7 @@ input {
 [data-theme="dark"] .card-column,
 [data-theme="dark"] .tooltip {
     background: #222222;
-    color: #dddddd; /* This color is for text and may be changed as needed for contrast */
+    color: #dddddd; 
 }
 
 /* Dark Mode for input labels */
@@ -590,16 +641,11 @@ input {
     color: #ffffff; 
 }
 
-/* Dark Mode for button hover states */
-[data-theme="dark"] .button-link:hover {
-    background-color: #0000C6;
-    box-shadow: 0 4px 8px rgba(255, 255, 255, 0);
-}
-
 [data-theme="dark"] .footer-link {
     background: #66BB6A; 
     color: #ffffff; 
 }
+
 [data-theme="dark"] .footer-link:hover{
     background-color: #009083;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -621,7 +667,22 @@ input {
     box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
 }
 
-/*for logged-in-as*/
 [data-theme="dark"] .logged-in-as {
     color: #ffffff;
+}
+
+/*Dark Mode for list items in faq*/
+[data-theme="dark"] .faq-container li {
+    background-color: #444444
+}
+
+/* Dark Mode for Credits Container */
+[data-theme="dark"] .credits-container {
+    padding: 1em 2em;
+}
+
+/* Dark Mode for Credits List Items */
+[data-theme="dark"] .credits-container li {
+    color: #ffffff; 
+    border-bottom: 0.2em solid #555; 
 }
