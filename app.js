@@ -895,7 +895,7 @@ app.get("/requests-list", isLoggedIn, (req, res) => {
  * this route is the target for the filter form, and the order by form in the requests-lists page
 */
 app.post("/requests-list-filtered", isLoggedIn, function (req, res) {
-  loggedInMessage = getLoggedInUser(req);
+  var loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var userId = req.session.userid;
   var email = req.session.email;
@@ -921,18 +921,18 @@ app.post("/requests-list-filtered", isLoggedIn, function (req, res) {
       duration: req.body.durationRange,
     };
     // save the current filters in the user session, this is so they can be re-used when there is no filter POSTED
-    req.session.requestListFilters = filters;
+    req.session.requestsListFilters = filters;
   } else {
-    filters = req.session.requestListFilters;
+    filters = req.session.requestsListFilters;
     // save the orderSelection
-    req.session.requestListOrder = req.body.orderSelection;
+    req.session.requestsListOrder = req.body.orderSelection;
   }
   // get the current list order from the session and if not present initialise the order
   // if (!req.session.requestListOrder) req.session.requestListOrder = ""
   // manage the ordering of the data - if the user has re-ordered the list
   var listOrder = "";
   //console.log("session.requestListOrder: " + req.session.requestListOrder);
-  switch (req.session.requestListOrder) {
+  switch (req.session.requestsListOrder) {
     case "o_b_Room":
       listOrder = " ORDER BY r.building_name, r.room_number";
       break;
