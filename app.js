@@ -136,13 +136,12 @@ app.get("/login", (req, res) => {
 // login-check route which is the target for the https post in login,ejs.ejs
 app.post("/login-check", function (req, res) {
   var email = sanitiseHtml(req.body.email);
+  email = email.toLowerCase();
   var password = req.body.password;
   // just check that the email address exists (password hash checking comes after)
   let sqlquery =
-    'SELECT email, id, password, user_role FROM user_account WHERE email="' +
-    email.toLowerCase() +
-    '";';
-  db.query(sqlquery, (err, result) => {
+    'SELECT email, id, password, user_role FROM user_account WHERE email= ? ';
+  db.query(sqlquery, email, (err, result) => {
     // if error display login-error page
     loggedInMessage = getLoggedInUser(req);
     if (err) {
