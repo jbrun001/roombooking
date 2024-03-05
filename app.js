@@ -324,6 +324,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         SELECT 
         r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
         r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+        b.is_risk_assessment_approved as raApproved, 
         CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
         r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
         b.id as bookingId, r.id as roomId, u.id as userId
@@ -338,6 +339,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         SELECT 
         r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
         r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+        b.is_risk_assessment_approved as raApproved, 
         CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
         r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
         b.id as bookingId, r.id as roomId, u.id as userId
@@ -352,6 +354,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         SELECT 
         r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
         r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
+        b.is_risk_assessment_approved as raApproved, 
         CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
         r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
         b.id as bookingId, r.id as roomId, u.id as userId
