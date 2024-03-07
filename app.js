@@ -329,6 +329,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         b.id as bookingId, r.id as roomId, u.id as userId
         FROM booking b JOIN room r ON b.room_id = r.id JOIN user_account u ON b.user_id = u.id
         WHERE u.id = ?
+        AND b.booking_status != 'Cancelled'
       `;
     }
     if (pageName === "requests-list") {
@@ -548,11 +549,12 @@ function getRooms(pageName, filters, listOrder, roomId) {
           WHERE b.room_id = r.id
           AND (
                 (
-                  b.booking_start < DATE_ADD( ?, INTERVAL ? HOUR_MINUTE) 
+                  b.booking_start <= DATE_ADD( ?, INTERVAL ? HOUR_MINUTE) 
                   AND 
-                  b.booking_end > DATE_ADD(?, INTERVAL ? HOUR_MINUTE)
+                  b.booking_end >= DATE_ADD(?, INTERVAL ? HOUR_MINUTE)
                 )
           )
+          AND b.booking_status != 'Cancelled' 
         )   
         # from that list above
         # exlude any room that has a booking that starts before the timeslot and finishes after the timeslot
@@ -563,15 +565,16 @@ function getRooms(pageName, filters, listOrder, roomId) {
           WHERE DATE(booking_start) = ?
           AND (
                 (
-                  booking_start < DATE_ADD( ? , INTERVAL ? HOUR_MINUTE) 
+                  booking_start <= DATE_ADD( ? , INTERVAL ? HOUR_MINUTE) 
                   AND 
-                  booking_end > DATE_ADD( ? , INTERVAL ? HOUR_MINUTE)
+                  booking_end >= DATE_ADD( ? , INTERVAL ? HOUR_MINUTE)
                 )
               OR (
-                booking_end > DATE_ADD(booking_start, INTERVAL ? MINUTE)
+                booking_end >= DATE_ADD(booking_start, INTERVAL ? MINUTE)
                 AND booking_start <= DATE_ADD( ? , INTERVAL ? HOUR_MINUTE)
               )
           )
+          AND booking_status != 'Cancelled' 
         ) AND r.is_accepting_bookings = 1 `;
       }
       // add any other filters to the end of the query
@@ -590,6 +593,7 @@ function getRooms(pageName, filters, listOrder, roomId) {
 
       }
     }
+
     // add the "order by" string
     sqlquery = sqlquery + " " + listOrder;
 
@@ -1452,7 +1456,23 @@ app.post("/edit-booking-submit", isLoggedIn, (req, res) => {
   })
 });
 
-
+app.post("/cancel-booking", isLoggedIn, (req, res) => {
+  loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var email = req.session.email;
+  var bookingId = sanitiseHtml(req.body.bookingId);
+  updateCancelledQuery = "UPDATE booking " +
+    "SET booking_status = 'Cancelled' " +
+    "WHERE id = ?;";
+  db.query(updateCancelledQuery, [bookingId], (err, result) => {
+    if (err) {
+      console.log("cancel-booking: error in sql query: " + err);
+    } else {
+      res.send('<p>Booking ' + bookingId + ' cancelled successfully.</p></br><a href="/login-success">Click to go back to the menu</a>');
+    } 
+  });
+  //res.send(updateCancelledQuery);
+});
 
 // this displays the room details from the database and the
 // booking information passed into the page from the room-list is roomId, selectedDate and selectedTimeSlot

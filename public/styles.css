@@ -170,7 +170,7 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.button-link {
+.button-link, .cancel-button {
     color: #fff;
     /* Text color adjusted for contrast */
     text-decoration: none;
@@ -188,6 +188,15 @@ button:hover {
     /* Align text vertically */
     justify-content: center;
     /* Align text horizontally */
+}
+
+.cancel-button {
+    background: #ff4242;
+}
+
+.cancel-button:hover {
+    background-color: #ff0000;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .button-small-width {

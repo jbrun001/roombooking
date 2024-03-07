@@ -52,6 +52,12 @@
                 <a href="/login-success" class="button-link" onclick="event.preventDefault(); window.history.back();">Back</a>
             </div>
         <% } %>
+        <% if (userrole == "admin" || userrole == "coordinator") { %>
+            <form id = "editAction" class="view-booking-content" action="/cancel-booking" method="POST">
+                <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
+                <button class="cancel-button" name="cancel" type="submit" value="">Cancel</button>
+            </form>
+        <% } %>
     </div>
     <%- include('footer') %>
 </body>
