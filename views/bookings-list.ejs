@@ -87,6 +87,11 @@
                                 </div>
                                 <div class="card-column">
                                     <a href="/view-booking/<%=bookings[i].bookingId%>" class="button-link">View</a>
+                                    <%if (bookings[i].raApproved != 1 && bookings[i].raApproved != 0) {%>
+                                    <form id = "editBookingButton" action="/edit-booking" method="POST">
+                                        <button class="button-link" name="bookingId" type="submit" value="<%=bookings[i].bookingId%>">Edit</button>
+                                    </form>
+                                    <% }%>
                                 </div>
                             </div>
                         </div>
