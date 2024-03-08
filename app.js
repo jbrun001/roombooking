@@ -501,7 +501,8 @@ function getRooms(pageName, filters, listOrder, roomId) {
         SELECT id as roomId, room_number as roomNumber, 
         building_name as buildingName, picture_URL as pictureURL,
         capacity, is_accepting_bookings as isAcceptingBookings,
-        room_type as roomType FROM room r WHERE id = ` + roomId + ' ';
+        room_type as roomType FROM room r WHERE id = ?
+      `;
     }
     else {
       // if the filter date OR there is no selecton for start time and duration then get all the rooms and other filter criteria are added after the if else
