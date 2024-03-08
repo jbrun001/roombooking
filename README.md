@@ -15,16 +15,7 @@ install dotenv## roombooking
 - copy the .env file provided to the folder (this is not included in github because it contains credentials)
 - Install [Node.js](https://nodejs.org/en/download/)
 - npm install
-- npm install dotenv
-- npm install mysql2
-- npm install express
-- npm install express-session
-- npm install ejs
-- npm install sanitize-html
-- npm install body-parser
-- npm install bcrypt
 - npm install dotenv mysql2 express express-session ejs sanitize-html body-parser bcrypt
-
 
 to run
 - node app.js
@@ -40,21 +31,3 @@ the test login, for a coordinator, is
 the test login, for an administrator, is
  -u: admin@123.com
  -p: admintest
-
-
-to create new users, log in as an admin user and use the "register new user" button from their menu 
-
-Front end pages/routes required & status
-route               prototyped      connected to database       societyleader   coordinator     comment
-- login             Yes             Yes                         n/a             n/a
-- login-success     Yes             Yes                         Yes             Yes
-- login-error       Yes             Yes                         n/a             n/a
-- login-check       Yes             Yes                         n/a             n/a
-- register          Yes             Yes                         n/a             n/a             no link to this page from others
-- registered        Yes             Yes                         n/a             n/a             just renders login after - no feedback
-- book-room                                                     Yes             Yes
-- view-bookings                                                 Yes             Yes             needs more work when zooming in and out
-- view-booking                                                  Yes             Yes
-- edit-booking                                                  Yes             Yes
-- view-requests                                                 No              Yes
-- view-accepted                                                 No              Yes
