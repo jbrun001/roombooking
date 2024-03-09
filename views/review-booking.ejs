@@ -6,6 +6,11 @@
         <title>Bookit / Review Booking </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <link rel="stylesheet" href="/styles.css">
+        <!-- tinyMCE code starts -->
+        <link rel="stylesheet" href="/tinyMCEstyle.css">
+        <script type="application/javascript" src="/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+        <script type="application/javascript" src="/bookit-tinymce-config.js"></script>            
+        <!-- tinyMCE code ends -->
         <link rel="icon" type="image/x-icon" href="/favicon.ico">
     </head>
 <body>
@@ -27,12 +32,15 @@
                 <% } %>
             </li>
         </ul>
-
         <div class="view-booking-input">
-            <p><strong>Risk Assessment 1</strong></p>
-            <textarea maxlength="200" rows="8" cols="200" readonly><%= result[0].risk1 %></textarea>
-            <p><strong>Risk Assessment 2</strong></p>
-            <textarea maxlength="200" rows="8" cols="200" readonly><%= result[0].risk2 %></textarea>
+            <p><strong>Risk Assessment</strong></p>
+            <textarea id="risktinymce" maxlength="200" name="risk1" label="Risk1" rows="8" cols="200" oninput="updateCharCount('risktinymce', 'countRisk1')">
+                <% if (result[0].risk1 == null ) { %> 
+                    <%- include('risk-template',{ templateBy: result[0].bookedBy, templateType: result[0].roomType, templateBuilding: result[0].building, templateRoom: result[0].roomNumber , templateSociety:'INSERT SOCIETY HERE!', templateDate: result[0].date, templateTimeslot: result[0].timeslot }) %>   
+                <% } else { %>
+                    <%- result[0].risk1 %>
+                <% } %>
+            </textarea>
         </div>
         <div class="view-booking-button">
             <a href="/approved-list" class="button-link">Back</a>

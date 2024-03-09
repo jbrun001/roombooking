@@ -23,9 +23,8 @@
                                     <p class=MsoNormal style='margin-top:4.0pt;margin-right:-6.0pt;margin-bottom:
                                     4.0pt;margin-left:0cm'><span style='font-family:"Candara",sans-serif;
                                     color:red'>
-Booking by  <%= result[0].bookedBy %> for <%= result[0].roomType %> <%= result[0].building %> <%= result[0].roomNumber %> for 
-INSERT SOCIETY HERE 
-on <%= result[0].date %> <%= result[0].timeslot %></span></p>
+Booking by <%= templateBy %> in <%= templateType %> <%= templateBuilding %> <%= templateRoom %> for 
+<%= templateSociety %> on <%= templateDate %> <%= templateTimeslot %></span></p>
                                     </td>
                                    </tr>
                                   </table>
@@ -63,7 +62,7 @@ on <%= result[0].date %> <%= result[0].timeslot %></span></p>
                                   4.0pt;margin-left:0cm;border:none'><span style='font-family:"Candara",sans-serif;
                                   color:black'>SU – </span><span style='font-family:"Candara",sans-serif;
                                   color:red'>
-Insert society Name here!</span></p>
+<%= templateSociety %></span></p>
                                   </td>
                                   <td width=104 style='width:77.95pt;border:none;border-bottom:solid black 1.0pt;
                                   background:#F2F2F2;padding:0cm 6.0pt 0cm 6.0pt;height:33.0pt'>
@@ -77,7 +76,7 @@ Insert society Name here!</span></p>
                                   <p class=MsoNormal style='margin-top:4.0pt;margin-right:-6.0pt;margin-bottom:
                                   4.0pt;margin-left:0cm'><span style='font-family:"Candara",sans-serif;
                                   color:red'>
-<%= result[0].building %> <%= result[0].roomNumber %></span></p>
+<%= templateBuilding %> <%= templateRoom %></span></p>
                                   </td>
                                   <td width=142 style='width:106.35pt;border:none;border-bottom:solid black 1.0pt;
                                   background:#F2F2F2;padding:0cm 6.0pt 0cm 6.0pt;height:33.0pt'>
@@ -89,7 +88,7 @@ Insert society Name here!</span></p>
                                   solid black 1.0pt;border-right:solid black 1.0pt;background:#F2F2F2;
                                   padding:0cm 6.0pt 0cm 6.0pt;height:33.0pt'>
                                   <p class=MsoNormal><span style='font-family:"Candara",sans-serif;color:red'>
-<%= result[0].date %></span></p>
+<%= templateDate %></span></p>
                                   </td>
                                   <td width=94 colspan=2 style='width:70.85pt;border:none;border-bottom:solid black 1.0pt;
                                   background:#F2F2F2;padding:0cm 6.0pt 0cm 6.0pt;height:33.0pt'>

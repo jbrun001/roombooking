@@ -30,10 +30,14 @@
         <% if (result[0].Status == 'Awaiting Approval' && result[0].isApproved != '1') { %>
             <form id = "editAction" class="view-booking-content" action="/edit-booking" method="POST">
                 <div class="view-booking-input">
-                    <p><strong>Risk Assessment 1</strong></p>
-                    <textarea rows="8" cols="200" readonly><%= result[0].risk1 %></textarea>
-                    <p><strong>Risk Assessment 2</strong></p>
-                    <textarea rows="8" cols="200" readonly><%= result[0].risk2 %></textarea>
+                    <p><strong>Risk Assessment</strong></p>
+                    <div class="view-booking-risk-read-only">
+                        <% if (result[0].risk1 == null ) { %> 
+                            <%- include('risk-template',{ templateBy: result[0].bookedBy, templateType: result[0].roomType, templateBuilding: result[0].building, templateRoom: result[0].roomNumber , templateSociety:'INSERT SOCIETY HERE!', templateDate: result[0].date, templateTimeslot: result[0].timeslot }) %>   
+                        <% } else { %>
+                            <%- result[0].risk1 %>
+                        <% } %>  
+                    </div>
                 </div>
                 <div class="view-booking-button">
                     <a href="/login-success" class="button-link" onclick="event.preventDefault(); window.history.back();">Back</a>
@@ -43,10 +47,14 @@
             </form>
         <% } else { %>
             <div class="view-booking-input">
-                <p><strong>Risk Assessment 1</strong></p>
-                <textarea rows="8" cols="200" readonly><%= result[0].risk1 %></textarea>
-                <p><strong>Risk Assessment 2</strong></p>
-                <textarea rows="8" cols="200" readonly><%= result[0].risk2 %></textarea>
+                <p><strong>Risk Assessment</strong></p>
+                <div class="view-booking-risk-read-only">
+                    <% if (result[0].risk1 == null ) { %> 
+                        <%- include('risk-template',{ templateBy: result[0].bookedBy, templateType: result[0].roomType, templateBuilding: result[0].building, templateRoom: result[0].roomNumber , templateSociety:'INSERT SOCIETY HERE!', templateDate: result[0].date, templateTimeslot: result[0].timeslot }) %>   
+                    <% } else { %>
+                        <%- result[0].risk1 %>
+                    <% } %>  
+                </div>
             </div>
             <div class="view-booking-button">
                 <a href="/login-success" class="button-link" onclick="event.preventDefault(); window.history.back();">Back</a>
