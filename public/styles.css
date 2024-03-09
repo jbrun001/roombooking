@@ -87,10 +87,6 @@ h2 {
     justify-content: space-between; /* This will space out the items evenly */
 }
 
-.login-success-page .welcome-container.button-link{
-    width: calc(50% - 10px); /* Adjust 10px to your spacing preference */
-    margin-bottom: 20px; /* Spacing between rows */
-}
 
 .login-container,
 .welcome-container h1,
