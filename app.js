@@ -51,11 +51,11 @@ app.use((req, res, next) => {
   var cSPolicy = "default-src http://localhost:8000; "; // will need changing when installed
   cSPolicy =
     cSPolicy +
-    "script-src http://localhost:8000 'unsafe-inline' https://ajax.googleapis.com; "; // unsafe-inline allows for script in the pages
+    "script-src http://localhost:8000  https://ajax.googleapis.com 'unsafe-inline'; "; // unsafe-inline allows for script in the pages
   cSPolicy =
     cSPolicy +
     "img-src 'self' https://cdn3.iconfinder.com https://i.imgur.com; ";
-  cSPolicy = cSPolicy + "style-src http://localhost:8000; ";
+  cSPolicy = cSPolicy + "style-src http://localhost:8000 'unsafe-inline'; ";
   cSPolicy = cSPolicy + "font-src http://localhost:8000; ";
   cSPolicy = cSPolicy + "frame-ancestors http://localhost:8000; "; // stops the page being used within external websites
   cSPolicy = cSPolicy + "form-action http://localhost:8000; "; // only allow form submission to the server running the app
