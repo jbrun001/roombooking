@@ -102,6 +102,7 @@ register-container p {
 
 .input-group {
     margin-bottom: 1em;
+    text-align: center;
 }
 
 .input-group label {
@@ -113,7 +114,7 @@ register-container p {
 .input-group input,
 select {
     width: 100%;
-    padding: 0.75em;
+    /*padding: 0.75em;*/
     border: 1px solid #ddd;
     border-radius: 4px;
 }
@@ -161,6 +162,7 @@ button:hover {
     background: #66BB6A;
     border-radius: 20px;
     font-weight: bold;
+    width: 7rem;
     margin: 10px 10px;
     /* Add margin to space out the links */
     transition: background-color 0.3s, box-shadow 0.3s;
@@ -177,10 +179,12 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.button-link, .cancel-button {
+.button-link, .cancel-button, .button-link-order {
     color: #fff;
     /* Text color adjusted for contrast */
     text-decoration: none;
+    /* added tp standise button widths */
+    width: 7rem;
     padding: 10px 15px;
     /* Adjusted padding for better spacing */
     background: #5419f5;
@@ -198,13 +202,19 @@ button:hover {
 }
 
 .cancel-button {
-    background: #ff4242;
+    background: #5419f5;
 }
 
 .cancel-button:hover {
-    background-color: #ff0000;
+    background-color:#5419f5;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
+
+.button-link-order {
+    width: 21rem;
+    background: #5419f5;
+}
+
 
 .button-small-width {
     width: 10%;
@@ -322,7 +332,7 @@ button:hover {
     align-content: flex-start;
 
     button, #filterReset {
-        width: 100%;
+        width: 7rem;
         padding: 1em;
         border: none;
         border-radius: 20px;
