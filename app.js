@@ -1,5 +1,6 @@
 require("dotenv").config();
 const express = require("express");
+var path = require('path');
 const app = express();
 const port = process.env.PORT || 8000;
 var session = require("express-session"); // used for creating sessions so data can persist between pages like if a user is logged in
@@ -27,7 +28,9 @@ app.use(
 );
 
 // this allows processing of form data
-app.use(bodyParser.urlencoded({ extended: true }));
+// extended the limit to to 500kb so the post of the risk assessment is managed
+// the risk assessment template is 223kb, so this allows for just over double the size
+app.use(bodyParser.urlencoded({ limit: '500kb', extended: true }));
 
 // Set the directory where Express will pick up media files images - this will be accessable from \
 // __dirname will get the current directory
@@ -35,6 +38,9 @@ app.use(express.static(__dirname + "/media"));
 
 // Set up access to folder with css
 app.use(express.static(__dirname + "/public"));
+
+/* New Route to the TinyMCE Node module */
+app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
 
 // Set the security headers for anti-click jacking and set the content security policy
 // these fix 2 medium security errors identified by OWASP Zap as part of Part E
@@ -1429,7 +1435,7 @@ app.post("/edit-booking", isLoggedIn, (req, res) => {
     if(err) console.log("edit-booking: error in sql query: " + err)
     else {
       console.log("edit-booking result data: " + result);
-      res.render("edit-booking.ejs", {loggedInMessage, userrole, email, result});
+      res.render("edit-booking-mce.ejs", {loggedInMessage, userrole, email, result});
     } 
   })
 });
@@ -1439,7 +1445,21 @@ app.post("/edit-booking-submit", isLoggedIn, (req, res) => {
   var userrole = req.session.user_role;
   var email = req.session.email;
   var bookingId = sanitiseHtml(req.body.bookingId);
-  var risk1 = sanitiseHtml(req.body.risk1);
+  //var risk1 = sanitiseHtml(req.body.risk1);
+  var risk1 = sanitiseHtml(req.body.risk1, {
+    allowedTags: sanitiseHtml.defaults.allowedTags.concat(['span','table','td','tr','p']),
+    allowedAttributes: {
+      '*': ['style','width','colspan','border','border-left','border-right','border-top','border-bottom']
+    },
+    allowedStyles: {
+      '*': {
+        // Allow color and background-color for any element
+        'color': [/^#(0x)?[0-9a-f]+$/i, /^rgb\(/, /^rgba\(/, /^hsl\(/, /^hsla\(/, /^(red|black|yellow|white)$/i],
+        'background-color': [/^#(0x)?[0-9a-f]+$/i, /^rgb\(/, /^rgba\(/, /^hsl\(/, /^hsla\(/, /^(red|black|yellow|white)$/i],
+        'background': [/^#(0x)?[0-9a-f]+$/i, /^rgb\(/, /^rgba\(/, /^hsl\(/, /^hsla\(/, /^(red|black|yellow|white)$/i]
+      }
+    }
+  });
   var risk2 = sanitiseHtml(req.body.risk2);
 
   const query =  `

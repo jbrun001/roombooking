@@ -17,6 +17,10 @@ install dotenv## roombooking
 - npm install
 - npm install dotenv mysql2 express express-session ejs sanitize-html body-parser bcrypt
 
+tinyMCE install:
+npm install path cookie-parser morgan tinymce@^6
+
+
 to run
 - node app.js
 

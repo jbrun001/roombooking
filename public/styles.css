@@ -485,7 +485,8 @@ input {
     box-sizing: border-box;
 }
 
-.view-booking-input textarea {
+/* .tox is used to style the tinyMCE editor */
+.view-booking-input textarea, .tox {
     width: 86%;
     resize: none;
     border-width: 0.1rem;
