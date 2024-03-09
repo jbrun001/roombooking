@@ -1435,7 +1435,7 @@ app.post("/edit-booking", isLoggedIn, (req, res) => {
     if(err) console.log("edit-booking: error in sql query: " + err)
     else {
       console.log("edit-booking result data: " + result);
-      res.render("edit-booking-mce.ejs", {loggedInMessage, userrole, email, result});
+      res.render("edit-booking.ejs", {loggedInMessage, userrole, email, result});
     } 
   })
 });
