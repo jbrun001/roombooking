@@ -78,7 +78,18 @@ h2 {
 .welcome-container {
     margin-left: auto;
     margin-right: auto;
-    margin-top: 4rem;
+    margin-top: 5rem;
+}
+
+.login-success-page .welcome-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* This will space out the items evenly */
+}
+
+.login-success-page .welcome-container.button-link{
+    width: calc(50% - 10px); /* Adjust 10px to your spacing preference */
+    margin-bottom: 20px; /* Spacing between rows */
 }
 
 .login-container,
@@ -209,8 +220,11 @@ button:hover {
 }
 
 .welcome-user-logo {
-    width: 25%;
+    width: 30%;
     /* This will make the image take the full width of its parent */
+    /*move image to the right*/
+    margin-left: auto;
+    margin-right: auto;
     height: auto;
     /* To maintain the aspect ratio */
 }
