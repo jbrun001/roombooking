@@ -12,15 +12,15 @@
     <div class="content">
         <div class="form-container">
             <h1>Edit Room</h1>
-            <form action="/edit-room-success" method="post">
-                <div class="input-group">
+            <form action="/edit-room-success" class="input-group-admin-pages" method="post">
+                <div class="input-group-admin-pages">
                     <input type="hidden" id="roomId" name="roomId" value="<%= rooms[0].roomId %>" required>
                 </div>
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="roomNumber">Room Number:</label>
                     <input type="text" id="room_number" name="roomNumber" value="<%= rooms[0].roomNumber %>" required>
                 </div>
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="buildingName">Building Name:</label>
                     <select id="building_name" name="buildingName" required>
                         <% for (let i = 0; i < buildingNames.length; i++) { %>
@@ -28,11 +28,11 @@
                         <% } %>
                     </select>
                 </div>
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="capacity">Capacity:</label>
                     <input type="number" id="capacity" name="capacity" value="<%= rooms[0].capacity %>" required>
                 </div>
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="roomType">Room Type:</label>
                     <select id="roomType" name="roomType" required>
                         <% for (let i = 0; i < roomTypes.length; i++) { %>
@@ -40,18 +40,18 @@
                         <% } %>
                     </select>
                 </div>                
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="pictureURL">Picture URL:</label>
                     <input type="text" id="pictureURL" name="pictureURL" value="<%= rooms[0].pictureURL %>" >
                 </div>
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="isAcceptingBookings">Accepting Bookings:</label>
                     <select id="isAcceptingBookings" name="isAcceptingBookings">
                         <option value="1" <%= rooms[0].isAcceptingBookings == '1' ? 'selected' : '' %>>Yes</option>
                         <option value="0" <%= rooms[0].isAcceptingBookings == '0' ? 'selected' : '' %>>No</option>
                     </select>
                 </div>
-                <button type="submit" class="button-link">Confirm Changes</button>
+                <button type="submit" class="button-link">Save</button>
             </form>
         </div>
     </div>

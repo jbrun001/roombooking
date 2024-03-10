@@ -40,9 +40,15 @@
                     </div>
                 </div>
                 <div class="view-booking-button">
-                    <a href="/login-success" class="button-link" onclick="event.preventDefault(); window.history.back();">Back</a>
+                    <% if (userrole == "admin" || userrole == "coordinator") { %>
+                        <form id = "editAction" class="view-booking-content" action="/cancel-booking" method="POST">
+                            <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
+                            <button class="cancel-button" name="cancel" type="submit" value="">Cancel</button>
+                        </form>
+                    <% } %>
                     <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
                     <button class="button-link" name="confirm" type="submit" value="">Edit</button>
+                    <a href="/login-success" class="button-link" onclick="event.preventDefault(); window.history.back();">Back</a>
                 </div>
             </form>
         <% } else { %>
@@ -57,14 +63,14 @@
                 </div>
             </div>
             <div class="view-booking-button">
+                <% if (userrole == "admin" || userrole == "coordinator") { %>
+                    <form id = "editAction"  action="/cancel-booking" method="POST">
+                        <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
+                        <button class="cancel-button" name="cancel" type="submit" value="">Cancel</button>
+                    </form>
+                <% } %>
                 <a href="/login-success" class="button-link" onclick="event.preventDefault(); window.history.back();">Back</a>
             </div>
-        <% } %>
-        <% if (userrole == "admin" || userrole == "coordinator") { %>
-            <form id = "editAction" class="view-booking-content" action="/cancel-booking" method="POST">
-                <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
-                <button class="cancel-button" name="cancel" type="submit" value="">Cancel</button>
-            </form>
         <% } %>
     </div>
     <%- include('footer') %>
