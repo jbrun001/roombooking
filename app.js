@@ -1,4 +1,6 @@
 require("dotenv").config();
+const speakeasy = require("speakeasy");
+const qrcode = require("qrcode");
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 8000;
@@ -9,6 +11,51 @@ const sanitiseHtml = require("sanitize-html"); // used to make sure there are no
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt"); // used for storing and comparing password hashes
 const bcryptSaltRounds = 10; // the higher this is the more processing time - 20 is unworkable takes too long so changed to 10
+
+
+//Two Factor Authentication
+//THIS VARIABLE ACTIVATES TWO FACTOR ACROSS THE ENTIRE APP <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+var activateTwoFactor = true;
+
+// 1) Make a secret key const generatedSecret using generateSecretKey() which returns secret, which generates a key based on the argument (user email)
+// 2) Create a QR code URL using the qrToURL function which takes a secret key as its argument. This will be used to diplay the qr code as an image in the page
+// 3) User scans the qr code using google authenticator - a user should input the code generated into a post box on the log in page,  which updates token in a POST method
+// 4) Run verified on the ascii value of generatedSecret against the userinput taken from the GET method 
+
+function generateSecretKey(email){
+  this.email = String(email);
+  var secret = speakeasy.generateSecret({
+    name: String(this.email)
+    });    
+    return secret;
+}
+
+// Calling this function from the URL  package creates a data URL
+//this dataUrl is an image that we can pass to a html file
+//The google authenticator app can scan this image and generate 6 digit keys
+function qrToURL(generatedSecret) {
+  return new Promise((resolve, reject) => {
+    qrcode.toDataURL(generatedSecret.otpauth_url, function (err, data) {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(data);
+      }
+    });
+  });
+};
+
+// This function takes two arguments, user input and user secret. These will be session based and defined in the GET method and used in the Post method to verify the user. 
+//speakeasy does the heavy lefting here - we are using ascii encoding for our keys
+function verifyKey(token , userSecret){
+  var verified = speakeasy.totp.verify({
+    secret: String(userSecret),
+    encoding: 'ascii',
+    token: token 
+  })
+  return verified;
+}
+console.log(verifyKey());
 
 // set up the database connection
 const db = mysql.createConnection(process.env.DATABASE_URL);
@@ -48,7 +95,7 @@ app.use((req, res, next) => {
     "script-src http://localhost:8000 'unsafe-inline' https://ajax.googleapis.com; "; // unsafe-inline allows for script in the pages
   cSPolicy =
     cSPolicy +
-    "img-src 'self' https://cdn3.iconfinder.com https://i.imgur.com; ";
+    "img-src 'self' data: https://cdn3.iconfinder.com https://i.imgur.com; ";
   cSPolicy = cSPolicy + "style-src http://localhost:8000; ";
   cSPolicy = cSPolicy + "font-src http://localhost:8000; ";
   cSPolicy = cSPolicy + "frame-ancestors http://localhost:8000; "; // stops the page being used within external websites
@@ -157,20 +204,71 @@ app.post("/login-check", function (req, res) {
     else {
       // now have to check the passwords matches the hashed password
       // take the first result from the sql query
+
+        // v THIS v is the normal login
       if (isMatchingPassword(password, result[0].password)) {
-        req.session.isLoggedIn = true; // set the session variable to show logged in
-        req.session.userid = result[0].id;
-        req.session.email = result[0].email;
-        req.session.user_role = result[0].user_role;
-        loggedInMessage = getLoggedInUser(req);
-        res.redirect("/login-success");
-      } else {
+        if(!activateTwoFactor){
+            req.session.isLoggedIn = true; // set the session variable to show logged in
+            req.session.userid = result[0].id;
+            req.session.email = result[0].email;
+            req.session.user_role = result[0].user_role;
+            loggedInMessage = getLoggedInUser(req);
+            res.redirect("/login-success");
+           
+          // 2FA login conidtions
+        } else if(activateTwoFactor){  // request the relevant session info (userid, email, user_role)
+          req.session.userid = result[0].id;
+          req.session.email = result[0].email;
+          req.session.user_role = result[0].user_role;     
+          res.redirect("/login-2fa"); // redirect to the 2fa pge
+        } else {
         console.error("user details don't match");
         loggedInMessage = getLoggedInUser(req);
         res.render("login-error.ejs", { loggedInMessage });
-      }
+      }}
     }
   });
+});
+
+app.get("/login-2fa", async (req, res) => {
+  let qrCodeUrl = req.session.qrCodeUrl; // default session qr code if a qr is present
+  let secretKey = req.session.generatedSecret; // default session secret key if a qr is present
+  try{
+      if(!qrCodeUrl) { // if there is no qr is present 
+        secretKey = generateSecretKey(req.session.email); // session email is used in the function that generates secret keys
+        req.session.generatedSecret = secretKey; // update the session secretkey 
+        
+        qrCodeUrl = await qrToURL(secretKey); // generate a qr from the secret keys
+        req.session.qrCodeUrl = qrCodeUrl; // update session qr code url
+        
+        loggedInMessage = "Complete Two Factor Authentication" // this will render on the page for 2fa
+      // Pass the QR code URL to the template
+      res.render("login-2fa.ejs", { loggedInMessage, qrCodeUrl }); // render the 2fa page
+    }
+  } catch (error) {
+    console.error(error);
+    loggedInMessage = "Failed to generate the QR Code - contact the administrator";
+    res.render("login-error.ejs", { loggedInMessage });
+  }
+});
+
+app.post("/login-2fa", async (req, res) =>{
+  qrCodeUrl = req.session.qrCodeUrl // references the session qr url
+  secretKey = req.session.generatedSecret.ascii // references the session secret key in ascii format
+  const userToken = req.body.twoFactorCode; // references user input taken from the 2fa input box from the html
+
+  // Verify the two-factor authentication code
+  const isTokenValid = verifyKey(userToken, secretKey); // the deciding function - takes the session user token and secret key and verifies if there is a match 
+
+  if (isTokenValid) { // login if true
+    req.session.isLoggedIn = true; // Set the session variable to show logged in
+    loggedInMessage = getLoggedInUser(req);`  `
+    res.redirect("/login-success");
+  } else {
+    loggedInMessage = "Two-factor authentication failed, try again";
+          // render the original 2fa page again with the orinal session qr url (this prevents a new qr code generated if incorrect form data is entered)
+    res.render("login-2fa.ejs", { loggedInMessage, qrCodeUrl });
+  }
 });
 
 app.get("/login-error", function (req, res) {
@@ -2049,3 +2147,7 @@ app.post("/edit-room-success", isLoggedIn, (req, res) => {
 app.listen(port, () => {
   console.log(`Bookit app listening at http://localhost:${port}`);
 });
+
+
+
+

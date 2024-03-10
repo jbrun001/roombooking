@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Bookit</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <%- include('header-nomenu-nologout') %>
+    <div class="content">
+        <div class="welcome-container">
+            <h1>Welcome to Bookit</h1>
+            <p>Please Scan the QR code below using the authenticator app</p>
+
+             <img src="<%= qrCodeUrl %>" >
+
+            <form action="/login-2fa" method="POST">
+                <div class="input-group">
+                    <label for="email">Input the code for the authenticator app:</label>
+                    <input type="text" id="twoFactorCode" name="twoFactorCode" required>
+                </div>
+                <button type="submit">Submit</button>
+            </form>
+        </div>
+    </div>
+    <%- include('footer') %>
+</body>
+</html>
