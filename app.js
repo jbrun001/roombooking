@@ -10,6 +10,21 @@ const sanitiseHtml = require("sanitize-html"); // used to make sure there are no
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt"); // used for storing and comparing password hashes
 const bcryptSaltRounds = 10; // the higher this is the more processing time - 20 is unworkable takes too long so changed to 10
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'rooms/')
+  },
+  filename: function (req, file, cb) {
+    const roomNumber = req.body.roomNumber;
+    const buildingName = req.body.buildingName;
+    const filename = `${roomNumber}-${buildingName}${path.extname(file.originalname)}`;
+    cb(null, filename);
+  }
+});
+
+const upload = multer({ storage: storage });
 
 // set up the database connection
 const db = mysql.createConnection(process.env.DATABASE_URL);
@@ -1155,47 +1170,37 @@ app.get("/add-room", isLoggedIn, (req, res) => {
   });
 });
 
-// this route is used to add a room to the database
-app.post("/add-room", isLoggedIn, (req, res) => {
-  // checking for admin role
+// Update the route to include multer middleware for handling file uploads
+app.post("/add-room", isLoggedIn, upload.single('roomImageFile'), (req, res) => {
   if (req.session.user_role !== "admin") {
     return res.send("Unauthorized access");
   }
 
-  // sanitising the input
+  // Sanitize the input
   const roomNumber = sanitiseHtml(req.body.roomNumber);
   const buildingName = sanitiseHtml(req.body.buildingName);
   const roomType = sanitiseHtml(req.body.roomType);
   const capacity = parseInt(req.body.capacity);
-  const pictureURL = sanitiseHtml(req.body.pictureURL);
+  let pictureURL = req.body.pictureURL ? sanitiseHtml(req.body.pictureURL) : null;
   const isAcceptingBookings = req.body.isAcceptingBookings === "true";
 
-  // inserting the room into the database
-  let sqlquery =
-    "INSERT INTO room (room_number, building_name, room_type, capacity, picture_URL, is_accepting_bookings) VALUES (?, ?, ?, ?, ?, ?)";
+  //Check if a file was uploaded
+  if (req.file) {
+    //Uploads to the rooms folder
+    pictureURL = `/rooms/${req.file.filename}`; 
+  }
 
-  // execute sql query
-  db.query(
-    sqlquery,
-    [
-      roomNumber,
-      buildingName,
-      roomType,
-      capacity,
-      pictureURL,
-      isAcceptingBookings,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error(err.message);
-        return res.send("Error in adding room");
-      }
-      // redirecting to a success page if the room was added successfully
-      res.redirect("/add-room-success");
+  let sqlQuery = "INSERT INTO room (room_number, building_name, room_type, capacity, picture_URL, is_accepting_bookings) VALUES (?, ?, ?, ?, ?, ?)";
+
+  // Execute SQL query
+  db.query(sqlQuery, [roomNumber, buildingName, roomType, capacity, pictureURL, isAcceptingBookings], (err, result) => {
+    if (err) {
+      console.error(err.message);
+      return res.send("Error in adding room");
     }
-  );
+    res.redirect("/add-room-success");
+  });
 });
-
 
 //----------------------------------------VIEW BOOKING--------------------------------------------------------
 app.get("/view-booking", isLoggedIn, (req, res) => {
@@ -1839,7 +1844,7 @@ app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
  * edit-rooms-list
  * this list shows all rooms so a user can select which room they want to edit
  */
-app.get("/edit-rooms-list", isLoggedIn, (req, res) => {
+app.get("/edit-rooms-list",upload.single('roomImageFile'), isLoggedIn, (req, res) => {
   var loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var userId = req.session.userid;

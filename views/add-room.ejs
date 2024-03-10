@@ -12,7 +12,7 @@
     <div class="content">
         <div class="form-container">
             <h1>Add New Room</h1>
-            <form action="/add-room" class="input-group-admin-pages" method="post">
+            <form action="/add-room" method="post" enctype="multipart/form-data">
                 <div class="input-group-admin-pages">
                     <label for="roomNumber">Room Number:</label>
                     <input type="text" id="roomNumber" name="roomNumber" required>
@@ -38,9 +38,11 @@
                     </select>
                 </div>                
                 <div class="input-group-admin-pages">
-                    <label for="pictureURL">Picture URL:</label>
-                    <input type="text" id="pictureURL" name="pictureURL">
-                </div>
+                    <label>Room Image:</label>
+                    <input type="file" name="roomImageFile" id="roomImageFile">
+                    <p>Or</p>
+                    <input type="text" name="pictureURL" placeholder="Or enter image URL" id="pictureURL">
+                  </div>
                 <div class="input-group-admin-pages">
                     <label for="isAcceptingBookings">Accepting Bookings:</label>
                     <select id="isAcceptingBookings" name="isAcceptingBookings">
