@@ -14,16 +14,16 @@
             <h1>Registration</h1>
             <p>Please enter your details to register</p>
             <p>Password must be at least 8 characters long and include at least one upper and lowercase letter, and one digit.</p>
-            <form action="/registered" method="POST">
-                <div class="input-group">
+            <form action="/registered" class="input-group-admin-pages" method="POST">
+                <div class="input-group-admin-pages">
                     <label for="email">Email:*</label>
                     <input type="email" id="email" name="email" required>
                 </div>
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="password">Password:*</label>
                     <input type="password" id="password" name="password" required>
                 </div>
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="userrole">User Role:*</label>
                     <select name="userrole" id="userrole">
                         <% for(let i = 0; i < allUserRoles.length; i++) { %>
@@ -31,15 +31,15 @@
                         <% } %>   
                     </select>    
                 </div>
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="societyname">Society Name:</label>
                     <input type="text" id="societyname" name="societyname">
                 </div>
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="module">Module:</label>
                     <input type="text" id="module" name="module">
                 </div>
-                <button type="submit">Register</button>
+                <button type="submit" class="button-link">Register</button>
             </form>
         </div>
     </div>

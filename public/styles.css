@@ -78,8 +78,15 @@ h2 {
 .welcome-container {
     margin-left: auto;
     margin-right: auto;
-    margin-top: 4rem;
+    margin-top: 5rem;
 }
+
+.login-success-page .welcome-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between; /* This will space out the items evenly */
+}
+
 
 .login-container,
 .welcome-container h1,
@@ -93,22 +100,38 @@ register-container p {
     color: #666;
 }
 
-.input-group {
+.input-group, 
+.input-group-admin-pages {
     margin-bottom: 1em;
+    text-align: center;
 }
 
-.input-group label {
+.input-group-admin-pages {
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+    width: 100%; 
+}
+
+.input-group,
+.input-group-admin-pages label {
     display: block;
     color: #333;
     margin-bottom: 0.5em;
 }
 
 .input-group input,
+.input-group-admin-pages input,
 select {
-    width: 100%;
-    padding: 0.75em;
+    width: 10rem;
+    height: 1rem;
+    /*padding: 0.75em;*/
     border: 1px solid #ddd;
     border-radius: 4px;
+}
+
+select {
+    height: 2rem;
 }
 
 button {
@@ -154,6 +177,7 @@ button:hover {
     background: #66BB6A;
     border-radius: 20px;
     font-weight: bold;
+    width: 7rem;
     margin: 10px 10px;
     /* Add margin to space out the links */
     transition: background-color 0.3s, box-shadow 0.3s;
@@ -170,10 +194,12 @@ button:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-.button-link {
+.button-link, .cancel-button, .button-link-order {
     color: #fff;
     /* Text color adjusted for contrast */
     text-decoration: none;
+    /* added tp standise button widths */
+    width: 7rem;
     padding: 10px 15px;
     /* Adjusted padding for better spacing */
     background: #5419f5;
@@ -190,6 +216,21 @@ button:hover {
     /* Align text horizontally */
 }
 
+.cancel-button {
+    background: #5419f5;
+}
+
+.cancel-button:hover {
+    background-color:#5419f5;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.button-link-order {
+    width: 21rem;
+    background: #5419f5;
+}
+
+
 .button-small-width {
     width: 10%;
 }
@@ -200,8 +241,11 @@ button:hover {
 }
 
 .welcome-user-logo {
-    width: 25%;
+    width: 30%;
     /* This will make the image take the full width of its parent */
+    /*move image to the right*/
+    margin-left: auto;
+    margin-right: auto;
     height: auto;
     /* To maintain the aspect ratio */
 }
@@ -303,7 +347,7 @@ button:hover {
     align-content: flex-start;
 
     button, #filterReset {
-        width: 100%;
+        width: 7rem;
         padding: 1em;
         border: none;
         border-radius: 20px;
@@ -317,7 +361,7 @@ button:hover {
     }
 
     #filterReset {
-        background-color: #ff4242;
+        background-color: #5419f5;
     }
 }
 
@@ -383,15 +427,15 @@ input::-webkit-calendar-picker-indicator::after {
 
 .date {
     position: relative;
-    width: 154px;
+    width: 11rem;
     overflow: auto;
     background: #000;
 }
 
 input {
-    width: 140px;
+    width: 9.25rem;
     padding: 5px;
-    height: 24px;
+    height: 1rem;
     display: block;
 }
 
@@ -451,7 +495,7 @@ input {
 .view-booking-content {
     flex: 1;
     width: 100%;
-    margin-top: 50px;
+    margin-top: 20px;
 }
 
 .view-booking-content h2 {
@@ -476,12 +520,17 @@ input {
     box-sizing: border-box;
 }
 
-.view-booking-input textarea {
-    width: 86%;
+/* .tox is used to style the tinyMCE editor */
+.view-booking-input textarea, .tox {
+    width: 95%;
     resize: none;
     border-width: 0.1rem;
     border-radius: 1rem;
     margin-bottom: 20px;
+}
+
+.view-booking-risk-read-only {
+    overflow: auto; width:95%; max-height: 300px;
 }
 
 .view-booking-button {
@@ -493,7 +542,7 @@ input {
 }
 
 .view-booking-button a {
-    width: 12%;
+    width: 6rem;
 }
 
 
@@ -586,7 +635,8 @@ input {
 }
 
 /* Dark Mode for input labels */
-[data-theme="dark"] .input-group label {
+[data-theme="dark"] .input-group label,
+[data-theme="dark"] .input-group-admin-pages label {
     color: #ffffff; 
 }
 

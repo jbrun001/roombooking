@@ -16,11 +16,11 @@
         </div>
         <div class="right-column">
             <h2 class="current-bookings-title">Approved Bookings</h2>
-            <div id="approved-order-button-wrapper" class="order-by-button-wrapper">
+            <div id="order-button-wrapper" class="order-by-button-wrapper">
                 <form id = "orderForm" class="card-wrapper" action="/approved-list-filtered" method="POST">
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Room">Order by Building</button>
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Time">Order by Upcoming Date/Time</button>
-                    <button class="button-link" name="orderSelection" type="submit" value="o_b_Recent_Approved">Order by Most Recently Approved</button>
+                    <button class="button-link-order" name="orderSelection" type="submit" value="o_b_Room">Order by Building</button>
+                    <button class="button-link-order" name="orderSelection" type="submit" value="o_b_Time">Order by Upcoming Date/Time</button>
+                    <button class="button-link-order" name="orderSelection" type="submit" value="o_b_Recent_Approved">Order by Most Recently Approved</button>
                 </form>
                 <script>
                     // Attach the event listener to the form

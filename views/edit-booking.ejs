@@ -6,6 +6,11 @@
         <title>Bookit / Edit Booking </title>
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
         <link rel="stylesheet" href="/styles.css">
+        <!-- tinyMCE code starts -->
+        <link rel="stylesheet" href="/tinyMCEstyle.css">
+        <script type="application/javascript" src="/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
+        <script type="application/javascript" src="/bookit-tinymce-config.js"></script>            
+        <!-- tinyMCE code ends -->
         <link rel="icon" type="image/x-icon" href="/favicon.ico">
     </head>
 <body>
@@ -30,12 +35,20 @@
         <% if (result[0].Status = "Awaiting Approval" && result[0].isApproved != '1') { %>
             <form id = "updateAction" class="view-booking-content" action="/edit-booking-submit" method="POST">
                 <div class="view-booking-input">
-                    <p><strong>Risk Assessment 1</strong></p>
-                    <textarea id="risk1" maxlength="200" name="risk1" label="Risk1" rows="8" cols="200" oninput="updateCharCount('risk1', 'countRisk1')"><%= result[0].risk1 %></textarea>
+                    <p><strong>Risk Assessment</strong></p>
+                    <textarea id="risktinymce" maxlength="200" name="risk1" label="Risk1" rows="8" cols="200" oninput="updateCharCount('risktinymce', 'countRisk1')">
+                    <% if (result[0].risk1 == null ) { %> 
+                        <%- include('risk-template',{ templateBy: result[0].bookedBy, templateType: result[0].roomType, templateBuilding: result[0].building, templateRoom: result[0].roomNumber , templateSociety:'INSERT SOCIETY HERE!', templateDate: result[0].date, templateTimeslot: result[0].timeslot }) %>   
+                    <% } else { %>
+                        <%- result[0].risk1 %>
+                    <% } %>
+                    </textarea>
                     <div id="countRisk1">0/200</div>
+<!--  remove risk assessment 2
                     <p><strong>Risk Assessment 2</strong></p>
                     <textarea id="risk2" maxlength="200" name="risk2" label="Risk2" rows="8" cols="200" oninput="updateCharCount('risk2', 'countRisk2')"><%= result[0].risk2 %></textarea>
                     <div id="countRisk2">0/200</div>
+-->
                 </div>
                 <script>
                     function updateCharCount(textarea, count) {
@@ -51,7 +64,7 @@
                     }
                 </script>
                 <div class="view-booking-button">
-                    <a href="/view-booking/<%= result[0].bookingId %>" class="button-link">Back</a>
+                    <a href="/view-booking/<%= result[0].bookingId %>" class="button-link" onclick="event.preventDefault(); window.history.back();">Back</a>
                     <input type="hidden" label="bookingId" name="bookingId" value="<%= result[0].bookingId %>"> 
                     <button class="button-link" name="confirm" type="submit" value="">Update Booking</button>
                 </div>
@@ -59,9 +72,11 @@
         <% } else { %>
             <div class="view-booking-input">
                 <p><strong>The risk asssements cannot be edited because they have already been approved or this booking is not awaiting approval</strong>                <p><strong>Risk Assessment 1</strong></p>
-                <textarea name="risk1" id="risk1" rows="8" cols="200" readonly><%= result[0].risk1 %></textarea>
+                <textarea name="risk1" id="risktinymce" rows="8" cols="200" readonly><%- result[0].risk1 %></textarea>
+<!-- risk assessment 2 removed
                 <p><strong>Risk Assessment 2</strong></p>
                 <textarea name="risk2" id="risk2" rows="8" cols="200" readonly><%= result[0].risk2 %></textarea>
+-->
             </div>
             <div class="view-booking-button"><a href="/view-booking/<%= result[0].bookingId %>" class="button-link">Back</a></div>
         <% } %>

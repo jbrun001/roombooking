@@ -2,6 +2,7 @@ require("dotenv").config();
 const speakeasy = require("speakeasy");
 const qrcode = require("qrcode");
 const express = require("express");
+var path = require('path');
 const app = express();
 const port = process.env.PORT || 8000;
 var session = require("express-session"); // used for creating sessions so data can persist between pages like if a user is logged in
@@ -11,6 +12,21 @@ const sanitiseHtml = require("sanitize-html"); // used to make sure there are no
 const bodyParser = require("body-parser");
 const bcrypt = require("bcrypt"); // used for storing and comparing password hashes
 const bcryptSaltRounds = 10; // the higher this is the more processing time - 20 is unworkable takes too long so changed to 10
+const multer = require('multer');
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'rooms/')
+  },
+  filename: function (req, file, cb) {
+    const roomNumber = req.body.roomNumber;
+    const buildingName = req.body.buildingName;
+    const filename = `${roomNumber}-${buildingName}${path.extname(file.originalname)}`;
+    cb(null, filename);
+  }
+});
+
+const upload = multer({ storage: storage });
 
 
 //Two Factor Authentication
@@ -74,7 +90,9 @@ app.use(
 );
 
 // this allows processing of form data
-app.use(bodyParser.urlencoded({ extended: true }));
+// extended the limit to to 500kb so the post of the risk assessment is managed
+// the risk assessment template is 223kb, so this allows for just over double the size
+app.use(bodyParser.urlencoded({ limit: '500kb', extended: true }));
 
 // Set the directory where Express will pick up media files images - this will be accessable from \
 // __dirname will get the current directory
@@ -82,6 +100,9 @@ app.use(express.static(__dirname + "/media"));
 
 // Set up access to folder with css
 app.use(express.static(__dirname + "/public"));
+
+/* New Route to the TinyMCE Node module */
+app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
 
 // Set the security headers for anti-click jacking and set the content security policy
 // these fix 2 medium security errors identified by OWASP Zap as part of Part E
@@ -92,11 +113,11 @@ app.use((req, res, next) => {
   var cSPolicy = "default-src http://localhost:8000; "; // will need changing when installed
   cSPolicy =
     cSPolicy +
-    "script-src http://localhost:8000 'unsafe-inline' https://ajax.googleapis.com; "; // unsafe-inline allows for script in the pages
+    "script-src http://localhost:8000  https://ajax.googleapis.com 'unsafe-inline'; "; // unsafe-inline allows for script in the pages
   cSPolicy =
     cSPolicy +
     "img-src 'self' data: https://cdn3.iconfinder.com https://i.imgur.com; ";
-  cSPolicy = cSPolicy + "style-src http://localhost:8000; ";
+  cSPolicy = cSPolicy + "style-src http://localhost:8000 'unsafe-inline'; ";
   cSPolicy = cSPolicy + "font-src http://localhost:8000; ";
   cSPolicy = cSPolicy + "frame-ancestors http://localhost:8000; "; // stops the page being used within external websites
   cSPolicy = cSPolicy + "form-action http://localhost:8000; "; // only allow form submission to the server running the app
@@ -183,13 +204,12 @@ app.get("/login", (req, res) => {
 // login-check route which is the target for the https post in login,ejs.ejs
 app.post("/login-check", function (req, res) {
   var email = sanitiseHtml(req.body.email);
+  email = email.toLowerCase();
   var password = req.body.password;
   // just check that the email address exists (password hash checking comes after)
   let sqlquery =
-    'SELECT email, id, password, user_role FROM user_account WHERE email="' +
-    email.toLowerCase() +
-    '";';
-  db.query(sqlquery, (err, result) => {
+    'SELECT email, id, password, user_role FROM user_account WHERE email= ? ';
+  db.query(sqlquery, email, (err, result) => {
     // if error display login-error page
     loggedInMessage = getLoggedInUser(req);
     if (err) {
@@ -428,6 +448,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         b.id as bookingId, r.id as roomId, u.id as userId
         FROM booking b JOIN room r ON b.room_id = r.id JOIN user_account u ON b.user_id = u.id
         WHERE u.id = ?
+        AND b.booking_status != 'Cancelled'
       `;
     }
     if (pageName === "requests-list") {
@@ -599,7 +620,8 @@ function getRooms(pageName, filters, listOrder, roomId) {
         SELECT id as roomId, room_number as roomNumber, 
         building_name as buildingName, picture_URL as pictureURL,
         capacity, is_accepting_bookings as isAcceptingBookings,
-        room_type as roomType FROM room r WHERE id = ` + roomId + ' ';
+        room_type as roomType FROM room r WHERE id = ?
+      `;
     }
     else {
       // if the filter date OR there is no selecton for start time and duration then get all the rooms and other filter criteria are added after the if else
@@ -647,11 +669,12 @@ function getRooms(pageName, filters, listOrder, roomId) {
           WHERE b.room_id = r.id
           AND (
                 (
-                  b.booking_start < DATE_ADD( ?, INTERVAL ? HOUR_MINUTE) 
+                  b.booking_start <= DATE_ADD( ?, INTERVAL ? HOUR_MINUTE) 
                   AND 
-                  b.booking_end > DATE_ADD(?, INTERVAL ? HOUR_MINUTE)
+                  b.booking_end >= DATE_ADD(?, INTERVAL ? HOUR_MINUTE)
                 )
           )
+          AND b.booking_status != 'Cancelled' 
         )   
         # from that list above
         # exlude any room that has a booking that starts before the timeslot and finishes after the timeslot
@@ -662,15 +685,16 @@ function getRooms(pageName, filters, listOrder, roomId) {
           WHERE DATE(booking_start) = ?
           AND (
                 (
-                  booking_start < DATE_ADD( ? , INTERVAL ? HOUR_MINUTE) 
+                  booking_start <= DATE_ADD( ? , INTERVAL ? HOUR_MINUTE) 
                   AND 
-                  booking_end > DATE_ADD( ? , INTERVAL ? HOUR_MINUTE)
+                  booking_end >= DATE_ADD( ? , INTERVAL ? HOUR_MINUTE)
                 )
               OR (
-                booking_end > DATE_ADD(booking_start, INTERVAL ? MINUTE)
+                booking_end >= DATE_ADD(booking_start, INTERVAL ? MINUTE)
                 AND booking_start <= DATE_ADD( ? , INTERVAL ? HOUR_MINUTE)
               )
           )
+          AND booking_status != 'Cancelled' 
         ) AND r.is_accepting_bookings = 1 `;
       }
       // add any other filters to the end of the query
@@ -689,6 +713,7 @@ function getRooms(pageName, filters, listOrder, roomId) {
 
       }
     }
+
     // add the "order by" string
     sqlquery = sqlquery + " " + listOrder;
 
@@ -1243,47 +1268,37 @@ app.get("/add-room", isLoggedIn, (req, res) => {
   });
 });
 
-// this route is used to add a room to the database
-app.post("/add-room", isLoggedIn, (req, res) => {
-  // checking for admin role
+// Update the route to include multer middleware for handling file uploads
+app.post("/add-room", isLoggedIn, upload.single('roomImageFile'), (req, res) => {
   if (req.session.user_role !== "admin") {
     return res.send("Unauthorized access");
   }
 
-  // sanitising the input
+  // Sanitize the input
   const roomNumber = sanitiseHtml(req.body.roomNumber);
   const buildingName = sanitiseHtml(req.body.buildingName);
   const roomType = sanitiseHtml(req.body.roomType);
   const capacity = parseInt(req.body.capacity);
-  const pictureURL = sanitiseHtml(req.body.pictureURL);
+  let pictureURL = req.body.pictureURL ? sanitiseHtml(req.body.pictureURL) : null;
   const isAcceptingBookings = req.body.isAcceptingBookings === "true";
 
-  // inserting the room into the database
-  let sqlquery =
-    "INSERT INTO room (room_number, building_name, room_type, capacity, picture_URL, is_accepting_bookings) VALUES (?, ?, ?, ?, ?, ?)";
+  //Check if a file was uploaded
+  if (req.file) {
+    //Uploads to the rooms folder
+    pictureURL = `/rooms/${req.file.filename}`; 
+  }
 
-  // execute sql query
-  db.query(
-    sqlquery,
-    [
-      roomNumber,
-      buildingName,
-      roomType,
-      capacity,
-      pictureURL,
-      isAcceptingBookings,
-    ],
-    (err, result) => {
-      if (err) {
-        console.error(err.message);
-        return res.send("Error in adding room");
-      }
-      // redirecting to a success page if the room was added successfully
-      res.redirect("/add-room-success");
+  let sqlQuery = "INSERT INTO room (room_number, building_name, room_type, capacity, picture_URL, is_accepting_bookings) VALUES (?, ?, ?, ?, ?, ?)";
+
+  // Execute SQL query
+  db.query(sqlQuery, [roomNumber, buildingName, roomType, capacity, pictureURL, isAcceptingBookings], (err, result) => {
+    if (err) {
+      console.error(err.message);
+      return res.send("Error in adding room");
     }
-  );
+    res.redirect("/add-room-success");
+  });
 });
-
 
 //----------------------------------------VIEW BOOKING--------------------------------------------------------
 app.get("/view-booking", isLoggedIn, (req, res) => {
@@ -1533,7 +1548,21 @@ app.post("/edit-booking-submit", isLoggedIn, (req, res) => {
   var userrole = req.session.user_role;
   var email = req.session.email;
   var bookingId = sanitiseHtml(req.body.bookingId);
-  var risk1 = sanitiseHtml(req.body.risk1);
+  //var risk1 = sanitiseHtml(req.body.risk1);
+  var risk1 = sanitiseHtml(req.body.risk1, {
+    allowedTags: sanitiseHtml.defaults.allowedTags.concat(['span','table','td','tr','p']),
+    allowedAttributes: {
+      '*': ['style','width','colspan','border','border-left','border-right','border-top','border-bottom']
+    },
+    allowedStyles: {
+      '*': {
+        // Allow color and background-color for any element
+        'color': [/^#(0x)?[0-9a-f]+$/i, /^rgb\(/, /^rgba\(/, /^hsl\(/, /^hsla\(/, /^(red|black|yellow|white)$/i],
+        'background-color': [/^#(0x)?[0-9a-f]+$/i, /^rgb\(/, /^rgba\(/, /^hsl\(/, /^hsla\(/, /^(red|black|yellow|white)$/i],
+        'background': [/^#(0x)?[0-9a-f]+$/i, /^rgb\(/, /^rgba\(/, /^hsl\(/, /^hsla\(/, /^(red|black|yellow|white)$/i]
+      }
+    }
+  });
   var risk2 = sanitiseHtml(req.body.risk2);
 
   const query =  `
@@ -1551,7 +1580,23 @@ app.post("/edit-booking-submit", isLoggedIn, (req, res) => {
   })
 });
 
-
+app.post("/cancel-booking", isLoggedIn, (req, res) => {
+  loggedInMessage = getLoggedInUser(req);
+  var userrole = req.session.user_role;
+  var email = req.session.email;
+  var bookingId = sanitiseHtml(req.body.bookingId);
+  updateCancelledQuery = "UPDATE booking " +
+    "SET booking_status = 'Cancelled' " +
+    "WHERE id = ?;";
+  db.query(updateCancelledQuery, [bookingId], (err, result) => {
+    if (err) {
+      console.log("cancel-booking: error in sql query: " + err);
+    } else {
+      res.send('<p>Booking ' + bookingId + ' cancelled successfully.</p></br><a href="/login-success">Click to go back to the menu</a>');
+    } 
+  });
+  //res.send(updateCancelledQuery);
+});
 
 // this displays the room details from the database and the
 // booking information passed into the page from the room-list is roomId, selectedDate and selectedTimeSlot
@@ -1897,7 +1942,7 @@ app.post("/rooms-list-filtered", isLoggedIn, function (req, res) {
  * edit-rooms-list
  * this list shows all rooms so a user can select which room they want to edit
  */
-app.get("/edit-rooms-list", isLoggedIn, (req, res) => {
+app.get("/edit-rooms-list",upload.single('roomImageFile'), isLoggedIn, (req, res) => {
   var loggedInMessage = getLoggedInUser(req);
   var userrole = req.session.user_role;
   var userId = req.session.userid;
