@@ -16,7 +16,7 @@ const multer = require('multer');
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, 'rooms/')
+    cb(null, 'media/rooms/')
   },
   filename: function (req, file, cb) {
     const roomNumber = req.body.roomNumber;
@@ -26,7 +26,15 @@ const storage = multer.diskStorage({
   }
 });
 
-const upload = multer({ storage: storage });
+// Accept image files only
+const imageFilter = function(req, file, cb) {
+  if (!file.originalname.match(/\.(jpg|jpeg|png)$/i)) {
+      return cb(new Error('Only image files are allowed'), false);
+  }
+  cb(null, true);
+};
+
+const upload = multer({ storage: storage, fileFilter: imageFilter });
 
 
 //Two Factor Authentication
