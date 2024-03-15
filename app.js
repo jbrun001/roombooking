@@ -409,6 +409,11 @@ app.get("/credits", (req, res) => {
   res.render("credits.ejs", { loggedInMessage });
 });
 
+app.get("/report-bug", (req, res) => {
+  loggedInMessage = getLoggedInUser(req);
+  res.render("report-bug.ejs", { loggedInMessage });
+});
+
 app.get("/faq", (req, res) => {
   loggedInMessage = getLoggedInUser(req);
   res.render("faq.ejs", { loggedInMessage });
