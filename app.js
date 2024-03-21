@@ -2208,6 +2208,24 @@ app.post("/edit-room-success", isLoggedIn, (req, res) => {
   );
 });
 
+app.post("/delete-room", isLoggedIn, (req, res) => {
+  if (req.session.user_role !== "admin") {
+    return res.send("Unauthorized access");
+  }
+  const roomId = parseInt(req.body.roomId);
+
+  const deleteQuery = 'DELETE FROM room WHERE id = ?';
+
+  db.query(deleteQuery, [roomId], (err, result) => {
+    if (err) {
+      console.error(err.message);
+      return res.status(500).send("Error deleting room");
+    }
+    console.log("Deleted Room ID:", roomId);
+    res.redirect('/edit-rooms-list'); 
+  });
+});
+
 app.listen(port, () => {
   console.log(`Bookit app listening at http://localhost:${port}`);
 });

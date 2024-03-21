@@ -36,9 +36,13 @@
                                     </div>
                                 </div>
                                 <div class="card-column">
-                                    <form id = "actionButtons" class="card-wrapper" action="/edit-room" method="POST">
-                                        <input type="hidden" name="roomId" value="<%=rooms[i].roomId%>">
-                                        <button class="button-link" name="editSubmit" type="submit">Edit</button>
+                                    <form id="editForm" action="/edit-room" method="POST">
+                                        <input type="hidden" name="roomId" value="<%= rooms[i].roomId%>">
+                                        <button class="button-link" type="submit">Edit</button>
+                                    </form>
+                                    <form id="deleteForm" action="/delete-room" method="POST" onsubmit="return confirm('Are you sure you want to delete this room?');">
+                                        <input type="hidden" name="roomId" value="<%= rooms[i].roomId%>">
+                                        <button class="button-link" type="submit">Delete</button>
                                     </form>
                                 </div>
                             </div>
