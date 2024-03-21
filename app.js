@@ -1002,6 +1002,9 @@ app.get("/requests-list", isLoggedIn, (req, res) => {
     case "o_b_Status":
       listOrder = " ORDER BY b.booking_status";
       break;
+    case "o_b_Risk_Approved":
+      listOrder = " ORDER BY b.is_risk_assessment_approved DESC, b.confirmed_on ASC, b.booking_start ASC"
+      break;
     default:
       listOrder = " ORDER BY b.booking_start";
       break;
@@ -1080,6 +1083,9 @@ app.post("/requests-list-filtered", isLoggedIn, function (req, res) {
       break;
     case "o_b_Status":
       listOrder = " ORDER BY b.booking_status";
+      break;
+    case "o_b_Risk_Approved":
+      listOrder = " ORDER BY b.is_risk_assessment_approved DESC, b.confirmed_on ASC, b.booking_start ASC"
       break;
     default:
       listOrder = " ORDER BY b.booking_start";
