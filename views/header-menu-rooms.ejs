@@ -1,0 +1,80 @@
+
+<header class="top-menu">
+    <div class="logo">
+        <a href="/login-success">
+            <img src="/logo.png" alt="Bookit Logo">
+        </a>
+    </div>
+    <div class="app-name">Bookit</div>
+    <!-- Dark Mode Toggle Button -->
+    <div class="theme-toggle">
+        <label for="dark-mode-toggle">Dark Mode</label>
+        <input type="checkbox" id="dark-mode-toggle"/>
+    </div>
+    <div class="order-by-button-wrapper">
+    <form id = "orderForm" class="card-wrapper" action="/rooms-list-filtered" method="POST">
+        <button class="button-link-order" name="orderSelection" type="submit" value="o_b_Building">Order by Building</button>
+        <button class="button-link-order" name="orderSelection" type="submit" value="o_b_Capacity">Order by Capacity</button>
+    </form>
+    <script>
+        // Attach the event listener to the form
+        $(document).ready(function() {
+            // Attach the event listener to buttons within the form
+            $('#orderForm .button-link-order').on('click', function(e) {
+                e.preventDefault(); // Prevent default button action
+        
+                var orderValue = $(this).val(); // Get the value of the clicked button
+                // Serialize the form data and append the clicked button value
+                var formData = $('#orderForm').serialize() + '&orderSelection=' + encodeURIComponent(orderValue);
+                // Send the AJAX request
+                $.ajax({   
+                    // Send the form data to the server
+                    type: "POST",
+                    url: $('#orderForm').attr('action'),
+                    data: formData, // Include the clicked button value explicitly
+                    success: function(response) {
+                        // Update the bookings list with the response
+                        $('.data-list').html($(response).find('.data-list').html());
+                        // remove the new data animation if it has already been added
+                        $('.data-list').removeClass('newDataLoadedEffect');
+                        // force the animation to run again
+                        void $('.data-list')[0].offsetWidth;
+                        // re-add the animation on the new data
+                        $('.data-list').addClass('newDataLoadedEffect');
+                    }
+                });
+            });
+        });
+        </script>                                
+</div>
+    <div class="logged-in-as"><%= loggedInMessage %></div>
+    <div class="logout-user-button-image"></div>
+        <a href="/login-success" class="button-link">Menu</a>
+    </div>
+    <div class="logout-user-button-image"></div>
+        <a href="/logout" class="button-link">Logout</a>
+    </div>
+    <script>
+        const toggleSwitch = document.getElementById('dark-mode-toggle');
+        toggleSwitch.addEventListener('change', switchTheme, false);
+    
+        function switchTheme(e) {
+            if (e.target.checked) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+            }    
+        }
+    
+        // Check for saved user preferences on page load.
+        const currentTheme = localStorage.getItem('theme') ? localStorage.getItem('theme') : null;
+        if (currentTheme) {
+            document.documentElement.setAttribute('data-theme', currentTheme);
+            if (currentTheme === 'dark') {
+                toggleSwitch.checked = true;
+            }
+        }
+    </script>
+</header>
