@@ -2,10 +2,6 @@
 CREATE DATABASE roombooking;
 USE roombooking;
 
-# Create the app user and give it access to the database
-CREATE USER 'bookituser'@'localhost' IDENTIFIED WITH mysql_native_password BY 'JuKi!s28;-24';
-GRANT ALL PRIVILEGES ON roombooking.* TO 'bookituser'@'localhost';
-
 -- MySQL dump 10.13  Distrib 8.2.0, for Win64 (x86_64)
 --
 -- Host: aws.connect.psdb.cloud    Database: roombooking
@@ -22,19 +18,12 @@ GRANT ALL PRIVILEGES ON roombooking.* TO 'bookituser'@'localhost';
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
-SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
-SET @@SESSION.SQL_LOG_BIN= 0;
+/* SET @MYSQLDUMP_TEMP_LOG_BIN = @@SESSION.SQL_LOG_BIN;
+/* SET @@SESSION.SQL_LOG_BIN= 0;
 
 --
 -- GTID state at the beginning of the backup 
 --
-
-SET @@GLOBAL.GTID_PURGED=/*!80000 '+'*/ '50cc57ff-c5cb-11ee-b8ea-0e0f63437c8e:1-276,
-5c667a10-b85e-11ee-9c97-92498ad8abd2:1-249,
-5ce4eca1-b85e-11ee-9db5-52eaea5f96d0:1-160,
-a85f33ee-dbcc-11ee-a580-82a372d0ea61:1-99,
-aa3e195f-c43e-11ee-9132-8a92493258c8:1-343,
-db53e045-dcb1-11ee-a335-727b835d0b29:1-62';
 
 --
 -- Table structure for table `booking`
@@ -249,7 +238,7 @@ LOCK TABLES `user_account` WRITE;
 INSERT INTO `user_account` VALUES (2,'jake@123.com','$2b$10$lgIpFn3VZhDRaPsqiZDA0u9qEJYKNskmtlybrO2.K35a0wYb8XzB.','society leader','testing',NULL),(3,'coordinator@123.com','$2b$10$lgIpFn3VZhDRaPsqiZDA0u9qEJYKNskmtlybrO2.K35a0wYb8XzB.','coordinator','',''),(4,'admin@123.com','$2b$10$qBl3yz5wb.UfnSC8p.TgSe8vMpkhVCnvw7l2UUuE8VTbogXhTODvq','admin','n/a',NULL),(10,'security@123.com','$2b$10$NzIS2b4infjObfF9meaZXuJsdpQOI3dJo6FCFv1qngOqfe8wG3PqG','admin','n/a','n/a'),(11,'securitytest1@123.com','$2b$10$t.efCsfx3s8YWksUUgDaEuB7NP4gMGbuxWbVpFi9oHKssD.SNT0KW','admin','n/a','n/a'),(12,'admin@123.com','$2b$10$SWpVbxCqEr8RFCg7jzIw2edbqwGMkocoVfTFl78eTizKye7zDfbtq','society leader','test',''),(13,'test1@test.com','$2b$10$4iirG9G86bMw7N.TCtm0i.rnQe7xWZpmoYX2sVr/WvzbqfzOq5oH6','society leader','test',''),(14,'test2@test.com','$2b$10$dfzvaaDj8rZHXrU0EvQUbek28DhxTrxxwZUUTCy4ts84eKyYQK39O','society leader','test',''),(15,'passwordtest@123.com','$2b$10$ofII5VRAiR6QAnDdTj338e4ZtfTSvext3t2e7UKwXluNEh89uoJg6','lecturer','','');
 /*!40000 ALTER TABLE `user_account` ENABLE KEYS */;
 UNLOCK TABLES;
-SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
+/* SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -261,3 +250,8 @@ SET @@SESSION.SQL_LOG_BIN = @MYSQLDUMP_TEMP_LOG_BIN;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2024-03-17  8:43:38
+
+
+# Create the app user and give it access to the database
+CREATE USER 'bookituser'@'localhost' IDENTIFIED WITH mysql_native_password BY 'JuKi!s28;-24';
+GRANT ALL PRIVILEGES ON roombooking.* TO 'bookituser'@'localhost';
