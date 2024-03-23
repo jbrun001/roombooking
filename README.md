@@ -20,6 +20,15 @@ install dotenv## roombooking
 tinyMCE install:
 npm install path cookie-parser morgan tinymce@^6
 
+QR Code install
+npm speakeasy qrcode 
+
+File upload install
+npm multer
+
+All installs:
+npm install dotenv mysql2 express express-session ejs sanitize-html body-parser bcrypt path cookie-parser morgan tinymce@^6 multer
+
 
 to run
 - node app.js

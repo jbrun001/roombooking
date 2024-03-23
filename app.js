@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const roomNumber = req.body.roomNumber;
     const buildingName = req.body.buildingName;
-    const filename = `${roomNumber}-${buildingName}${path.extname(file.originalname)}`;
+    const filename = `${roomNumber}-${buildingName}.jpeg`;
     cb(null, filename);
   }
 });
@@ -36,10 +36,21 @@ const imageFilter = function(req, file, cb) {
 
 const upload = multer({ storage: storage, fileFilter: imageFilter });
 
-
 //Two Factor Authentication
 //THIS VARIABLE ACTIVATES TWO FACTOR ACROSS THE ENTIRE APP <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-var activateTwoFactor = true;
+let activateTwoFactor;
+activateTwoFactor = true;
+
+// override this value if there is a TWO_FACTOR=TRUE or TWO_FACTOR=FALSE in the .env file
+if (process.env.TWO_FACTOR) {
+  let mfa = process.env.TWO_FACTOR.toLowerCase();
+  // have to do this as mfa is a string not a boolean
+  if (mfa == "true") activateTwoFactor = true
+  else if (mfa == "false") activateTwoFactor = false
+  else console.log("INFO: invalid values for TWO_FACTOR in .env - TRUE and FALSE are the only valid values")
+}
+
+console.log("Two factor authentication activation is " + activateTwoFactor);
 
 // 1) Make a secret key const generatedSecret using generateSecretKey() which returns secret, which generates a key based on the argument (user email)
 // 2) Create a QR code URL using the qrToURL function which takes a secret key as its argument. This will be used to diplay the qr code as an image in the page
@@ -82,8 +93,29 @@ function verifyKey(token , userSecret){
 console.log(verifyKey());
 
 // set up the database connection
-const db = mysql.createConnection(process.env.DATABASE_URL);
+// check to see if the .env has a variable LOCAL_DB=true  if this variable is present and set to true
+// then we are in production mode and use localhost as the database with additional parameters from the .env
+// else we are in development mode and use the shared cloud database 
+let db;
+if(process.env.LOCAL_DB && process.env.LOCAL_DB.toLowerCase() == "true") { 
+  // local database - used for live system
+  db = mysql.createConnection ({
+    host: process.env.LOCAL_HOST,
+    user: process.env.LOCAL_USER,
+    password: process.env.LOCAL_PASSWORD,
+    database: process.env.LOCAL_DATABASE
+  });
+  console.log("Using Local Database. Host: " +process.env.LOCAL_HOST + ",  Database: " + process.env.LOCAL_DATABASE);
+} 
+else {
+  // cloud based development database  
+  db = mysql.createConnection(process.env.DATABASE_URL);
+  const url = new URL(process.env.DATABASE_URL);
+  console.log("Using Cloud Database. Host: " + url.hostname + url.pathname);
+}
 db.connect();
+
+
 
 // session middleware - used for login, used to create a unique persistent session
 app.use(
@@ -249,11 +281,12 @@ app.post("/login-check", function (req, res) {
           req.session.email = result[0].email;
           req.session.user_role = result[0].user_role;     
           res.redirect("/login-2fa"); // redirect to the 2fa pge
-        } else {
+        }
+      } else {
         console.error("user details don't match");
         loggedInMessage = getLoggedInUser(req);
         res.render("login-error.ejs", { loggedInMessage });
-      }}
+      }
     }
   });
 });
@@ -1287,7 +1320,6 @@ app.get("/add-room", isLoggedIn, (req, res) => {
   });
 });
 
-// Update the route to include multer middleware for handling file uploads
 app.post("/add-room", isLoggedIn, upload.single('roomImageFile'), (req, res) => {
   if (req.session.user_role !== "admin") {
     return res.send("Unauthorized access");
@@ -2155,7 +2187,7 @@ app.post("/edit-room", isLoggedIn, (req, res) => {
     });
 });
 
-app.post("/edit-room-success", isLoggedIn, (req, res) => {
+app.post("/edit-room-success", isLoggedIn, upload.single('roomImageFile'), (req, res) => {
   //sql changes to room table
   var userrole = req.session.user_role;
   var email = req.session.email;
@@ -2165,9 +2197,14 @@ app.post("/edit-room-success", isLoggedIn, (req, res) => {
   const buildingName = sanitiseHtml(req.body.buildingName);
   const roomType = sanitiseHtml(req.body.roomType);
   const capacity = sanitiseHtml(req.body.capacity);
-  const pictureURL = sanitiseHtml(req.body.pictureURL);
+  let pictureURL = req.body.pictureURL ? sanitiseHtml(req.body.pictureURL) : null;
   const isAcceptingBookings = sanitiseHtml(req.body.isAcceptingBookings);
   console.log("edit room sucess: " + roomId);
+
+    // Check if a file was uploaded
+  if (req.file) {
+    pictureURL = `/rooms/${req.file.filename}`; // Update the file path as needed
+  }
 
   sqlquery = `
     UPDATE room SET room_number = ?, building_name = ?, room_type = ?, 
@@ -2203,10 +2240,10 @@ app.post("/edit-room-success", isLoggedIn, (req, res) => {
         loggedInMessage,
         userrole,
         email
-      });
-    }
-  );
-});
+          });
+        }
+      );
+  });
 
 app.post("/delete-room", isLoggedIn, (req, res) => {
   if (req.session.user_role !== "admin") {
