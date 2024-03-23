@@ -39,10 +39,10 @@
                                     <div class="user-data">
                                         <div>Booked by: <%=bookings[i].bookedBy%></div>
                                         <div>Status: <%=bookings[i].Status%></div>
-                                        <% if (bookings[i].raApproved == 1) { %>
+                                        <% if (bookings[i].raApprovementStatus == "Risk Assessment Approved") { %>
                                             <div>Risk Assessment: Approved</div>
-                                        <% } else if (bookings[i].raApproved == 0) { %>
-                                            <div>Risk Assessment: Approved</div>
+                                        <% } else if (bookings[i].raApprovalStatus == "Risk Assessment Rejected") { %>
+                                            <div>Risk Assessment: Rejected</div>
                                         <% } else { %>
                                             <div>Risk Assessment: Not reviewed</div>
                                         <% } %>
@@ -50,7 +50,7 @@
                                 </div>
                                 <div class="card-column">
                                     <a href="/view-booking/<%=bookings[i].bookingId%>" class="button-link">View</a>
-                                    <%if (bookings[i].raApproved != 1 && bookings[i].raApproved != 0) {%>
+                                    <%if (bookings[i].raApprovementStatus != "Risk Assessment Approved" && bookings[i].raApprovalStatus != "Risk Assessment Rejected") {%>
                                     <form id = "editBookingButton" action="/edit-booking" method="POST">
                                         <button class="button-link" name="bookingId" type="submit" value="<%=bookings[i].bookingId%>">Edit</button>
                                     </form>

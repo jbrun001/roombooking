@@ -39,10 +39,10 @@
                                     <div class="user-data">
                                         <div>Booked by: <%=bookings[i].bookedBy%></div>
                                         <div>Status: <%=bookings[i].Status%></div>
-                                        <% if (bookings[i].raApproved == 1) { %>
+                                        <% if (bookings[i].raApprovementStatus == "Risk Assessment Approved") { %>
                                             <div>Risk Assessment: Approved</div>
-                                        <% } else if (bookings[i].raApproved == 0) { %>
-                                            <div>Risk Assessment: Approved</div>
+                                        <% } else if (bookings[i].raApprovementStatus == "Risk Assessment Rejected") { %>
+                                            <div>Risk Assessment: Rejected</div>
                                         <% } else { %>
                                             <div>Risk Assessment: Not reviewed</div>
                                         <% } %>
