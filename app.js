@@ -36,10 +36,21 @@ const imageFilter = function(req, file, cb) {
 
 const upload = multer({ storage: storage, fileFilter: imageFilter });
 
-
 //Two Factor Authentication
 //THIS VARIABLE ACTIVATES TWO FACTOR ACROSS THE ENTIRE APP <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-var activateTwoFactor = true;
+let activateTwoFactor;
+activateTwoFactor = true;
+
+// override this value if there is a TWO_FACTOR=TRUE or TWO_FACTOR=FALSE in the .env file
+if (process.env.TWO_FACTOR) {
+  let mfa = process.env.TWO_FACTOR.toLowerCase();
+  // have to do this as mfa is a string not a boolean
+  if (mfa == "true") activateTwoFactor = true
+  else if (mfa == "false") activateTwoFactor = false
+  else console.log("INFO: invalid values for TWO_FACTOR in .env - TRUE and FALSE are the only valid values")
+}
+
+console.log("Two factor authentication activation is " + activateTwoFactor);
 
 // 1) Make a secret key const generatedSecret using generateSecretKey() which returns secret, which generates a key based on the argument (user email)
 // 2) Create a QR code URL using the qrToURL function which takes a secret key as its argument. This will be used to diplay the qr code as an image in the page
@@ -82,8 +93,29 @@ function verifyKey(token , userSecret){
 console.log(verifyKey());
 
 // set up the database connection
-const db = mysql.createConnection(process.env.DATABASE_URL);
+// check to see if the .env has a variable LOCAL_DB=true  if this variable is present and set to true
+// then we are in production mode and use localhost as the database with additional parameters from the .env
+// else we are in development mode and use the shared cloud database 
+let db;
+if(process.env.LOCAL_DB && process.env.LOCAL_DB.toLowerCase() == "true") { 
+  // local database - used for live system
+  db = mysql.createConnection ({
+    host: process.env.LOCAL_HOST,
+    user: process.env.LOCAL_USER,
+    password: process.env.LOCAL_PASSWORD,
+    database: process.env.LOCAL_DATABASE
+  });
+  console.log("Using Local Database. Host: " +process.env.LOCAL_HOST + ",  Database: " + process.env.LOCAL_DATABASE);
+} 
+else {
+  // cloud based development database  
+  db = mysql.createConnection(process.env.DATABASE_URL);
+  const url = new URL(process.env.DATABASE_URL);
+  console.log("Using Cloud Database. Host: " + url.hostname + url.pathname);
+}
 db.connect();
+
+
 
 // session middleware - used for login, used to create a unique persistent session
 app.use(
