@@ -445,7 +445,22 @@ app.get("/credits", (req, res) => {
 app.get("/report-bug", (req, res) => {
   loggedInMessage = getLoggedInUser(req);
   res.render("report-bug.ejs", { loggedInMessage });
-});
+}); 
+
+app.post('/send',
+[
+  check('yourName').notEmpty().withMessage('Name is required'),
+  check('email').isEmail().withMessage('Email is required'),
+  check('bugTitle').notEmpty().withMessage('Title is required'),
+  check('bugDescription').notEmpty().withMessage('Description is required')
+], (req, res) => {
+
+const errors = validationResult(req);
+if (!errors.isEmpty()) {
+  response.render('contact', { errors: errors.mapped() });
+}
+}
+);
 
 app.get("/faq", (req, res) => {
   loggedInMessage = getLoggedInUser(req);
