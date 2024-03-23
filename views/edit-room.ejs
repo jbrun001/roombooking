@@ -12,7 +12,7 @@
     <div class="content">
         <div class="form-container">
             <h1>Edit Room</h1>
-            <form action="/edit-room-success" class="input-group-admin-pages" method="post">
+            <form action="/edit-room-success" class="input-group-admin-pages" method="post" enctype="multipart/form-data">
                 <div class="input-group-admin-pages">
                     <input type="hidden" id="roomId" name="roomId" value="<%= rooms[0].roomId %>" required>
                 </div>
@@ -39,11 +39,22 @@
                             <option value="<%= roomTypes[i].room_type %>" <%= roomTypes[i].room_type == rooms[0].roomType ? 'selected' : '' %>><%= roomTypes[i].room_type %></option>
                         <% } %>
                     </select>
-                </div>                
-                <div class="input-group-admin-pages">
-                    <label for="pictureURL">Picture URL:</label>
-                    <input type="text" id="pictureURL" name="pictureURL" value="<%= rooms[0].pictureURL %>" >
                 </div>
+                <div class="input-group-admin-pages">
+                    <label>Room Image:</label>
+                    <input type="file" name="roomImageFile" id="roomImageFile">
+                    <p>Or</p>
+                    <input type="text" name="pictureURL" placeholder="Or enter image URL" id="pictureURL" value="<%= rooms[0].pictureURL %>">
+                </div>
+                <script>
+                    document.getElementById('roomImageFile').addEventListener('change', function() {
+                        // Check if a file was selected
+                        if(this.files && this.files.length > 0) {
+                            // Clear the text input for the picture URL
+                            document.getElementById('pictureURL').value = '';
+                        }
+                    });
+                </script>                
                 <div class="input-group-admin-pages">
                     <label for="isAcceptingBookings">Accepting Bookings:</label>
                     <select id="isAcceptingBookings" name="isAcceptingBookings">

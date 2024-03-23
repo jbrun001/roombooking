@@ -21,7 +21,7 @@ const storage = multer.diskStorage({
   filename: function (req, file, cb) {
     const roomNumber = req.body.roomNumber;
     const buildingName = req.body.buildingName;
-    const filename = `${roomNumber}-${buildingName}${path.extname(file.originalname)}`;
+    const filename = `${roomNumber}-${buildingName}.jpeg`;
     cb(null, filename);
   }
 });
@@ -1320,7 +1320,6 @@ app.get("/add-room", isLoggedIn, (req, res) => {
   });
 });
 
-// Update the route to include multer middleware for handling file uploads
 app.post("/add-room", isLoggedIn, upload.single('roomImageFile'), (req, res) => {
   if (req.session.user_role !== "admin") {
     return res.send("Unauthorized access");
@@ -2188,7 +2187,7 @@ app.post("/edit-room", isLoggedIn, (req, res) => {
     });
 });
 
-app.post("/edit-room-success", isLoggedIn, (req, res) => {
+app.post("/edit-room-success", isLoggedIn, upload.single('roomImageFile'), (req, res) => {
   //sql changes to room table
   var userrole = req.session.user_role;
   var email = req.session.email;
@@ -2198,9 +2197,14 @@ app.post("/edit-room-success", isLoggedIn, (req, res) => {
   const buildingName = sanitiseHtml(req.body.buildingName);
   const roomType = sanitiseHtml(req.body.roomType);
   const capacity = sanitiseHtml(req.body.capacity);
-  const pictureURL = sanitiseHtml(req.body.pictureURL);
+  let pictureURL = req.body.pictureURL ? sanitiseHtml(req.body.pictureURL) : null;
   const isAcceptingBookings = sanitiseHtml(req.body.isAcceptingBookings);
   console.log("edit room sucess: " + roomId);
+
+    // Check if a file was uploaded
+  if (req.file) {
+    pictureURL = `/rooms/${req.file.filename}`; // Update the file path as needed
+  }
 
   sqlquery = `
     UPDATE room SET room_number = ?, building_name = ?, room_type = ?, 
@@ -2236,10 +2240,10 @@ app.post("/edit-room-success", isLoggedIn, (req, res) => {
         loggedInMessage,
         userrole,
         email
-      });
-    }
-  );
-});
+          });
+        }
+      );
+  });
 
 app.post("/delete-room", isLoggedIn, (req, res) => {
   if (req.session.user_role !== "admin") {
