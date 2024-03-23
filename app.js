@@ -488,7 +488,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         SELECT 
         r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
         r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
-        b.risk_assessment_approval_status as raApprovementStatus, 
+        b.risk_assessment_approval_status as raApprovalStatus, 
         CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
         r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
         b.id as bookingId, r.id as roomId, u.id as userId
@@ -504,7 +504,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         SELECT 
         r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
         r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
-        b.risk_assessment_approval_status as raApprovementStatus, 
+        b.risk_assessment_approval_status as raApprovalStatus, 
         CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
         r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
         b.id as bookingId, r.id as roomId, u.id as userId
@@ -519,7 +519,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         SELECT 
         r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
         r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
-        b.risk_assessment_approval_status as raApprovementStatus, 
+        b.risk_assessment_approval_status as raApprovalStatus, 
         CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
         r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
         b.id as bookingId, r.id as roomId, u.id as userId
@@ -1527,7 +1527,6 @@ app.post("/review-booking-submit", isLoggedIn, (req, res) => {
   if (reviewAction == "rejectRisk" || reviewAction == "approveRisk") {
     // current user is the reviewed_by
     riskAssessmentData = [userId];
-    // 0 in isApproved = rejected, 1 in isApproved = approved
     if (reviewAction == "rejectRisk") riskAssessmentData.push(0)
     else riskAssessmentData.push(1)
     // this is the record we are updating
