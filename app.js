@@ -281,11 +281,12 @@ app.post("/login-check", function (req, res) {
           req.session.email = result[0].email;
           req.session.user_role = result[0].user_role;     
           res.redirect("/login-2fa"); // redirect to the 2fa pge
-        } else {
+        }
+      } else {
         console.error("user details don't match");
         loggedInMessage = getLoggedInUser(req);
         res.render("login-error.ejs", { loggedInMessage });
-      }}
+      }
     }
   });
 });
