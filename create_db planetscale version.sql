@@ -135,8 +135,8 @@ CREATE TABLE risk_assessment (
     # changed from assessmentid to id so can see difference between primary and foreign keys
     id INT AUTO_INCREMENT,
     PRIMARY KEY(id),
-    risk1 VARCHAR(200),
-    risk2 VARCHAR(200),
+    risk1 mediumtext,
+    risk2 mediumtext,
     approval_status VARCHAR(50),
     # this will be an id from the user_account table from a user that has role health and safety
     reviewed_by INT,
