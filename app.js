@@ -503,7 +503,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         SELECT 
         r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
         r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
-        b.is_risk_assessment_approved as raApproved, 
+        b.risk_assessment_approval_status as raApprovalStatus, 
         CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
         r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
         b.id as bookingId, r.id as roomId, u.id as userId
@@ -519,7 +519,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         SELECT 
         r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
         r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
-        b.is_risk_assessment_approved as raApproved, 
+        b.risk_assessment_approval_status as raApprovalStatus, 
         CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
         r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
         b.id as bookingId, r.id as roomId, u.id as userId
@@ -534,7 +534,7 @@ function getBookings(pageName, userId, filters, listOrder) {
         SELECT 
         r.room_number as roomNumber, r.building_name as building, r.capacity as minSeats,
         r.room_type as roomType, DATE_FORMAT(b.booking_start, '%Y-%m-%d') as date,
-        b.is_risk_assessment_approved as raApproved, 
+        b.risk_assessment_approval_status as raApprovalStatus, 
         CONCAT(DATE_FORMAT(b.booking_start, '%H'),':',DATE_FORMAT(b.booking_start,'%i'),'-',DATE_FORMAT(b.booking_end, '%H'),':',DATE_FORMAT(b.booking_end,'%i')) as timeslot,
         r.picture_URL as pictureURL, u.email as bookedBy, b.booking_status as Status,
         b.id as bookingId, r.id as roomId, u.id as userId
@@ -1051,7 +1051,7 @@ app.get("/requests-list", isLoggedIn, (req, res) => {
       listOrder = " ORDER BY b.booking_status";
       break;
     case "o_b_Risk_Approved":
-      listOrder = " ORDER BY b.is_risk_assessment_approved DESC, b.confirmed_on ASC, b.booking_start ASC"
+      listOrder = " ORDER BY b.risk_assessment_approval_status DESC, b.confirmed_on ASC, b.booking_start ASC"
       break;
     default:
       listOrder = " ORDER BY b.booking_start";
@@ -1133,7 +1133,7 @@ app.post("/requests-list-filtered", isLoggedIn, function (req, res) {
       listOrder = " ORDER BY b.booking_status";
       break;
     case "o_b_Risk_Approved":
-      listOrder = " ORDER BY b.is_risk_assessment_approved DESC, b.confirmed_on ASC, b.booking_start ASC"
+      listOrder = " ORDER BY b.risk_assessment_approval_status DESC, b.confirmed_on ASC, b.booking_start ASC"
       break;
     default:
       listOrder = " ORDER BY b.booking_start";
@@ -1424,8 +1424,8 @@ app.get("/view-booking/:id", isLoggedIn, (req, res) => {
         u.id as userId,
         ra.risk1 as risk1,
         ra.risk2 as risk2,
-        ra.is_approved as isApproved,
-        ra.approved_by as approvedBy
+        ra.approval_status as approvalStatus,
+        ra.reviewed_by as reviewedBy
         FROM booking b
         JOIN user_account u ON b.user_id = u.id
         JOIN room r ON b.room_id = r.id
@@ -1475,8 +1475,8 @@ app.get("/review-booking/:id", isLoggedIn, (req, res) => {
     u.id as userId,
     ra.risk1 as risk1,
     ra.risk2 as risk2,
-    ra.is_approved as isApproved,
-    ra.approved_by as approvedBy
+    ra.approval_status as approvalStatus,
+    ra.reviewed_by as reviewedBy
     FROM booking b
     JOIN user_account u ON b.user_id = u.id
     JOIN room r ON b.room_id = r.id
@@ -1540,19 +1540,18 @@ app.post("/review-booking-submit", isLoggedIn, (req, res) => {
   // this requires that we know the current user who is the approver
   // we also need to update a field in the booking table that shows if the risk assessment is approved.
   if (reviewAction == "rejectRisk" || reviewAction == "approveRisk") {
-    // current user is the approved_by
+    // current user is the reviewed_by
     riskAssessmentData = [userId];
-    // 0 in isApproved = rejected, 1 in isApproved = approved
     if (reviewAction == "rejectRisk") riskAssessmentData.push(0)
     else riskAssessmentData.push(1)
     // this is the record we are updating
     riskAssessmentData.push(bookingId);
     console.log(reviewAction + " riskAssessmentData: " + riskAssessmentData[0] + ", " + riskAssessmentData[1] + ", " + riskAssessmentData[2] );
-    insertUpdateRiskAssessment("UPDATE_APPROVED_APPROVED_BY", riskAssessmentData)
+    insertUpdateRiskAssessment("UPDATE_APPROVED_REVIEWED_BY", riskAssessmentData)
       // when that update is complete update the bookings table 
       .then((bookingUpdateResult) => {
-        if (reviewAction == "approveRisk") bookingData = [1,bookingId];
-        if (reviewAction == "rejectRisk") bookingData = [0,bookingId];
+        if (reviewAction == "approveRisk") bookingData = ["Risk Assessment Approved",bookingId];
+        if (reviewAction == "rejectRisk") bookingData = ["Risk Assessment Rejected",bookingId];
         insertUpdateBooking("UPDATE_RISK_ASSESS_APPROVAL",bookingData)
       })
       // when that update is complete - redirect
@@ -1591,8 +1590,8 @@ app.post("/edit-booking", isLoggedIn, (req, res) => {
     u.id as userId,
     ra.risk1 as risk1,
     ra.risk2 as risk2,
-    ra.is_approved as isApproved,
-    ra.approved_by as approvedBy
+    ra.approval_status as approvalStatus,
+    ra.reviewed_by as reviewedBy
     FROM booking b
     JOIN user_account u ON b.user_id = u.id
     JOIN room r ON b.room_id = r.id
@@ -1719,7 +1718,7 @@ function insertUpdateBooking(mode, changedDataFields) {
       sqlquery = `
         INSERT INTO booking 
           (booking_start, booking_end, booking_reason, booking_status,
-          is_risk_assessment_approved, confirmed_on, cancelled_on, user_id, room_id)
+          risk_assessment_approval_status, confirmed_on, cancelled_on, user_id, room_id)
           VALUES (
           ?, ?, NULL, "Awaiting Approval",
           0, NULL, NULL, ?, ?)
@@ -1737,7 +1736,7 @@ function insertUpdateBooking(mode, changedDataFields) {
     }
     if (mode == "UPDATE_RISK_ASSESS_APPROVAL") {
       sqlquery = `
-        UPDATE booking SET is_risk_assessment_approved = ? where id = ? 
+        UPDATE booking SET risk_assessment_approval_status = ? where id = ? 
       `;
     }
     console.log("insertUpdateBooking: " + sqlquery);
@@ -1775,14 +1774,14 @@ function insertUpdateRiskAssessment(mode, changedDataFields) {
     if (mode == "INSERT") {
       sqlquery = `
         INSERT INTO risk_assessment 
-          (risk1, risk2, is_approved, approved_by, booking_id)
+          (risk1, risk2, approval_status, reviewed_by, booking_id)
         VALUES (?, ?, 0, NULL, ?)
       `;
     }
     // add more modes here as necessary for updating etc
-    if (mode == "UPDATE_APPROVED_APPROVED_BY") {
+    if (mode == "UPDATE_APPROVED_REVIEWED_BY") {
       sqlquery = `
-        UPDATE risk_assessment SET  approved_by = ?, is_approved = ?
+        UPDATE risk_assessment SET  reviewed_by = ?, approval_status = ?
         WHERE booking_id = ?
       `;
     }

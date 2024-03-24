@@ -21,13 +21,13 @@
             <li><strong>Room Number:</strong> <%= result[0].roomNumber %></li>
             <li><strong>Seating Requested:</strong> <%= result[0].minSeats %></li>
             <li><strong>Risk Assessment:</strong>
-                <% if (result[0].isApproved == 1) { %>Approved
-                <% } else if ((result[0].isApproved == 0 || result[0].isApproved === null) && result[0].approvedBy != null) { %>Rejected
+                <% if (result[0].approvalStatus == "Risk Assessment Approved") { %>Approved
+                <% } else if ((result[0].approvalStatus == "Risk Assessment Rejected" || result[0].approvalStatus == "Not Reviewed") && result[0].reviewedBy != null) { %>Rejected
                 <% } else {%>Not yet reviewed 
                 <% } %>
             </li>
         </ul>
-        <% if (result[0].Status == 'Awaiting Approval' && result[0].isApproved != '1') { %>
+        <% if (result[0].Status == 'Awaiting Approval' && result[0].approvalStatus != "Risk Assessment Approved") { %>
             <form id = "editAction" class="view-booking-content" action="/edit-booking" method="POST">
                 <div class="view-booking-input">
                     <p><strong>Risk Assessment</strong></p>
