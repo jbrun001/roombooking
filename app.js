@@ -39,7 +39,7 @@ const upload = multer({ storage: storage, fileFilter: imageFilter });
 //Two Factor Authentication
 //THIS VARIABLE ACTIVATES TWO FACTOR ACROSS THE ENTIRE APP <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 let activateTwoFactor;
-activateTwoFactor = false;
+activateTwoFactor = true;
 
 // override this value if there is a TWO_FACTOR=TRUE or TWO_FACTOR=FALSE in the .env file
 if (process.env.TWO_FACTOR) {
