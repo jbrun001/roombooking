@@ -39,7 +39,7 @@ const upload = multer({ storage: storage, fileFilter: imageFilter });
 //Two Factor Authentication
 //THIS VARIABLE ACTIVATES TWO FACTOR ACROSS THE ENTIRE APP <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 let activateTwoFactor;
-activateTwoFactor = true;
+activateTwoFactor = false;
 
 // override this value if there is a TWO_FACTOR=TRUE or TWO_FACTOR=FALSE in the .env file
 if (process.env.TWO_FACTOR) {
@@ -449,16 +449,16 @@ app.get("/report-bug", (req, res) => {
 
 app.post('/send',
 [
-  check('yourName').notEmpty().withMessage('Name is required'),
-  check('email').isEmail().withMessage('Email is required'),
-  check('bugTitle').notEmpty().withMessage('Title is required'),
-  check('bugDescription').notEmpty().withMessage('Description is required')
+  // check('yourName').notEmpty().withMessage('Name is required'),
+  // check('email').isEmail().withMessage('Email is required'),
+  // check('bugTitle').notEmpty().withMessage('Title is required'),
+  // check('bugDescription').notEmpty().withMessage('Description is required')
 ], (req, res) => {
 
-const errors = validationResult(req);
-if (!errors.isEmpty()) {
-  response.render('contact', { errors: errors.mapped() });
-}
+// const errors = validationResult(req);
+// if (!errors.isEmpty()) {
+  res.render('contact');
+//}
 }
 );
 

@@ -16,30 +16,18 @@
                 <div class="input-group-admin-pages">
                     <label for="yourName">Your Name:</label>
                     <input type="text" id="yourName" name="yourName" required>
-                    <% if(errors && errors.yourName) { %> 
-                    <span class="text-danger"><%= errors.name.msg %></span>
-                    <% } %>
                 </div>
                 <div class="input-group-admin-pages">
                     <label for="yourEmail">Your Email:</label>
                     <input type="email" id="yourEmail" name="yourEmail" required>
-                    <% if(errors && errors.yourEmail) { %>
-                    <span class="text-danger"><%= errors.email.msg %></span>  
-                    <% } %>
                 </div>
                 <div class="input-group-admin-pages">
                     <label for="bugTitle">Bug Title:</label>
                     <input type="text" id="bugTitle" name="bugTitle" required>
-                    <% if(errors && errors.bugTitle) { %>
-                    <span class="text-danger"><%= errors.bugTitle.msg %></span>
-                    <% } %>
                 </div>
                 <div class="input-group-admin-pages">
                     <label for="bugDescription">Bug Description:</label>
                     <textarea id="bugDescription" name="bugDescription" required></textarea>
-                    <% if(errors && errors.bugDescription) { %>
-                    <span class="text-danger"><%= errors.bugDescription.msg %></span>
-                    <% } %>
                 </div>
                 <div class="input-group-admin-pages">
                     <label for="bugSeverity">Bug Severity:</label>
