@@ -1,3 +1,8 @@
+# package files - these can be re-created if needed on a new install with npm init 
+# and then running the npm install (all the modules here) part of the readme.md
+package.json
+package.json.lock
+
 # Logs
 logs
 *.log
