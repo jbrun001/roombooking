@@ -274,14 +274,14 @@ app.post("/login-check", function (req, res) {
             req.session.email = result[0].email;
             req.session.user_role = result[0].user_role;
             loggedInMessage = getLoggedInUser(req);
-            res.redirect("/login-success");
+            res.redirect("login-success");
            
           // 2FA login conidtions
         } else if(activateTwoFactor){  // request the relevant session info (userid, email, user_role)
           req.session.userid = result[0].id;
           req.session.email = result[0].email;
           req.session.user_role = result[0].user_role;     
-          res.redirect("/login-2fa"); // redirect to the 2fa pge
+          res.redirect("login-2fa"); // redirect to the 2fa pge
         }
       } else {
         console.error("user details don't match");
@@ -409,9 +409,9 @@ app.post("/registered", isLoggedIn, function (req, res) {
     db.query(sqlqueryuser, newuser, (err, result) => {
       if (err) {
         console.error(err.message);
-        res.redirect("/");
+        res.redirect("./");
       } else {
-        res.redirect("/login-success");
+        res.redirect("login-success");
       }
     });
   }
@@ -425,7 +425,7 @@ app.get("/register-error", function (req, res) {
   db.query("SELECT * FROM lookup_user_role", (err, data) => {
     if (err) {
       console.error(err.message);
-      return res.redirect("/");
+      return res.redirect("./");
     }
 
     //render the register-error page with the error message
@@ -1363,7 +1363,7 @@ app.post("/add-room", isLoggedIn, upload.single('roomImageFile'), (req, res) => 
       console.error(err.message);
       return res.send("Error in adding room");
     }
-    res.redirect("/add-room-success");
+    res.redirect("add-room-success");
   });
 });
 
@@ -1530,7 +1530,7 @@ app.post("/review-booking-submit", isLoggedIn, (req, res) => {
     console.log(reviewAction + " booking data: " + bookingData[0] + ", " + bookingData[1] + ", " +  bookingData[2] );
     insertUpdateBooking("UPDATE_STATUS_CONFIRMED_ON", bookingData)
       .then((bookingUpdateResult) => {
-        res.redirect("/requests-list");
+        res.redirect("./requests-list");
       })
       .catch((error) => {
         console.error("update booking status: An error occurred:", error);
@@ -1557,7 +1557,7 @@ app.post("/review-booking-submit", isLoggedIn, (req, res) => {
       })
       // when that update is complete - redirect
       .then((riskAssessmentResult) => {
-        res.redirect("/requests-list");
+        res.redirect("./requests-list");
       })
       .catch((error) => {
         console.error("update booking status: An error occurred:", error);
@@ -1687,7 +1687,7 @@ app.post("/add-booking", isLoggedIn, (req, res) => {
     if (err) {
       console.log("add-booking db query error");
       console.error(err.message);
-      res.render("/bookings-list");
+      res.render("bookings-list");
     }
     let pageData = Object.assign(
       {},
@@ -2274,7 +2274,7 @@ app.post("/delete-room", isLoggedIn, (req, res) => {
       return res.status(500).send("Error deleting room");
     }
     console.log("Deleted Room ID:", roomId);
-    res.redirect('/edit-rooms-list'); 
+    res.redirect('./edit-rooms-list'); 
   });
 });
 
