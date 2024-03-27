@@ -78,7 +78,7 @@
                 // Send the form data to the server
                 type: "POST",
                 // url: $(this).attr('action'),
-                url: '/' + window.location.pathname.split('/').pop() + '-filtered',
+                url: window.location.pathname.split('/').pop() + '-filtered',
                 // data: $(this).serialize(), // Serialize form data for submission
                 data: $('#filterForm').serialize(),
                 success: function(response) {
