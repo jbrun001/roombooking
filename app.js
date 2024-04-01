@@ -128,21 +128,6 @@ app.use(
   })
 );
 
-// this allows processing of form data
-// extended the limit to to 500kb so the post of the risk assessment is managed
-// the risk assessment template is 223kb, so this allows for just over double the size
-app.use(bodyParser.urlencoded({ limit: '500kb', extended: true }));
-
-// Set the directory where Express will pick up media files images - this will be accessable from \
-// __dirname will get the current directory
-app.use(express.static(__dirname + "/media"));
-
-// Set up access to folder with css
-app.use(express.static(__dirname + "/public"));
-
-/* New Route to the TinyMCE Node module */
-app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
-
 
 // Set the security headers for anti-click jacking and set the content security policy
 // these fix 2 medium security errors identified by OWASP Zap as part of Part E
@@ -184,6 +169,21 @@ app.use((req, res, next) => {
 });
 
 
+
+// this allows processing of form data
+// extended the limit to to 500kb so the post of the risk assessment is managed
+// the risk assessment template is 223kb, so this allows for just over double the size
+app.use(bodyParser.urlencoded({ limit: '500kb', extended: true }));
+
+// Set the directory where Express will pick up media files images - this will be accessable from \
+// __dirname will get the current directory
+app.use(express.static(__dirname + "/media"));
+
+// Set up access to folder with css
+app.use(express.static(__dirname + "/public"));
+
+/* New Route to the TinyMCE Node module */
+app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
 
 // Set the directory where Express will pick up HTML files
 // __dirname will get the current directory
