@@ -26,8 +26,8 @@
             <li><strong>Room Number:</strong> <%= result[0].roomNumber %></li>
             <li><strong>Seating Requested:</strong> <%= result[0].minSeats %></li>
             <li><strong>Risk Assessment:</strong>
-                <% if (result[0].isApproved == 1) { %>Approved
-                <% } else if ((result[0].isApproved == 0 || result[0].isApproved === null) && result[0].approvedBy != null) { %>Rejected
+                <% if (result[0].approvalStatus == "Risk Assessment Accepted") { %>Approved
+                <% } else if ((result[0].approvalStatus == "Risk Assessment Rejected" || result[0].approvalStatus == "Not Reviewed") && result[0].reviewedBy != null) { %>Rejected
                 <% } else {%>Not yet reviewed 
                 <% } %>
             </li>
@@ -44,8 +44,8 @@
         </div>
         <div class="view-booking-button">
             <a href="/approved-list" class="button-link">Back</a>
-            <% console.log(result[0].isApproved + " approved by: >" + result[0].approvedBy +"< type: " + typeof result[0].approvedBy); %>
-            <% if ((result[0].isApproved === null || result[0].isApproved == 0) && result[0].approvedBy == null) {%>
+            <% console.log(result[0].approvalStatus + " approved by: >" + result[0].reviewedBy +"< type: " + typeof result[0].reviewedBy); %>
+            <% if ((result[0].approvalStatus == "Not Reviewed" || result[0].approvalStatus == "Risk Assessment Rejected") && result[0].reviewedBy == null) {%>
                 <form id = "approveRisk" action="/review-booking-submit" method="POST">
                     <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
                     <button class="button-link" name="reviewAction" type="submit" value="approveRisk">Approve Risk</button>
@@ -55,7 +55,7 @@
                     <button class="button-link" name="reviewAction" type="submit" value="rejectRisk">Reject Risk</button>
                 </form>
             <% } %>
-            <% if (result[0].isApproved != null) {%>
+            <% if (result[0].approvalStatus != "Not Reviewed") {%>
                 <form id = "approveBooking" action="/review-booking-submit" method="POST">
                     <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
                     <button class="button-link" name="reviewAction" type="submit" value="approveBooking">Approve Booking</button>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookit / Report Bug</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body>
+    <%- include('header-menu') %>
+    <div class="content">
+        <div class="form-container">
+            <h1>Report a Bug</h1>
+            <form action="/send" class="input-group-admin-pages" method="POST">
+                <div class="input-group-admin-pages">
+                    <label for="yourName">Your Name:</label>
+                    <input type="text" id="yourName" name="yourName" required>
+                </div>
+                <div class="input-group-admin-pages">
+                    <label for="yourEmail">Your Email:</label>
+                    <input type="email" id="yourEmail" name="yourEmail" required>
+                </div>
+                <div class="input-group-admin-pages">
+                    <label for="bugTitle">Bug Title:</label>
+                    <input type="text" id="bugTitle" name="bugTitle" required>
+                </div>
+                <div class="input-group-admin-pages">
+                    <label for="bugDescription">Bug Description:</label>
+                    <textarea id="bugDescription" name="bugDescription" required></textarea>
+                </div>
+                <div class="input-group-admin-pages">
+                    <label for="bugSeverity">Bug Severity:</label>
+                    <select id="bugSeverity" name="bugSeverity" required>
+                        <option value="Low">Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
+                <button type="submit" class="button-link">Submit</button>
+            </form>
+        </div>
+    </div>
+    <%- include('footer') %>
+</body>
+</html>

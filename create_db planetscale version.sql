@@ -85,7 +85,7 @@ CREATE TABLE booking (
     booking_end DATETIME,
     booking_reason VARCHAR(50),
     booking_status VARCHAR(50),
-    is_risk_assessment_approved BOOLEAN,
+    risk_assessment_approval_status VARCHAR(50),
     confirmed_on DATETIME,
     cancelled_on DATETIME,
     user_id INT,
@@ -135,11 +135,11 @@ CREATE TABLE risk_assessment (
     # changed from assessmentid to id so can see difference between primary and foreign keys
     id INT AUTO_INCREMENT,
     PRIMARY KEY(id),
-    risk1 VARCHAR(200),
-    risk2 VARCHAR(200),
-    is_approved BOOLEAN,
+    risk1 mediumtext,
+    risk2 mediumtext,
+    approval_status VARCHAR(50),
     # this will be an id from the user_account table from a user that has role health and safety
-    approved_by INT,
+    reviewed_by INT,
     # a risk_assessment must be related to one booking
     booking_id INT
 );

@@ -17,11 +17,11 @@
              <img src="<%= qrCodeUrl %>" >
 
             <form action="/login-2fa" method="POST">
-                <div class="input-group">
+                <div class="input-group-admin-pages">
                     <label for="email">Input the code for the authenticator app:</label>
-                    <input type="text" id="twoFactorCode" name="twoFactorCode" required>
+                    <input type="text" id="twoFactorCode" name="twoFactorCode" required autofocus>
+                    <button type="submit" class="button-link">Submit</button>
                 </div>
-                <button type="submit">Submit</button>
             </form>
         </div>
     </div>
