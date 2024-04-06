@@ -331,7 +331,7 @@ app.post("/login-2fa", async (req, res) =>{
   if (isTokenValid) { // login if true
     req.session.isLoggedIn = true; // Set the session variable to show logged in
     loggedInMessage = getLoggedInUser(req);`  `
-    res.redirect("/login-success");
+    res.redirect("login-success");
   } else {
     loggedInMessage = "Two-factor authentication failed, try again";
           // render the original 2fa page again with the orinal session qr url (this prevents a new qr code generated if incorrect form data is entered)
