@@ -331,7 +331,7 @@ app.post("/login-2fa", async (req, res) =>{
   if (isTokenValid) { // login if true
     req.session.isLoggedIn = true; // Set the session variable to show logged in
     loggedInMessage = getLoggedInUser(req);`  `
-    res.redirect("/login-success");
+    res.redirect("login-success");
   } else {
     loggedInMessage = "Two-factor authentication failed, try again";
           // render the original 2fa page again with the orinal session qr url (this prevents a new qr code generated if incorrect form data is entered)
@@ -1647,7 +1647,7 @@ app.post("/edit-booking-submit", isLoggedIn, (req, res) => {
   db.query(query, [risk1, risk2, bookingId], (err, result) => {
     if(err) console.log("edit-booking: error in sql query: " + err)
     else {
-      res.redirect("/bookings-list");
+      res.redirect("bookings-list");
     } 
   })
 });
@@ -1664,7 +1664,7 @@ app.post("/cancel-booking", isLoggedIn, (req, res) => {
     if (err) {
       console.log("cancel-booking: error in sql query: " + err);
     } else {
-      res.send('<p>Booking ' + bookingId + ' cancelled successfully.</p></br><a href="/login-success">Click to go back to the menu</a>');
+      res.send('<p>Booking ' + bookingId + ' cancelled successfully.</p></br><a href="login-success">Click to go back to the menu</a>');
     } 
   });
   //res.send(updateCancelledQuery);
@@ -1843,7 +1843,7 @@ app.post("/add-booking-submit", isLoggedIn, (req, res) => {
     .then((riskAssessmentResult) => {
       console.log("Risk assessment updated with result:", riskAssessmentResult);
       res.send(
-        '<p>Booking and risk assessment inserted successfully!</p></br><a href="/login-success">Click to go back to the menu</a>'
+        '<p>Booking and risk assessment inserted successfully!</p></br><a href="login-success">Click to go back to the menu</a>'
       );
     })
     .catch((error) => {
@@ -1854,7 +1854,7 @@ app.post("/add-booking-submit", isLoggedIn, (req, res) => {
 //this route displays when a room has been added successfully
 app.get("/add-room-success", isLoggedIn, (req, res) => {
   res.send(
-    '<p>Room added successfully!</p><a href="/login-success">Return to Dashboard</a>'
+    '<p>Room added successfully!</p><a href="login-success">Return to Dashboard</a>'
   );
 });
 

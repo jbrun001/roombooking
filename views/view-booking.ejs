@@ -46,8 +46,7 @@
                             <button class="cancel-button" name="cancel" type="submit" value="">Cancel</button>
                         </form>
                     <% } %>
-                    <input type="hidden" label="bookingId" name="bookingId" value="<%=result[0].bookingId%>"> 
-                    <button class="button-link" name="confirm" type="submit" value="">Edit</button>
+                    <button class="button-link" name="submit" type="submit">Edit</button>
                     <a href="/login-success" class="button-link" onclick="event.preventDefault(); window.history.back();">Back</a>
                 </div>
             </form>
