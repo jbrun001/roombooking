@@ -1,6 +1,7 @@
 require("dotenv").config();
 const speakeasy = require("speakeasy");
 const qrcode = require("qrcode");
+const nodemailer = require ("nodemailer");
 const express = require("express");
 var path = require('path');
 const app = express();
@@ -1805,6 +1806,42 @@ function insertUpdateRiskAssessment(mode, changedDataFields) {
   });
 }
 
+
+
+//CURRENTLY THE NODEAMILER SECTION IS NOT IN USE DUE TO EXTERNAL FACTORS-------------------------------------------------------------------------------------------------------------------------------------------------------------
+const transporter = nodemailer.createTransport({
+  service: "smtp.mail.yahoo.com",
+  port: 465,
+  secure: true,
+  auth: {
+    user: "bookit.notifications@yahoo.com",
+    pass: "AdminTest123!",
+  },
+  tls: {
+    rejectUnauthorized: false, // Ignore SSL certificate errors
+  },
+});
+
+async function sendBookingRequestEmail(email, bookingDetails) {
+  const mailOptions = {
+    from: "bookit.notifications@yahoo.com",
+    to: "noahtambala@gmail.com",
+    subject: "Booking Request Submited",
+    html: "<h1>Booking Request Notification</h1><p>A new booking has been requested with the following details:</p> <p>Room: ${bookingDetails.room}</p> <p>Date: ${bookingDetails.date}</p> <p>Timeslot: ${bookingDetails.timeslot}</p><p>Please review the booking and take necessary actions.</p>",
+  };
+
+  // Send the email
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log("Email was sent successfully:", info.response);
+    return info.response;
+  } catch (error) {
+    console.error("Error email was not sent:", error);
+    throw error; //
+  }
+}
+//----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 // this processes the booking when the confirm button is pressed
 app.post("/add-booking-submit", isLoggedIn, (req, res) => {
   loggedInMessage = getLoggedInUser(req);
@@ -1842,8 +1879,39 @@ app.post("/add-booking-submit", isLoggedIn, (req, res) => {
     })
     .then((riskAssessmentResult) => {
       console.log("Risk assessment updated with result:", riskAssessmentResult);
+
+      // Send email notification
+      const bookingDetails = {
+        room: req.body.roomName,
+        date: selectedDate,
+        timeslot: selectedTimeslot,
+      };
+
+
+      //BELOW IS ASPIRATIONAL CODE 
+      //This code was designed to return the promise of the sendBookingRequest email function
+      //Only if this was successful would the .then() be executed
+      //This would otherwise produce an error message
+      //The process was designed to avoid issues when booking where confirmation email may not be sent
+      //but the booking is still processed, causing some confusion if a user reattempts a booking.
+      //Unfortunately with external issues with SMPT serivce provides, there currenly isn't an authentication of logins from external
+      //apps meaning that no emails can currntly sent from the emails I have set up. 
+      //Hence the old code is in place :( 
+       //   return sendBookingRequestEmail(email, bookingDetails); // return the promise
+    // })
+
+    // .then(() => {
+    //   res.send( // sent after email is sent
+    //     '<p>Booking and risk assessment inserted successfully!</p></br><a href="/login-success">Click to go back to the menu</a>'
+    //   );
+    // })
+    // .catch((error) => {
+    //   console.error("An error occurred while processing the booking:", error);
+    // });
+    //OLD CODE - keep running using this due to constraints
+      // sendBookingRequestEmail(email, bookingDetails); // sents confirmation email -  error will not appear if sendBookingRequestEmail is unsuccesful - COMMENTED DUE TO EXTERNAL FACTORS
       res.send(
-        '<p>Booking and risk assessment inserted successfully!</p></br><a href="login-success">Click to go back to the menu</a>'
+        '<p>Booking and risk assessment inserted successfully!</p></br><a href="/login-success">Click to go back to the menu</a>'
       );
     })
     .catch((error) => {
