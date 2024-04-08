@@ -1809,6 +1809,7 @@ function insertUpdateRiskAssessment(mode, changedDataFields) {
 
 
 //CURRENTLY THE NODEAMILER SECTION IS NOT IN USE DUE TO EXTERNAL FACTORS-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 const transporter = nodemailer.createTransport({
   service: "smtp.mail.yahoo.com",
   port: 465,
@@ -1825,7 +1826,7 @@ const transporter = nodemailer.createTransport({
 async function sendBookingRequestEmail(email, bookingDetails) {
   const mailOptions = {
     from: "bookit.notifications@yahoo.com",
-    to: "noahtambala@gmail.com",
+    to: email,
     subject: "Booking Request Submited",
     html: "<h1>Booking Request Notification</h1><p>A new booking has been requested with the following details:</p> <p>Room: ${bookingDetails.room}</p> <p>Date: ${bookingDetails.date}</p> <p>Timeslot: ${bookingDetails.timeslot}</p><p>Please review the booking and take necessary actions.</p>",
   };
@@ -1840,6 +1841,7 @@ async function sendBookingRequestEmail(email, bookingDetails) {
     throw error; //
   }
 }
+
 //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 // this processes the booking when the confirm button is pressed
