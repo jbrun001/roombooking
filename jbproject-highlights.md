@@ -5,7 +5,7 @@
 **Platform:** Browser Based  
 **Team/Solo:** Project as part of a team
 
-**Repository:** [https://github.com/jbrun001/APIProject](https://github.com/jbrun001/roombooking)
+**Repository:** [https://github.com/jbrun001/roombooking](https://github.com/jbrun001/roombooking)
 
 ---
 
