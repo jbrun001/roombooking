@@ -26,7 +26,7 @@ A room booking system with complex searching and enhanced security features.
 - **XSS and SQL Injection Defense** - Secure coding practices.
 - **Wireframe design** - quick mock ups for feedback
 - **Cloud Database use** - setup of cloud MySQL for ease of development team
-- **Issue Management** - using github projects and issues
+- **Issue Management** - [implementation of github projects and issues](https://github.com/users/jbrun001/projects/1)
 - **Deployment Troubleshooting** - resolving BCRYPT node package differences on production vs development
 - **Project Managment** - allocation of tasks using kanban, and timeline management
 
