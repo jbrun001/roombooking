@@ -15,7 +15,15 @@ A room booking system with complex searching and enhanced security features.
 ## Features
 - Complex search functionality.
 - Room booking approval workflow.  
-- Security testing with OWASP tools.  
+- Security testing with OWASP tools.
+
+## Vulnerability testing
+During this project I learnt to use OWASP Zap for automated application vulnerability testing, producing security reports for the team during the development process (https://github.com/jbrun001/roombooking/tree/main/security). The process of conducting these tests increased by security knowledge significantly and highlighted new areas of security to consider (CORS) as well as highlighting weaknesses in the existing protections that had been coded (SQL Injection) so they could be corrected by the team.
+
+## Teamwork
+This was the first project that I had worked on with a larger team of developers, and the first time using git collaboratively. There were 6 developers involved including myself. This required more co-ordination that I had been used to on previous project. Github issues and using a github project were essential to keeping things on track. I learnt that the task distribution was critical, and the tasks for development needed to be ordered so they created opportunities for other team members to contribute in parallel. This task order would have been different if the size of the team was different.
+
+I spent more time on documentation, and even did some video walkthroughs in this project, this was to make sure that as we learnt new skills or implemented in a particular way, the team was kept up to date. Otherwise the team members who could have contributed would have become smaller as the project progressed.
 
 ## Skills Developed
 - **Node.js** - Backend API and logic.  
