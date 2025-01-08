@@ -21,8 +21,14 @@ A room booking system with complex searching and enhanced security features.
 - **Node.js** - Backend API and logic.  
 - **CORS** - Cross-origin security.  
 - **SQL** - Complex queries.  
-- **OWASP Zap** - Security vulnerability testing.  
-- **XSS and SQL Injection Defense** - Secure coding practices.  
+- **OWASP Zap** - Security vulnerability testing
+- **Team Training** - [Walkthoughs created for the team](https://github.com/jbrun001/roombooking/tree/main/dev-team-walkthroughs)
+- **XSS and SQL Injection Defense** - Secure coding practices.
+- **Wireframe design** - quick mock ups for feedback
+- **Cloud Database use** - setup of cloud MySQL for ease of development team
+- **Issue Management** - using github projects and issues
+- **Deployment Troubleshooting** - resolving BCRYPT node package differences on production vs development
+- **Project Managment** - allocation of tasks using kanban, and timeline management
 
 ---
 [Return to my portfolio](https://jbrun001.github.io/allprojects.html)
