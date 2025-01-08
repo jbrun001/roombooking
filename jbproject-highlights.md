@@ -22,7 +22,7 @@ A room booking system with complex searching and enhanced security features.
 - **CORS** - Cross-origin security.  
 - **SQL** - Complex queries.  
 - **OWASP Zap** - Security vulnerability testing
-- **Team Training** - [Walkthoughs created for the team](https://github.com/jbrun001/roombooking/tree/main/dev-team-walkthroughs)
+- **Team Training** - [Training videos created for the team](https://github.com/jbrun001/roombooking/tree/main/dev-team-walkthroughs)
 - **XSS and SQL Injection Defense** - Secure coding practices.
 - **Wireframe design** - quick mock ups for feedback
 - **Cloud Database use** - setup of cloud MySQL for ease of development team
